@@ -22,7 +22,8 @@ namespace DonnerTech_ECU_Mod
          *  ADD s2Rev Stage 2 revlimiter
          *  ADD CruiseControll
          *  DONE: Make parts plop off when mounting plate is removed
-         */    
+         *           *  change air/fuel ratio when launch controll and antilag
+         */
 
         /*  Changelog (v1.1)
          *  parts will now be uninstalled when mounting plate is removed.
@@ -37,16 +38,17 @@ namespace DonnerTech_ECU_Mod
          *  changed Mounting plate to add space for Smart Engine Module ECU (will now handle everything that has to do with the engine) = expensive part
          *  changed Cable Harness to only black
          *  changed Cable Harness to add plug for Smart Engine Module ECU
+         *  added engine backfire at revlimiter/Launch controll
+         *  added single backfire when launching using launch controll
+         *  added ModConsole output of mod version loaded.
+         *  added ALS Antilag (will only work with Clutch pressed in)
+         *  changed sound of backfire now comming from exhaust
          */
 
-
-            //Check: module function stays on when removing part while driving
-            //Check: switch resets when part is removed
-            //Check: color of light doesn't change back to green when part is back installed
-    public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
+        public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.0.2"; //Version
+        public override string Version => "1.1"; //Version
 
         // Set this to true if you will be load custom assets from Assets folder.
         // This will create subfolder in Assets folder for your mod.
@@ -77,6 +79,11 @@ namespace DonnerTech_ECU_Mod
         public static bool stage2revModuleEnabled = false;
         public static bool stage2revSwitchEnabled = false;
 
+        private static string modAssetsFolder;
+
+        private AudioSource backFire;
+        private ModAudio backfire_once = new ModAudio();
+        private float timeSinceLastBackFire;
 
         private static ECU_MOD_ABSModule_Part ecu_mod_absModule_Part;
         private static ECU_MOD_ESPModule_Part ecu_mod_espModule_Part;
@@ -90,7 +97,7 @@ namespace DonnerTech_ECU_Mod
         private static Drivetrain satsumaDriveTrain;
         private CarController satsumaCarController;
         private Axles satsumaAxles;
-
+        private FsmFloat mixture;
 
         private const string ecu_mod_ABSModule_SaveFile = "ecu_mod_ABSModule_partSave.txt";
         private const string ecu_mod_ESPModule_SaveFile = "ecu_mod_ESPModule_partSave.txt";
@@ -102,7 +109,9 @@ namespace DonnerTech_ECU_Mod
         private const string ecu_mod_SmartEngineModule_SaveFile = "ecu_mod_SmartEngineModule_partSave.txt";
 
         private Settings resetPosSetting = new Settings("resetPos", "Reset uninstalled parts location", new Action(DonnerTech_ECU_Mod.PosReset));
-
+        private static AudioSource backFireLoop;
+        private static ModAudio backFire_loop = new ModAudio();
+        private bool engineBackfiring = false;
         private static AudioSource dashButtonAudioSource
         {
             get
@@ -116,6 +125,14 @@ namespace DonnerTech_ECU_Mod
             get
             {
                 return cInput.GetKeyDown("Use");
+            }
+        }
+
+        internal static bool useThrottleButton
+        {
+            get
+            {
+                return cInput.GetKey("Throttle");
             }
         }
 
@@ -163,10 +180,14 @@ namespace DonnerTech_ECU_Mod
             }
             else
             {
+                modAssetsFolder = ModLoader.GetModAssetsFolder(this);
                 satsuma = GameObject.Find("SATSUMA(557kg, 248)");
                 satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
                 satsumaCarController = satsuma.GetComponent<CarController>();
                 satsumaAxles = satsuma.GetComponent<Axles>();
+                mixture = satsuma.transform.GetChild(13).GetChild(1).GetChild(3).gameObject.GetComponents<PlayMakerFSM>()[1].FsmVariables.FloatVariables[16];
+
+
 
                 assetBundle = LoadAssets.LoadBundle(this, "ecu-mod.unity3d");
                 DonnerTech_ECU_Mod.ecu_mod_ABSModule = (assetBundle.LoadAsset("ECU-Mod_ABS-Module.prefab") as GameObject); 
@@ -434,7 +455,6 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtSmartEngineModule)
                     {
-                        ModConsole.Print("Test");
                         shop.Add(this, smartEngineModuleProduct, ModsShop.ShopType.Teimo, PurchageMadeSmartEngineModule, ecu_mod_smartEngineModule_Part.activePart);
                         ecu_mod_smartEngineModule_Part.activePart.SetActive(false);
                     }
@@ -459,7 +479,9 @@ namespace DonnerTech_ECU_Mod
                 UnityEngine.Object.Destroy(DonnerTech_ECU_Mod.ecu_mod_MountingPlate);
                 UnityEngine.Object.Destroy(DonnerTech_ECU_Mod.ecu_mod_ControllPanel);
                 UnityEngine.Object.Destroy(DonnerTech_ECU_Mod.ecu_mod_SmartEngineModule);
+                ModConsole.Print("DonnerTechRacing Turbocharger Mod [ v" + this.Version + "]" + "loaded");
             }
+
         }
 
         public void PurchaseMadeABS(ModsShop.PurchaseInfo item)
@@ -543,10 +565,10 @@ namespace DonnerTech_ECU_Mod
         {
             if (ModLoader.CheckSteam() == true)
             {
+              
                 CheckPartsInstalledTrigger();
                 RaycastHit hit;
-
-                if (DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate && DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && ecu_mod_cableHarness_Part.installed && ecu_mod_controllPanel_Part.installed && ecu_mod_mountingPlate_Part.installed && hasPower)
+                if (DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && DonnerTech_ECU_Mod.ecu_mod_controllPanel_Part.installed && DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate && ecu_mod_cableHarness_Part.installed && ecu_mod_controllPanel_Part.installed && ecu_mod_mountingPlate_Part.installed && hasPower)
                 {
                     GameObject moduleLight = null;
                     if (DonnerTech_ECU_Mod.partBuySave.boughtABSModule)
@@ -602,7 +624,7 @@ namespace DonnerTech_ECU_Mod
                         {
                             ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_s2Rev-Light", Color.red);
                         }
-                        else if (ecu_mod_absModule_Part.installed && stage2revSwitchEnabled == true)
+                        else if (ecu_mod_smartEngineModule_Part.installed && stage2revSwitchEnabled == true)
                         {
                             ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_s2Rev-Light", Color.green);
                         }
@@ -611,18 +633,96 @@ namespace DonnerTech_ECU_Mod
                             ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_s2Rev-Light", new Color(1f, 1f, 1f, 1f));
                         }
 
-                        if (stage2revSwitchEnabled && satsumaDriveTrain.velo > 5.5f)
+                        if (ecu_mod_smartEngineModule_Part.installed && alsModuleEnabled == false)
+                        {
+                            ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_ALS-Light", Color.red);
+                        }
+                        else if (ecu_mod_smartEngineModule_Part.installed && alsModuleEnabled == true)
+                        {
+                            ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_ALS-Light", Color.green);
+                        }
+                        else
+                        {
+                            ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_ALS-Light", new Color(1f, 1f, 1f, 1f));
+                        }
+
+
+                        if(stage2revSwitchEnabled && alsModuleEnabled)
+                        {
+                            ToggleALSSwitch();
+                        }
+
+                        if (stage2revSwitchEnabled && satsumaDriveTrain.velo > 3.5f)
                         {
                             ToggleStage2RevSwitch();
                         }
 
-                        if (stage2revSwitchEnabled && satsumaDriveTrain.velo < 5.5f)
+                        if (stage2revSwitchEnabled && satsumaDriveTrain.velo < 3.5f)
                         {
                             satsumaDriveTrain.revLimiterTime = 0;
                         }
                         else
                         {
                             satsumaDriveTrain.revLimiterTime = 0.2f;
+                        }
+
+                        if (ecu_mod_smartEngineModule_Part.installed)
+                        {
+                            if (alsModuleEnabled)
+                            {
+                                if (hasPower)
+                                {
+                                    if(FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle").Value == "Satsuma")
+                                    {
+                                        if (cInput.GetKey("Clutch"))
+                                        {
+                                            satsumaCarController.throttle = 1f;
+                                            if (satsumaDriveTrain.rpm >= 6500)
+                                            {
+                                                if (backFireLoop == null)
+                                                {
+                                                    CreateBackfireLoop();
+                                                }
+                                                else if (!backFireLoop.isPlaying)
+                                                {
+                                                    backFireLoop.Play();
+                                                }
+                                            }
+                                            else if (backFireLoop != null && backFireLoop.isPlaying)
+                                            {
+                                                backFireLoop.Stop();
+                                            }
+
+                                        }
+                                        else if (backFireLoop != null && backFireLoop.isPlaying)
+                                        {
+                                            backFireLoop.Stop();
+                                        }
+                                    }
+                                    else if (backFireLoop != null && backFireLoop.isPlaying)
+                                    {
+                                        backFireLoop.Stop();
+                                    }
+
+
+
+
+                                }
+
+                                GameObject t = GameObject.Find("Choke");
+                                if (t != null)
+                                {
+
+                                    PlayMakerFSM tt = PlayMakerFSM.FindFsmOnGameObject(t, "Choke");
+
+
+                                    FsmVariables ttt = tt.FsmVariables;
+                                }
+
+
+                            }
+                            timeSinceLastBackFire += Time.deltaTime;
+                            TriggerBackFire(); 
                         }
                     }
 
@@ -651,10 +751,31 @@ namespace DonnerTech_ECU_Mod
                     if((DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().TCS != tcsModuleEnabled) && ecu_mod_tcsModule_Part.installed)
                     {
                         ToggleTCS();
-                    } 
+                    }
+                    if(stage2revSwitchEnabled == true)
+                    {
+                        
+                    }
+                    
+                    
+
                 }
 
-
+                /*
+                if (satsumaDriveTrain.rpm >= 5800)
+                {
+                    if (backFireLoop == null)
+                    {
+                        CreateBackfireLoop();
+                    }
+                    else if (backFireLoop.isPlaying == false)
+                        backFireLoop.Play();
+                }
+                else
+                {
+                    backFireLoop.Stop();
+                }
+                */
 
 
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f, 1 << LayerMask.NameToLayer("DontCollide")))
@@ -926,6 +1047,13 @@ namespace DonnerTech_ECU_Mod
                     alsSwitch.transform.localRotation = new Quaternion { eulerAngles = new Vector3(0f, 0f, -180f) };
                 }
                 alsModuleEnabled = !alsModuleEnabled;
+
+
+                if (!alsModuleEnabled && backFireLoop != null && backFireLoop.isPlaying)
+                {
+                    backFireLoop.Stop();
+                }
+
             }
         }
 
@@ -933,7 +1061,7 @@ namespace DonnerTech_ECU_Mod
         {
             if (DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate && DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && ecu_mod_cableHarness_Part.installed && ecu_mod_controllPanel_Part.installed && ecu_mod_mountingPlate_Part.installed && hasPower)
             {
-                if(stage2revSwitchEnabled && satsumaDriveTrain.velo < 5.5f)
+                if(stage2revSwitchEnabled && satsumaDriveTrain.velo < 3.5f)
                 {
                     satsumaDriveTrain.maxRPM = satsumaDriveTrain.maxPowerRPM;
                 }
@@ -1000,5 +1128,53 @@ namespace DonnerTech_ECU_Mod
            
         }
 
+        private static void CreateBackfireLoop()
+        {
+            if(GameObject.Find("racing muffler(Clone)") != null)
+            {
+                backFireLoop = GameObject.Find("racing muffler(Clone)").AddComponent<AudioSource>();
+                backFire_loop.audioSource = backFireLoop;
+                backFire_loop.LoadAudioFromFile(Path.Combine(modAssetsFolder, "backFire_loop.wav"), true, false);
+                backFireLoop.volume = 0.3f;
+                //backFireLoop.rolloffMode = AudioRolloffMode.Linear;
+                backFireLoop.minDistance = 1;
+                backFireLoop.maxDistance = 40;
+                backFireLoop.spatialBlend = 0.5f;
+                backFireLoop.loop = true;
+                backFire_loop.Play();
+            }
+            else
+            {
+                backFireLoop = null;
+            }
+            
+        }
+
+        private void TriggerBackFire()
+        {
+            if (stage2revSwitchEnabled && (satsumaDriveTrain.velo >= 0.25f && satsumaDriveTrain.velo <= 0.5f))
+            {
+                if(backFire == null)
+                {
+                    CreateBackfire();
+                }
+                else
+                {
+                    backFire.Play();
+                }
+            }
+        }
+
+
+        public void CreateBackfire()
+        {
+            backFire = satsuma.AddComponent<AudioSource>();
+            backfire_once.audioSource = backFire;
+            backFire.rolloffMode = AudioRolloffMode.Linear;
+            backFire.pitch = 1f;
+            backFire.volume = 5f;
+            backfire_once.LoadAudioFromFile(Path.Combine(ModLoader.GetModAssetsFolder(this), "backFire_once.wav"), true, false);
+            backFire.Play();
+        }
     }
 }
