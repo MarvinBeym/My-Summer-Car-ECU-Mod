@@ -479,7 +479,7 @@ namespace DonnerTech_ECU_Mod
                 UnityEngine.Object.Destroy(DonnerTech_ECU_Mod.ecu_mod_MountingPlate);
                 UnityEngine.Object.Destroy(DonnerTech_ECU_Mod.ecu_mod_ControllPanel);
                 UnityEngine.Object.Destroy(DonnerTech_ECU_Mod.ecu_mod_SmartEngineModule);
-                ModConsole.Print("DonnerTechRacing Turbocharger Mod [ v" + this.Version + "]" + "loaded");
+                ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + "loaded");
             }
 
         }
