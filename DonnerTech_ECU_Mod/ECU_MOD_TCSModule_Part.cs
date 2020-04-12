@@ -33,6 +33,10 @@ namespace DonnerTech_ECU_Mod
         {
             // do stuff on assemble.
             base.assemble(startUp); // if you want assemble function, you need to call base!
+            if (DonnerTech_ECU_Mod.ecu_mod_tcsModule_Part_screwable != null)
+            {
+                DonnerTech_ECU_Mod.ecu_mod_tcsModule_Part_screwable.setScrewsOnAssemble();
+            }
         }
 
         protected override void disassemble(bool startup = false)
@@ -41,8 +45,11 @@ namespace DonnerTech_ECU_Mod
             {
                 DonnerTech_ECU_Mod.ToggleTCS();
             }
-            // do stuff on dissemble.
             base.disassemble(startup); // if you want dissemble function, you need to call base!
+            if (DonnerTech_ECU_Mod.ecu_mod_tcsModule_Part_screwable != null)
+            {
+                DonnerTech_ECU_Mod.ecu_mod_tcsModule_Part_screwable.resetScrewsOnDisassemble();
+            }
         }
         public void removePart()
         {

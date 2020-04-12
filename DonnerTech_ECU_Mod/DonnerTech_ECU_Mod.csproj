@@ -54,6 +54,10 @@
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ScrewablePartAPI">
+      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\References\ScrewablePartAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -67,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ECU_MOD_SmartEngineModule_Part.cs" />
+    <Compile Include="ModCommunication.cs" />
     <Compile Include="PartBuySave.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
     <Compile Include="ECU_MOD_ABSModule_Part.cs" />

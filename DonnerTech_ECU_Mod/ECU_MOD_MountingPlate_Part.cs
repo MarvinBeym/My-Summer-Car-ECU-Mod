@@ -31,14 +31,21 @@ namespace DonnerTech_ECU_Mod
 
         protected override void assemble(bool startUp = false)
         {
-            // do stuff on assemble.
             base.assemble(startUp); // if you want assemble function, you need to call base!
+            if (DonnerTech_ECU_Mod.ecu_mod_mountingPlate_Part_screwable != null)
+            {
+                DonnerTech_ECU_Mod.ecu_mod_mountingPlate_Part_screwable.setScrewsOnAssemble();
+            }
         }
 
         protected override void disassemble(bool startup = false)
         {
-            // do stuff on dissemble.
             base.disassemble(startup); // if you want dissemble function, you need to call base!
+            if (DonnerTech_ECU_Mod.ecu_mod_mountingPlate_Part_screwable != null)
+            {
+                DonnerTech_ECU_Mod.ecu_mod_mountingPlate_Part_screwable.resetScrewsOnDisassemble();
+            }
+            base.disassemble(startup);
         }
         public void removePart()
         {

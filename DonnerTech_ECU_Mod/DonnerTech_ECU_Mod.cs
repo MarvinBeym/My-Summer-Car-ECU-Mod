@@ -9,12 +9,14 @@ using System.Xml;
 using UnityEngine;
 using ModsShop;
 using System.Security.Cryptography;
+using ScrewablePartAPI;
+using System.Collections.Generic;
 
 namespace DonnerTech_ECU_Mod
 {
     public class DonnerTech_ECU_Mod : Mod
     {
-        
+
         /*  TODO:
          *  Add Turbocharger ECU
          *  ADD RevLimiter function
@@ -23,27 +25,18 @@ namespace DonnerTech_ECU_Mod
          *  ADD s2Rev Stage 2 revlimiter
          *  ADD CruiseControll
          *  DONE: Make parts plop off when mounting plate is removed
-         *           *  change air/fuel ratio when launch controll and antilag
+         *  change air/fuel ratio when launch controll and antilag
          *           
          */
 
-        /*  Changelog (v1.4)
-         *  fixed problem with TV-Mode or camera changing mods
-         *  fixed stage2RevLimiter/Launch controll can always be enabled
-         *  fixed stage2RevLimiter/Launch controll won't disable when smart engine controller module is removed
-         *  added ModConsole output when Mod starts loading
-         *  fixed some als module bugs
-         *  fixed some stage2 bugs
-         *  when als is enabled and is backfiring. Air fuel ratio will be richer (more fuel -> backfire)
-         *  some optimization
-         *  added SixGears and AWD
-         *  also fixed AWD (awd can now always be toggled) (won't set it on startup you have to toggle the checkbox once after game is loaded)
-         *  SixGears sets itself on startup based on the last Mod Settings checkbox ticked
-         *  fixed Smart Engine Controll Module product image
-         *  
+        /*  Changelog (v1.2) first
+         *  Added Mods communication with DonnerTechRacing Turbocharger mod
+         *  Changed ALS to be more realistic. You have to enable it now and when you want to use it press the "USE" key (will only work when not on throttle to prevent abuse)
+         *  Added screws to mounting plate and all modules
+         *  module has to be screwed in fully to have effect (mounting plate has to be screwed in too)
          */
 
-            
+
 
         /* BUGS
          * fix smart engine module product picture
@@ -55,7 +48,7 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.1.4"; //Version
+        public override string Version => "1.2"; //Version
 
         // Set this to true if you will be load custom assets from Assets folder.
         // This will create subfolder in Assets folder for your mod.
@@ -69,6 +62,7 @@ namespace DonnerTech_ECU_Mod
         private static GameObject ecu_mod_MountingPlate = new GameObject();
         private static GameObject ecu_mod_ControllPanel = new GameObject();
         private static GameObject ecu_mod_SmartEngineModule = new GameObject();
+
 
         private static PartBuySave partBuySave;
         private Trigger ecu_mod_ABSModule_Trigger;
@@ -116,6 +110,15 @@ namespace DonnerTech_ECU_Mod
         private static ECU_MOD_MountingPlate_Part ecu_mod_mountingPlate_Part;
         private static ECU_MOD_ControllPanel_Part ecu_mod_controllPanel_Part;
         private static ECU_MOD_SmartEngineModule_Part ecu_mod_smartEngineModule_Part;
+
+        public static ScrewablePart ecu_mod_absModule_screwable;
+        public static ScrewablePart ecu_mod_espModule_Part_screwable;
+        public static ScrewablePart ecu_mod_tcsModule_Part_screwable;
+        public static ScrewablePart ecu_mod_smartEngineModule_Part_screwable;
+        public static ScrewablePart ecu_mod_mountingPlate_Part_screwable;
+        //public static ScrewablePart ecu_mod_controllPanel_Part_screwable;
+
+
 
         private static GameObject satsuma;
         private GameObject carChoke;
@@ -309,6 +312,9 @@ namespace DonnerTech_ECU_Mod
                 DonnerTech_ECU_Mod.ecu_mod_ControllPanel.layer = LayerMask.NameToLayer("Parts");
                 DonnerTech_ECU_Mod.ecu_mod_SmartEngineModule.layer = LayerMask.NameToLayer("Parts");
 
+                ecu_mod_SmartEngineModule.AddComponent<ModCommunication>();
+
+
 
                 ecu_mod_ABSModule_Trigger = new Trigger("ECU_MOD_ABSModule_Trigger", satsuma, new Vector3(0.254f, -0.28f, -0.155f), new Quaternion(0, 0, 0, 0), new Vector3(0.14f, 0.02f, 0.125f), false);
                 ecu_mod_ESPModule_Trigger = new Trigger("ECU_MOD_ESPModule_Trigger", satsuma, new Vector3(0.288f, -0.28f, -0.0145f), new Quaternion(0, 0, 0, 0), new Vector3(0.21f, 0.02f, 0.125f), false);
@@ -441,8 +447,122 @@ namespace DonnerTech_ECU_Mod
                     new Vector3(0.2398f, -0.248f, 0.104f),
                     new Quaternion(0, 0, 0, 0)
                 );
-                
-                
+
+                SortedList<String, Screws> screwListSave = ScrewablePart.LoadScrews(this, "ecu_mod_screwable_save.txt");
+                ecu_mod_absModule_screwable = new ScrewablePart(screwListSave, this, ecu_mod_absModule_Part.rigidPart,
+                    new Vector3[]{
+                        new Vector3(0.0558f, -0.0025f, -0.0525f),
+                        new Vector3(0.0558f, -0.0025f, 0.0525f),
+                        new Vector3(-0.0558f, -0.0025f, 0.0525f),
+                        new Vector3(-0.0558f, -0.0025f, -0.0525f),
+                    },
+                    new Vector3[]{
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                    },
+                    new Vector3[]{
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                    }, 12, "screwable_screw2");
+                ecu_mod_espModule_Part_screwable = new ScrewablePart(screwListSave, this, ecu_mod_espModule_Part.rigidPart,
+                    new Vector3[]{
+                        new Vector3(0.0918f, -0.0025f, -0.053f),
+                        new Vector3(0.0918f, -0.0025f, 0.0518f),
+                        new Vector3(-0.0902f, -0.0025f, 0.0518f),
+                        new Vector3(-0.0902f, -0.0025f, -0.053f),
+                    },
+                    new Vector3[]{
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                    },
+                    new Vector3[]{
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                    }, 12, "screwable_screw2");
+                ecu_mod_tcsModule_Part_screwable = new ScrewablePart(screwListSave, this, ecu_mod_tcsModule_Part.rigidPart,
+                    new Vector3[]{
+                        new Vector3(0.0378f, 0f, -0.0418f),
+                        new Vector3(0.0378f, 0f, 0.0422f),
+                        new Vector3(-0.039f, 0f, 0.0422f),
+                        new Vector3(-0.039f, 0f, -0.0418f),
+                    },
+                    new Vector3[]{
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                    },
+                    new Vector3[]{
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                        new Vector3(1.2f, 1.2f, 1.2f),
+                    }, 12, "screwable_screw2");
+                ecu_mod_smartEngineModule_Part_screwable = new ScrewablePart(screwListSave, this, ecu_mod_smartEngineModule_Part.rigidPart,
+                    new Vector3[]{
+                        new Vector3(0.0232f, -0.0048f, -0.033f),
+                        new Vector3(0.0232f, -0.0048f, 0.055f),
+                        new Vector3(-0.044f, -0.0048f, 0.055f),
+                        new Vector3(-0.044f, -0.0048f, -0.033f),
+                    },
+                    new Vector3[]{
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                    },
+                    new Vector3[]{
+                        new Vector3(1.1f, 1.1f, 1.1f),
+                        new Vector3(1.1f, 1.1f, 1.1f),
+                        new Vector3(1.1f, 1.1f, 1.1f),
+                        new Vector3(1.1f, 1.1f, 1.1f),
+                    }, 11, "screwable_screw2");
+
+                ecu_mod_mountingPlate_Part_screwable = new ScrewablePart(screwListSave, this, ecu_mod_mountingPlate_Part.rigidPart,
+                    new Vector3[]{
+                        new Vector3(-0.128f, 0.002f, -0.2068f),
+                        new Vector3(-0.0018f, 0.002f, -0.2068f),
+                        new Vector3(0.1245f, 0.002f, -0.2068f),
+                        new Vector3(0.1245f, 0.002f, -0.0035f),
+                        new Vector3(0.124f, 0.002f, 0.2f),
+                    },
+                    new Vector3[]{
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                        new Vector3(-90, 0, 0),
+                    },
+                    new Vector3[]{
+                        new Vector3(1.5f, 1.5f, 1.5f),
+                        new Vector3(1.5f, 1.5f, 1.5f),
+                        new Vector3(1.5f, 1.5f, 1.5f),
+                        new Vector3(1.5f, 1.5f, 1.5f),
+                        new Vector3(1.5f, 1.5f, 1.5f),
+                    }, 15, "screwable_screw2");
+                /*
+                ecu_mod_controllPanel_Part_screwable = new ScrewablePart(screwListSave, this, ecu_mod_absModule_Part.rigidPart,
+                    new Vector3[]{
+
+                    },
+                    new Vector3[]{
+
+                    },
+                    new Vector3[]{
+
+                    }, 8, "screwable_screw2");
+                */
+
+
+
                 if (GameObject.Find("Shop for mods") != null)
                 {
                     ModsShop.ShopItem shop;
@@ -458,7 +578,7 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtABSModule)
                     {
-                        shop.Add(this, absModuleProduct, ModsShop.ShopType.Teimo, PurchaseMadeABS, ecu_mod_absModule_Part.activePart);
+                        shop.Add(this, absModuleProduct, ModsShop.ShopType.Fleetari, PurchaseMadeABS, ecu_mod_absModule_Part.activePart);
                         ecu_mod_absModule_Part.activePart.SetActive(false);
                     }
 
@@ -473,7 +593,7 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtESPModule)
                     {
-                        shop.Add(this, espModuleProduct, ModsShop.ShopType.Teimo, PurchaseMadeESP, ecu_mod_espModule_Part.activePart);
+                        shop.Add(this, espModuleProduct, ModsShop.ShopType.Fleetari, PurchaseMadeESP, ecu_mod_espModule_Part.activePart);
                         ecu_mod_espModule_Part.activePart.SetActive(false);
                     }
 
@@ -487,7 +607,7 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtTCSModule)
                     {
-                        shop.Add(this, tcsModuleProduct, ModsShop.ShopType.Teimo, PurchaseMadeTCS, ecu_mod_tcsModule_Part.activePart);
+                        shop.Add(this, tcsModuleProduct, ModsShop.ShopType.Fleetari, PurchaseMadeTCS, ecu_mod_tcsModule_Part.activePart);
                         ecu_mod_tcsModule_Part.activePart.SetActive(false);
                     }
 
@@ -501,7 +621,7 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtCableHarness)
                     {
-                        shop.Add(this, cableHarnessProduct, ModsShop.ShopType.Teimo, PurchaseMadeCableHarness, ecu_mod_cableHarness_Part.activePart);
+                        shop.Add(this, cableHarnessProduct, ModsShop.ShopType.Fleetari, PurchaseMadeCableHarness, ecu_mod_cableHarness_Part.activePart);
                         ecu_mod_cableHarness_Part.activePart.SetActive(false);
                     }
 
@@ -515,7 +635,7 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate)
                     {
-                        shop.Add(this, mountingPlateProduct, ModsShop.ShopType.Teimo, PurchaseMadeMountingPlate, ecu_mod_mountingPlate_Part.activePart);
+                        shop.Add(this, mountingPlateProduct, ModsShop.ShopType.Fleetari, PurchaseMadeMountingPlate, ecu_mod_mountingPlate_Part.activePart);
                         ecu_mod_mountingPlate_Part.activePart.SetActive(false);
                     }
 
@@ -529,7 +649,7 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtControllPanel)
                     {
-                        shop.Add(this, controllPanelProduct, ModsShop.ShopType.Teimo, PurchaseMadeControllPanel, ecu_mod_controllPanel_Part.activePart);
+                        shop.Add(this, controllPanelProduct, ModsShop.ShopType.Fleetari, PurchaseMadeControllPanel, ecu_mod_controllPanel_Part.activePart);
                         ecu_mod_controllPanel_Part.activePart.SetActive(false);
                     }
                     ModsShop.ProductDetails smartEngineModuleProduct = new ModsShop.ProductDetails
@@ -542,7 +662,7 @@ namespace DonnerTech_ECU_Mod
                     };
                     if (!DonnerTech_ECU_Mod.partBuySave.boughtSmartEngineModule)
                     {
-                        shop.Add(this, smartEngineModuleProduct, ModsShop.ShopType.Teimo, PurchageMadeSmartEngineModule, ecu_mod_smartEngineModule_Part.activePart);
+                        shop.Add(this, smartEngineModuleProduct, ModsShop.ShopType.Fleetari, PurchageMadeSmartEngineModule, ecu_mod_smartEngineModule_Part.activePart);
                         ecu_mod_smartEngineModule_Part.activePart.SetActive(false);
                     }
                 }
@@ -574,43 +694,43 @@ namespace DonnerTech_ECU_Mod
 
         public void PurchaseMadeABS(ModsShop.PurchaseInfo item)
         {
-            item.gameObject.transform.position = ModsShop.TeimoSpawnLocation.desk;
+            item.gameObject.transform.position =ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
             DonnerTech_ECU_Mod.partBuySave.boughtABSModule = true;
         }
         public void PurchaseMadeESP(ModsShop.PurchaseInfo item)
         {
-            item.gameObject.transform.position = ModsShop.TeimoSpawnLocation.desk;
+            item.gameObject.transform.position =ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
             DonnerTech_ECU_Mod.partBuySave.boughtESPModule = true;
         }
         public void PurchaseMadeTCS(ModsShop.PurchaseInfo item)
         {
-            item.gameObject.transform.position = ModsShop.TeimoSpawnLocation.desk;
+            item.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
             DonnerTech_ECU_Mod.partBuySave.boughtTCSModule = true;
         }
         public void PurchaseMadeCableHarness(ModsShop.PurchaseInfo item)
         {
-            item.gameObject.transform.position = ModsShop.TeimoSpawnLocation.outsideRamp;
+            item.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
             DonnerTech_ECU_Mod.partBuySave.boughtCableHarness = true;
         }
         public void PurchaseMadeMountingPlate(ModsShop.PurchaseInfo item)
         {
-            item.gameObject.transform.position = ModsShop.TeimoSpawnLocation.outsideRamp;
+            item.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
             DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate = true;
         }
         public void PurchaseMadeControllPanel(ModsShop.PurchaseInfo item)
         {
-            item.gameObject.transform.position = ModsShop.TeimoSpawnLocation.floor;
+            item.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
             DonnerTech_ECU_Mod.partBuySave.boughtControllPanel = true;
         }
         private void PurchageMadeSmartEngineModule(PurchaseInfo item)
         {
-            item.gameObject.transform.position = ModsShop.TeimoSpawnLocation.desk;
+            item.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
             DonnerTech_ECU_Mod.partBuySave.boughtSmartEngineModule = true;
         }
@@ -649,10 +769,18 @@ namespace DonnerTech_ECU_Mod
                 SaveLoad.SerializeSaveFile<PartBuySave>(this, DonnerTech_ECU_Mod.partBuySave, ecu_mod_ModShop_SaveFile);
                 SaveLoad.SerializeSaveFile<PartSaveInfo>(this, DonnerTech_ECU_Mod.ecu_mod_smartEngineModule_Part.getSaveInfo(), ecu_mod_SmartEngineModule_SaveFile);
 
+                ScrewablePart.SaveScrews(this, new ScrewablePart[]
+                {
+                    ecu_mod_absModule_screwable,
+                    ecu_mod_espModule_Part_screwable,
+                    ecu_mod_tcsModule_Part_screwable,
+                    ecu_mod_smartEngineModule_Part_screwable,
+                    ecu_mod_mountingPlate_Part_screwable,
+                }, "ecu_mod_screwable_save.txt");
             }
             catch (System.Exception ex)
             {
-                ModConsole.Error("<b>[ECU_MOD]</b> - an error occured while attempting to save part info.. see: " + ex.ToString());
+                ModConsole.Error("<b>[ECU_MOD]</b> - an error occured while attempting to save see: " + ex.ToString());
             }
         }
 
@@ -662,21 +790,36 @@ namespace DonnerTech_ECU_Mod
 
         public override void Update()
         {
+            
             if (ModLoader.CheckSteam() == true || cracked == false)
             {
+                ecu_mod_absModule_screwable.DetectScrewing();
+                ecu_mod_espModule_Part_screwable.DetectScrewing();
+                ecu_mod_tcsModule_Part_screwable.DetectScrewing();
+                ecu_mod_smartEngineModule_Part_screwable.DetectScrewing();
+                ecu_mod_mountingPlate_Part_screwable.DetectScrewing();
+                //ecu_mod_controllPanel_Part_screwable.DetectScrewing();
+                
                 CheckPartsInstalledTrigger();
 
                 if (ecu_mod_cableHarness_Part.installed && ecu_mod_controllPanel_Part.installed && ecu_mod_mountingPlate_Part.installed && hasPower)
                 {
                     if (DonnerTech_ECU_Mod.partBuySave.boughtABSModule)
                     {
-                        if (ecu_mod_absModule_Part.installed && absModuleEnabled == false)
+                        if (ecu_mod_mountingPlate_Part.installed && ecu_mod_mountingPlate_Part_screwable.partFixed)
                         {
-                            absLightColor = Color.red;
-                        }
-                        else if (ecu_mod_absModule_Part.installed && absModuleEnabled == true)
-                        {
-                            absLightColor = Color.green;
+                            if (ecu_mod_absModule_Part.installed && ecu_mod_absModule_screwable.partFixed && absModuleEnabled == false)
+                            {
+                                absLightColor = Color.red;
+                            }
+                            else if (ecu_mod_absModule_Part.installed && ecu_mod_absModule_screwable.partFixed && absModuleEnabled == true)
+                            {
+                                absLightColor = Color.green;
+                            }
+                            else
+                            {
+                                absLightColor = new Color(1f, 1f, 1f, 1f);
+                            }
                         }
                         else
                         {
@@ -686,13 +829,20 @@ namespace DonnerTech_ECU_Mod
                     }
                     if (DonnerTech_ECU_Mod.partBuySave.boughtESPModule)
                     {
-                        if (ecu_mod_espModule_Part.installed && espModuleEnabled == false)
+                        if (ecu_mod_mountingPlate_Part.installed && ecu_mod_mountingPlate_Part_screwable.partFixed)
                         {
-                            espLightColor = Color.red;
-                        }
-                        else if (ecu_mod_espModule_Part.installed && espModuleEnabled == true)
-                        {
-                            espLightColor = Color.green;
+                            if (ecu_mod_espModule_Part.installed && ecu_mod_espModule_Part_screwable.partFixed && espModuleEnabled == false)
+                            {
+                                espLightColor = Color.red;
+                            }
+                            else if (ecu_mod_espModule_Part.installed && ecu_mod_espModule_Part_screwable.partFixed && espModuleEnabled == true)
+                            {
+                                espLightColor = Color.green;
+                            }
+                            else
+                            {
+                                espLightColor = new Color(1f, 1f, 1f, 1f);
+                            }
                         }
                         else
                         {
@@ -703,30 +853,43 @@ namespace DonnerTech_ECU_Mod
 
                     if (DonnerTech_ECU_Mod.partBuySave.boughtTCSModule)
                     {
-                        if (ecu_mod_tcsModule_Part.installed && tcsModuleEnabled == false)
+                        if (ecu_mod_mountingPlate_Part.installed && ecu_mod_mountingPlate_Part_screwable.partFixed)
                         {
-                            tcsLightColor = Color.red;
-                        }
-                        else if (ecu_mod_tcsModule_Part.installed && tcsModuleEnabled == true)
-                        {
-                            tcsLightColor = Color.green;
+                            if (ecu_mod_tcsModule_Part.installed && ecu_mod_tcsModule_Part_screwable.partFixed && tcsModuleEnabled == false)
+                            {
+                                tcsLightColor = Color.red;
+                            }
+                            else if (ecu_mod_tcsModule_Part.installed && ecu_mod_tcsModule_Part_screwable.partFixed && tcsModuleEnabled == true)
+                            {
+                                tcsLightColor = Color.green;
+                            }
+                            else
+                            {
+                                tcsLightColor = new Color(1f, 1f, 1f, 1f);
+                            }
                         }
                         else
                         {
                             tcsLightColor = new Color(1f, 1f, 1f, 1f);
-
                         }
                         ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_TCS-Light", tcsLightColor);
                     }
                     if (DonnerTech_ECU_Mod.partBuySave.boughtSmartEngineModule)
                     {
-                        if (ecu_mod_smartEngineModule_Part.installed && alsModuleEnabled == false)
+                        if(ecu_mod_mountingPlate_Part.installed && ecu_mod_mountingPlate_Part_screwable.partFixed)
                         {
-                            alsLightColor = Color.red;
-                        }
-                        else if (ecu_mod_smartEngineModule_Part.installed && alsModuleEnabled == true)
-                        {
-                            alsLightColor = Color.green;
+                            if (ecu_mod_smartEngineModule_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed && alsModuleEnabled == false)
+                            {
+                                alsLightColor = Color.red;
+                            }
+                            else if (ecu_mod_smartEngineModule_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed && alsModuleEnabled == true)
+                            {
+                                alsLightColor = Color.green;
+                            }
+                            else
+                            {
+                                alsLightColor = new Color(1f, 1f, 1f, 1f);
+                            }
                         }
                         else
                         {
@@ -734,14 +897,20 @@ namespace DonnerTech_ECU_Mod
                         }
                         ChangeColorOfLight("ECU-Mod_Controll-Panel_v2_ALS-Light", alsLightColor);
 
-
-                        if (ecu_mod_smartEngineModule_Part.installed && stage2revSwitchEnabled == false)
+                        if (ecu_mod_mountingPlate_Part.installed && ecu_mod_mountingPlate_Part_screwable.partFixed)
                         {
-                            stage2RevLimiterLightColor = Color.red;
-                        }
-                        else if (ecu_mod_smartEngineModule_Part.installed && stage2revSwitchEnabled == true)
-                        {
-                            stage2RevLimiterLightColor = Color.green;
+                            if (ecu_mod_smartEngineModule_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed && stage2revSwitchEnabled == false)
+                            {
+                                stage2RevLimiterLightColor = Color.red;
+                            }
+                            else if (ecu_mod_smartEngineModule_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed && stage2revSwitchEnabled == true)
+                            {
+                                stage2RevLimiterLightColor = Color.green;
+                            }
+                            else
+                            {
+                                stage2RevLimiterLightColor = new Color(1f, 1f, 1f, 1f);
+                            }
                         }
                         else
                         {
@@ -776,42 +945,40 @@ namespace DonnerTech_ECU_Mod
                                 {
                                     if(FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle").Value == "Satsuma")
                                     {
-                                        if (cInput.GetKey("Clutch") && satsumaDriveTrain.rpm >= 400)
+                                        ModCommunication modCommunication = ecu_mod_smartEngineModule_Part.rigidPart.GetComponent<ModCommunication>();
+                                        
+                                        if (cInput.GetKey("Use") && satsumaDriveTrain.rpm >= 400 && !useThrottleButton)
                                         {
-                                            satsumaCarController.throttle = 1f;
-                                            if (satsumaDriveTrain.rpm >= 6500)
+                                            modCommunication.alsEnabled = true;
+                                            
+                                            if (carChoke == null)
                                             {
                                                 carChoke = GameObject.Find("Choke");
-                                                if (carChoke != null)
-                                                {
-
-                                                    chokeFSM = PlayMakerFSM.FindFsmOnGameObject(carChoke, "Choke");
-                                                    if(chokeFSM.FsmVariables.FloatVariables[0].Value != 0.5f)
-                                                    {
-                                                        originalChokeValue = chokeFSM.FsmVariables.FloatVariables[0].Value;
-                                                    }
-                                                    
-                                                    chokeFSM.FsmVariables.FloatVariables[0].Value = 0.5f;
-
-                                                }
-                                                if (backFireLoop == null)
-                                                {
-                                                    CreateBackfireLoop();
-                                                }
-                                                else if (!backFireLoop.isPlaying)
-                                                {
-                                                    backFireLoop.Play();
-                                                }
                                             }
-                                            else if (backFireLoop != null && backFireLoop.isPlaying)
+                                            else
                                             {
-                                                backFireLoop.Stop();
+                                                chokeFSM = PlayMakerFSM.FindFsmOnGameObject(carChoke, "Choke");
+                                                if (chokeFSM.FsmVariables.FloatVariables[0].Value != 0.5f)
+                                                {
+                                                    originalChokeValue = chokeFSM.FsmVariables.FloatVariables[0].Value;
+                                                }
+
+                                                chokeFSM.FsmVariables.FloatVariables[0].Value = 0.5f;
+
                                             }
-                                            
+                                            if (backFireLoop == null)
+                                            {
+                                                CreateBackfireLoop();
+                                            }
+                                            else if (!backFireLoop.isPlaying)
+                                            {
+                                                backFireLoop.Play();
+                                            }
                                         }
                                         else 
                                         {
-                                            if(chokeFSM != null)
+                                            modCommunication.alsEnabled = false;
+                                            if (chokeFSM != null)
                                             {
                                                 chokeFSM.FsmVariables.FloatVariables[0].Value = originalChokeValue;
                                             }
@@ -858,32 +1025,30 @@ namespace DonnerTech_ECU_Mod
 
                 if (hasPower)
                 {
-                    if ((DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ABS != absModuleEnabled) && ecu_mod_absModule_Part.installed)
+                    if(ecu_mod_mountingPlate_Part.installed && ecu_mod_mountingPlate_Part_screwable.partFixed)
                     {
-                        ToggleABS();
+                        if ((DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ABS != absModuleEnabled) && ecu_mod_absModule_Part.installed && ecu_mod_absModule_screwable.partFixed)
+                        {
+                            ToggleABS();
+                        }
+                        if ((DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ESP != espModuleEnabled) && ecu_mod_espModule_Part.installed && ecu_mod_espModule_Part_screwable.partFixed)
+                        {
+                            ToggleESP();
+                        }
+                        if ((DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().TCS != tcsModuleEnabled) && ecu_mod_tcsModule_Part.installed && ecu_mod_tcsModule_Part_screwable.partFixed)
+                        {
+                            ToggleTCS();
+                        }
+                        if ((stage2revModuleEnabled != stage2revSwitchEnabled) && ecu_mod_smartEngineModule_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed)
+                        {
+                            ToggleStage2Rev();
+                        }
+                        if ((alsModuleEnabled != alsSwitchEnabled) && ecu_mod_smartEngineModule_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed)
+                        {
+                            ToggleALS();
+                        }
                     }
-
-                    if ((DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ESP != espModuleEnabled) && ecu_mod_espModule_Part.installed)
-                    {
-                        ToggleESP();
-                    }
-
-
-                    if((DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().TCS != tcsModuleEnabled) && ecu_mod_tcsModule_Part.installed)
-                    {
-                        ToggleTCS();
-                    }
-                    if((stage2revModuleEnabled != stage2revSwitchEnabled) && ecu_mod_smartEngineModule_Part.installed)
-                    {
-                        ToggleStage2Rev();
-                    }
-                    if ((alsModuleEnabled != alsSwitchEnabled) && ecu_mod_smartEngineModule_Part.installed)
-                    {
-                        ToggleALS();
-                    }
-
-
-
+                    
                 }
 
                 /*
@@ -1056,10 +1221,7 @@ namespace DonnerTech_ECU_Mod
         {
             if (DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate && DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && ecu_mod_cableHarness_Part.installed && ecu_mod_controllPanel_Part.installed && ecu_mod_mountingPlate_Part.installed && hasPower)
             {
-                if (ecu_mod_absModule_Part.installed)
-                {
-                    DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ABS = !DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ABS;
-                }
+                satsuma.GetComponent<CarController>().ABS = !DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ABS;
             }
         }
         private void ToggleABSSwitch()
@@ -1085,10 +1247,7 @@ namespace DonnerTech_ECU_Mod
         {
             if (DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate && DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && ecu_mod_cableHarness_Part.installed && ecu_mod_controllPanel_Part.installed && ecu_mod_mountingPlate_Part.installed && hasPower)
             {
-                if (ecu_mod_espModule_Part.installed)
-                {
-                    DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ESP = !DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ESP;
-                }
+                DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ESP = !DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().ESP;
             }
         }
 
@@ -1117,10 +1276,7 @@ namespace DonnerTech_ECU_Mod
             
             if (DonnerTech_ECU_Mod.partBuySave.boughtMountingPlate && DonnerTech_ECU_Mod.partBuySave.boughtControllPanel && ecu_mod_cableHarness_Part.installed && ecu_mod_controllPanel_Part.installed && ecu_mod_mountingPlate_Part.installed && hasPower)
             {
-                if (ecu_mod_tcsModule_Part.installed)
-                {
-                    DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().TCS = !DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().TCS;
-                }
+                DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().TCS = !DonnerTech_ECU_Mod.satsuma.GetComponent<CarController>().TCS;
             }
         }
 
