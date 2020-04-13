@@ -43,5 +43,11 @@ namespace DonnerTech_ECU_Mod
             get;
             set;
         }
+
+        public bool boughtCruiseControlPanel
+        {
+            get;
+            set;
+        }
     }
 }
