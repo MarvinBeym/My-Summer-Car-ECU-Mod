@@ -29,33 +29,24 @@ namespace DonnerTech_ECU_Mod
          *           
          */
 
-        /*  Changelog (v1.2) first
-         *  Added Mods communication with DonnerTechRacing Turbocharger mod
-         *  Changed ALS to be more realistic. You have to enable it now and when you want to use it press the "USE" key (will only work when not on throttle to prevent abuse)
-         *  Added screws to mounting plate and all modules
-         *  Module has to be screwed in fully to have effect (mounting plate has to be screwed in too)
-         *  
-         *  Changelog (v1.2) final
-         *  Fixed name of control panel (removed double l in control)
-         *  Added CruiseControl panel
-         *  Added cruise control logic (smartEngineModule has to be installed otherwise it won't work)
+        /*  Changelog (v1.2.1)
+         *  small bug fix.
+         *  added cruise control debug information -> button is in Mod Setting. Everything that if false HAS TO BE TRUE!
          *  
          */
         /* BUGS
-         * fix smart engine module product picture
-         * 
-
          * 
          */
 
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.2"; //Version
-
-        // Set this to true if you will be load custom assets from Assets folder.
-        // This will create subfolder in Assets folder for your mod.
+        public override string Version => "1.2.1"; //Version
         public override bool UseAssetsFolder => true;
+
+        private static bool cruiseControlDebugEnabled = false;
+
+
 
         AssetBundle assetBundle;
         private static GameObject ecu_mod_ABSModule = new GameObject();
@@ -142,6 +133,7 @@ namespace DonnerTech_ECU_Mod
         private const string ecu_mod_cruiseControlPanel_SaveFile = "ecu_mod_CruiseControlPanel_partSave.txt";
 
         private Settings resetPosSetting = new Settings("resetPos", "Reset uninstalled parts location", new Action(DonnerTech_ECU_Mod.PosReset));
+        private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Enable/Disable", SwitchCruiseControlDebug);
 
         private static AudioSource backFireLoop;
         private static ModAudio backFire_loop = new ModAudio();
@@ -218,7 +210,6 @@ namespace DonnerTech_ECU_Mod
             SaveLoad.SerializeSaveFile<PartBuySave>(this, null, ecu_mod_SmartEngineModule_SaveFile);
             SaveLoad.SerializeSaveFile<PartBuySave>(this, null, ecu_mod_cruiseControlPanel_SaveFile);
         }
-
         public override void OnLoad()
         {
             ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " started loaded");
@@ -656,7 +647,7 @@ namespace DonnerTech_ECU_Mod
                     productName = "Cruise Control Panel with Controller",
                     multiplePurchases = false,
                     productCategory = "DonnerTech Racing",
-                    productIcon = null,
+                    productIcon = assetBundle.LoadAsset<Sprite>("CruiseControlPanel_ProductImage.png"),
                     productPrice = 2000
                 };
                 if (!DonnerTech_ECU_Mod.partBuySave.boughtCruiseControlPanel)
@@ -744,6 +735,7 @@ namespace DonnerTech_ECU_Mod
 
         public override void ModSettings()
         {
+            Settings.AddButton(this, debugCruiseControlSetting, "DEBUG Cruise Control");
             Settings.AddCheckBox(this, toggleSixGears);
             Settings.AddCheckBox(this, toggleAWD);
             Settings.AddButton(this, resetPosSetting, "reset part location");
@@ -789,6 +781,53 @@ namespace DonnerTech_ECU_Mod
 
         public override void OnGUI()
         {
+            if (cruiseControlDebugEnabled)
+            {
+                GUI.Label(new Rect(20, 240, 500, 100), "------------------------------------");
+                GUI.Label(new Rect(20, 260, 500, 100), "true = correct value for cruise control to work");
+                GUI.Label(new Rect(20, 280, 500, 100), "false = conition needed to have cruise control working");
+                GUI.Label(new Rect(20, 300, 500, 100), "Gear not R: " + (satsumaDriveTrain.gear != 0));
+                GUI.Label(new Rect(20, 320, 500, 100), "cruise control panel installed: " + ecu_mod_cruiseControlPanel_Part.installed);
+                GUI.Label(new Rect(20, 340, 500, 100), "cruise control enabled: " + cruiseControlModuleEnabled);
+                GUI.Label(new Rect(20, 360, 500, 100), "mounting plate installed: " + ecu_mod_mountingPlate_Part.installed);
+                GUI.Label(new Rect(20, 380, 500, 100), "mounting plate screwed in: " + ecu_mod_mountingPlate_Part_screwable.partFixed);
+                GUI.Label(new Rect(20, 400, 500, 100), "smart engine module installed: " + ecu_mod_smartEngineModule_Part.installed);
+                GUI.Label(new Rect(20, 420, 500, 100), "smart engine module screwed in: " + ecu_mod_smartEngineModule_Part_screwable.partFixed);
+                GUI.Label(new Rect(20, 440, 500, 100), "not on throttle: " + (satsumaCarController.throttleInput <= 0f));
+                GUI.Label(new Rect(20, 460, 500, 100), "speed above 20km/h: " + (satsumaDriveTrain.differentialSpeed >= 20f));
+                GUI.Label(new Rect(20, 480, 500, 100), "brake not pressed: " + (satsumaCarController.brakeInput <= 0f));
+                GUI.Label(new Rect(20, 500, 500, 100), "clutch not pressed: " + (satsumaCarController.clutchInput <= 0f));
+                GUI.Label(new Rect(20, 520, 500, 100), "handbrake not pressed: " + (satsumaCarController.handbrakeInput <= 0f));
+                GUI.Label(new Rect(20, 540, 500, 100), "set cruise control speed: " + setCruiseControlSpeed);
+                GUI.Label(new Rect(20, 560, 500, 100), "car electricity on: " + hasPower);
+                GUI.Label(new Rect(20, 580, 500, 100), "------------------------------------");
+            }
+
+            if (satsumaDriveTrain.gear != 0 && ecu_mod_cruiseControlPanel_Part.installed && cruiseControlModuleEnabled && ecu_mod_mountingPlate_Part.installed && ecu_mod_mountingPlate_Part_screwable.partFixed && ecu_mod_smartEngineModule_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed && satsumaCarController.throttleInput <= 0f)
+            {
+                float valueToThrottle = 0f;
+                if (satsumaDriveTrain.differentialSpeed <= setCruiseControlSpeed)
+                {
+                    valueToThrottle = (satsumaDriveTrain.differentialSpeed - (setCruiseControlSpeed * 2.2f)) / ((-setCruiseControlSpeed * 2.2f));
+                }
+                else
+                {
+                    valueToThrottle = 0f;
+                }
+                satsumaCarController.throttle = valueToThrottle;
+                if (satsumaDriveTrain.differentialSpeed < 19f || satsumaCarController.brakeInput > 0f || satsumaCarController.clutchInput > 0f || satsumaCarController.handbrakeInput > 0f)
+                {
+
+                    ResetCruiseControl();
+                }
+            }
+            else if (cruiseControlModuleEnabled && satsumaCarController.throttleInput <= 0f)
+            {
+                ResetCruiseControl();
+                setCruiseControlSpeed = 0;
+
+            }
+
         }
 
         private void SetCruiseControlSpeedText(string toSet)
@@ -1245,72 +1284,81 @@ namespace DonnerTech_ECU_Mod
 
         private void CheckPartsInstalledTrigger()
         {
-            if (ecu_mod_mountingPlate_Part.installed)
+            try
             {
-                if(ecu_mod_ABSModule_Trigger.triggerGameObject.activeSelf == false){
-                    ecu_mod_ABSModule_Trigger.triggerGameObject.SetActive(true);
-                }
-                if (ecu_mod_ESPModule_Trigger.triggerGameObject.activeSelf == false)
+                if (ecu_mod_mountingPlate_Part.installed)
                 {
-                    ecu_mod_ESPModule_Trigger.triggerGameObject.SetActive(true);
+                    if (ecu_mod_ABSModule_Trigger.triggerGameObject.activeSelf == false)
+                    {
+                        ecu_mod_ABSModule_Trigger.triggerGameObject.SetActive(true);
+                    }
+                    if (ecu_mod_ESPModule_Trigger.triggerGameObject.activeSelf == false)
+                    {
+                        ecu_mod_ESPModule_Trigger.triggerGameObject.SetActive(true);
+                    }
+                    if (ecu_mod_TCSModule_Trigger.triggerGameObject.activeSelf == false)
+                    {
+                        ecu_mod_TCSModule_Trigger.triggerGameObject.SetActive(true);
+                    }
+                    if (ecu_mod_CableHarness_Trigger.triggerGameObject.activeSelf == false)
+                    {
+                        ecu_mod_CableHarness_Trigger.triggerGameObject.SetActive(true);
+                    }
+                    if (ecu_mod_SmartEngineModule_Trigger.triggerGameObject.activeSelf == false)
+                    {
+                        ecu_mod_SmartEngineModule_Trigger.triggerGameObject.SetActive(true);
+                    }
                 }
-                if (ecu_mod_TCSModule_Trigger.triggerGameObject.activeSelf == false)
+                else
                 {
-                    ecu_mod_TCSModule_Trigger.triggerGameObject.SetActive(true);
-                }
-                if (ecu_mod_CableHarness_Trigger.triggerGameObject.activeSelf == false)
-                {
-                    ecu_mod_CableHarness_Trigger.triggerGameObject.SetActive(true);
-                }
-                if (ecu_mod_SmartEngineModule_Trigger.triggerGameObject.activeSelf == false)
-                {
-                    ecu_mod_SmartEngineModule_Trigger.triggerGameObject.SetActive(true);
-                }
-            }
-            else
-            {
-                if(ecu_mod_absModule_Part.installed)
-                {
-                    ecu_mod_absModule_Part.removePart();
-                }
-                if (ecu_mod_espModule_Part.installed)
-                {
-                    ecu_mod_espModule_Part.removePart();
-                }
-                if (ecu_mod_tcsModule_Part.installed)
-                {
-                    ecu_mod_tcsModule_Part.removePart();
-                }
-                if (ecu_mod_cableHarness_Part.installed)
-                {
-                    ecu_mod_cableHarness_Part.removePart();
-                }
-                if (ecu_mod_smartEngineModule_Part.installed)
-                {
-                    ecu_mod_smartEngineModule_Part.removePart();
-                }
+                    if (ecu_mod_absModule_Part.installed)
+                    {
+                        ecu_mod_absModule_Part.removePart();
+                    }
+                    if (ecu_mod_espModule_Part.installed)
+                    {
+                        ecu_mod_espModule_Part.removePart();
+                    }
+                    if (ecu_mod_tcsModule_Part.installed)
+                    {
+                        ecu_mod_tcsModule_Part.removePart();
+                    }
+                    if (ecu_mod_cableHarness_Part.installed)
+                    {
+                        ecu_mod_cableHarness_Part.removePart();
+                    }
+                    if (ecu_mod_smartEngineModule_Part.installed)
+                    {
+                        ecu_mod_smartEngineModule_Part.removePart();
+                    }
 
-                if (ecu_mod_ABSModule_Trigger.triggerGameObject.activeSelf == true)
-                {
-                    ecu_mod_ABSModule_Trigger.triggerGameObject.SetActive(false);
-                }
-                if (ecu_mod_ESPModule_Trigger.triggerGameObject.activeSelf == true)
-                {
-                    ecu_mod_ESPModule_Trigger.triggerGameObject.SetActive(false);
-                }
-                if (ecu_mod_TCSModule_Trigger.triggerGameObject.activeSelf == true)
-                {
-                    ecu_mod_TCSModule_Trigger.triggerGameObject.SetActive(false);
-                }
-                if (ecu_mod_CableHarness_Trigger.triggerGameObject.activeSelf == true)
-                {
-                    ecu_mod_CableHarness_Trigger.triggerGameObject.SetActive(false);
-                }
-                if (ecu_mod_SmartEngineModule_Trigger.triggerGameObject.activeSelf == true)
-                {
-                    ecu_mod_SmartEngineModule_Trigger.triggerGameObject.SetActive(false);
+                    if (ecu_mod_ABSModule_Trigger.triggerGameObject.activeSelf == true)
+                    {
+                        ecu_mod_ABSModule_Trigger.triggerGameObject.SetActive(false);
+                    }
+                    if (ecu_mod_ESPModule_Trigger.triggerGameObject.activeSelf == true)
+                    {
+                        ecu_mod_ESPModule_Trigger.triggerGameObject.SetActive(false);
+                    }
+                    if (ecu_mod_TCSModule_Trigger.triggerGameObject.activeSelf == true)
+                    {
+                        ecu_mod_TCSModule_Trigger.triggerGameObject.SetActive(false);
+                    }
+                    if (ecu_mod_CableHarness_Trigger.triggerGameObject.activeSelf == true)
+                    {
+                        ecu_mod_CableHarness_Trigger.triggerGameObject.SetActive(false);
+                    }
+                    if (ecu_mod_SmartEngineModule_Trigger.triggerGameObject.activeSelf == true)
+                    {
+                        ecu_mod_SmartEngineModule_Trigger.triggerGameObject.SetActive(false);
+                    }
                 }
             }
+            catch
+            {
+
+            }
+
         }
 
         private static bool hasPower
@@ -1518,6 +1566,10 @@ namespace DonnerTech_ECU_Mod
             {
                 ecu_mod_smartEngineModule_Part.activePart.transform.position = ecu_mod_smartEngineModule_Part.defaultPartSaveInfo.position;
             }
+            if (!ecu_mod_cruiseControlPanel_Part.installed)
+            {
+                ecu_mod_cruiseControlPanel_Part.activePart.transform.position = ecu_mod_cruiseControlPanel_Part.defaultPartSaveInfo.position;
+            }
            
         }
 
@@ -1600,6 +1652,11 @@ namespace DonnerTech_ECU_Mod
                     satsumaDriveTrain.SetTransmission(Drivetrain.Transmissions.FWD);
                 }
             }
+        }
+
+        private static void SwitchCruiseControlDebug()
+        {
+            cruiseControlDebugEnabled = !cruiseControlDebugEnabled;
         }
     }
 }
