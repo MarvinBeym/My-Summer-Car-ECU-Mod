@@ -40,14 +40,6 @@ namespace DonnerTech_ECU_Mod
 
         protected override void disassemble(bool startup = false)
         {
-            if (DonnerTech_ECU_Mod.alsModuleEnabled)
-            {
-                DonnerTech_ECU_Mod.ToggleALS();
-            }
-            if (DonnerTech_ECU_Mod.stage2revModuleEnabled)
-            {
-                DonnerTech_ECU_Mod.ToggleStage2Rev();
-            }
             base.disassemble(startup); // if you want dissemble function, you need to call base!
             if (DonnerTech_ECU_Mod.ecu_mod_smartEngineModule_Part_screwable != null)
             {

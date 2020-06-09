@@ -43,8 +43,9 @@
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\modapi_v0120-alpha.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ModsShop">
-      <HintPath>..\..\..\..\Desktop\ECU-Mod\Compiled Version\ModsShop.dll</HintPath>
+    <Reference Include="ModsShop, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\ModsShop.dll</HintPath>
     </Reference>
     <Reference Include="MSCLoader">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
@@ -70,14 +71,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AWD_Differential_Part.cs" />
+    <Compile Include="AWD_Gearbox_Part.cs" />
+    <Compile Include="AWD_PropShaft_Part.cs" />
+    <Compile Include="ECU_CruiseControl_Logic.cs" />
+    <Compile Include="ECU_InfoPanel_Logic.cs" />
+    <Compile Include="ECU_InfoPanel_Part.cs" />
     <Compile Include="ECU_MOD_CruiseControlPanel_Part.cs" />
     <Compile Include="ECU_MOD_SmartEngineModule_Part.cs" />
+    <Compile Include="ECU_SmartEngineModule_Logic.cs" />
     <Compile Include="ModCommunication.cs" />
     <Compile Include="PartBuySave.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
     <Compile Include="ECU_MOD_ABSModule_Part.cs" />
     <Compile Include="ECU_MOD_CableHarness_Part.cs" />
-    <Compile Include="ECU_MOD_ControllPanel_Part.cs" />
     <Compile Include="ECU_MOD_ESPModule_Part.cs" />
     <Compile Include="ECU_MOD_MountingPlate_Part.cs" />
     <Compile Include="ECU_MOD_TCSModule_Part.cs" />

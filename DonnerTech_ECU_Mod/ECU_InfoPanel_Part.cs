@@ -3,9 +3,9 @@ using ModApi.Attachable;
 
 namespace DonnerTech_ECU_Mod
 {
-    public class ECU_MOD_ControllPanel_Part : Part
+    public class ECU_InfoPanel_Part : Part
     {
-        public ECU_MOD_ControllPanel_Part(PartSaveInfo inPartSaveInfo, GameObject inPart, GameObject inParent, Trigger inPartTrigger, Vector3 inPartPosition, Quaternion inPartRotation) : base(inPartSaveInfo, inPart, inParent, inPartTrigger, inPartPosition, inPartRotation)
+        public ECU_InfoPanel_Part(PartSaveInfo inPartSaveInfo, GameObject inPart, GameObject inParent, Trigger inPartTrigger, Vector3 inPartPosition, Quaternion inPartRotation) : base(inPartSaveInfo, inPart, inParent, inPartTrigger, inPartPosition, inPartRotation)
         {
 
         }
@@ -14,8 +14,8 @@ namespace DonnerTech_ECU_Mod
         {
             installed = false, //Will make part installed
 
-            position = new Vector3(-17.4197388f, 0f, -3.02854872f), //Sets the spawn location -> where i can be found
-            rotation = Quaternion.Euler(-0.4087759f, 0.07467341f, 0.02485323f), // Rotation at spawn location
+            position = new Vector3(0, 0, 0), //Sets the spawn location -> where i can be found
+            rotation = Quaternion.Euler(0, 0, 0), // Rotation at spawn location
         };
 
         public override GameObject rigidPart

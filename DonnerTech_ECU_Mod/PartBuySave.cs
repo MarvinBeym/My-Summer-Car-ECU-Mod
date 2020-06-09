@@ -7,6 +7,27 @@ namespace DonnerTech_ECU_Mod
 {
     class PartBuySave
     {
+        public bool boughtInfoPanel
+        {
+            get;
+            set;
+        }
+        public bool boughtAwdGearbox
+        {
+            get;
+            set;
+        }
+        public bool boughtAwdDifferential
+        {
+            get;
+            set;
+        }
+        public bool boughtAwdPropshaft
+        {
+            get;
+            set;
+        }
+
         public bool boughtABSModule
         {
             get;
@@ -28,11 +49,6 @@ namespace DonnerTech_ECU_Mod
             set;
         }
         public bool boughtCableHarness
-        {
-            get;
-            set;
-        }
-        public bool boughtControllPanel
         {
             get;
             set;
