@@ -26,43 +26,8 @@ namespace DonnerTech_ECU_Mod
          *  Save state of modules and load them
          */
 
-        /*  Changelog (v1.3.1) first
-         *  Updated to ScrewablePartAPI v1.3
-         *  changed cruise control throttle calculation to be more simple. This also fixes the problem with "car not reaching set speed"
-         *  changed set cruise control logic. Now everytime if you are driving above 20km/h the cruise control speed will be set to the current speed driven.
-         */
-        /*  Changelog (v1.3) second
-        *   changed debug information position
-        *   Changed ALS logic to mimic Antilag on Deceleration instead of by using a "button"
-        *   ALS is now more for showoff
-        *   Fixed Mod Communication between ecu and turbo
-        *   Fixed ALS not disabling for Turbo when control panel was removed
-        *   
-        *   Changelog (v1.3) third
-        *   Fixed Cruise Control not applying throttle (this is a workaround as the previous way for some reason no longer works. This causes an unpleasent throttle sound now)
-        *   Added ECU-Panel
-        *   Added Animation to ECU-Panel
-        *   Added information to display to ECU-Panel
-        *   Logic for ECU Panel seperated into MonoBehaviour
-        *   Added pages logic to display different values changeable with arrows
-        *   Added TouchScreen logic
-        *   Added control for modules.
-        *   Added Faults to Panel displaying wear status
-        *   Added Faults to panel displaying conditions of some parts (more to come)
-        *   Removed the original control panel including all of the code for it
-        *   Complete Code rework
-        *   Improved performance ALOT
-        *   Changed ALS logic to only have an affect if the turbocharger mod is installed (to create flames and backfire). This is now 100% for showoff and does not have an effect on driving
-        *   Added logic for disabling the airFuel calculation -> will make A/F stay fixed without fluctuation thanks to @Rodrigz for this suggestion
-        *   Increased max rpm to 9000 WARNING
-        *   Added Mod communication for values of turbocharger-mod
-        *   Added ECU-Panel page for turbocharger-mod 
-        *   Fixed maxRPM not beeing increased to 9000rpm when smart engine module is installed
-        *   Added stage2Rev rpm to ecu-panel. This value can be adjusted by pressing on it and then using + - buttons
-        *   Added screws to info panel
-        *   Changed ProductImages of all parts
-        *   Changed max rpm to 8500 as 9000 would blow up the engine most of the time
-        *   renamed stage2 to 2step
+        /*  Changelog (v1.3.1)
+         *  Added limits for 2step revlimiter (max 10k, min 2k)
          */
         /* BUGS
          * Eco AutoTune runs Race tune too
