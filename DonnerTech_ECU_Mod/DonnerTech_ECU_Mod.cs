@@ -27,7 +27,7 @@ namespace DonnerTech_ECU_Mod
          */
 
         /*  Changelog (v1.3.1)
-         *  Added limits for 2step revlimiter (max 10k, min 2k)
+         *  Added limits for 2step revlimiter setting (max 10k, min 2k)
          */
         /* BUGS
          * Eco AutoTune runs Race tune too
