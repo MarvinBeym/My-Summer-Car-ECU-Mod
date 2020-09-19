@@ -71,23 +71,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AWD_Differential_Part.cs" />
-    <Compile Include="AWD_Gearbox_Part.cs" />
-    <Compile Include="AWD_PropShaft_Part.cs" />
     <Compile Include="ECU_CruiseControl_Logic.cs" />
+    <Compile Include="ProductBought.cs" />
+    <Compile Include="Shop.cs" />
+    <Compile Include="TcsPart.cs" />
+    <Compile Include="AbsPart.cs" />
+    <Compile Include="ECU_Airride_FL_Part.cs" />
+    <Compile Include="ECU_Airride_Logic.cs" />
     <Compile Include="ECU_InfoPanel_Logic.cs" />
-    <Compile Include="ECU_InfoPanel_Part.cs" />
-    <Compile Include="ECU_MOD_CruiseControlPanel_Part.cs" />
-    <Compile Include="ECU_MOD_SmartEngineModule_Part.cs" />
+    <Compile Include="ECU_ReverseCamera_Logic.cs" />
     <Compile Include="ECU_SmartEngineModule_Logic.cs" />
     <Compile Include="ModCommunication.cs" />
+    <Compile Include="SimplePart.cs" />
     <Compile Include="PartBuySave.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
-    <Compile Include="ECU_MOD_ABSModule_Part.cs" />
-    <Compile Include="ECU_MOD_CableHarness_Part.cs" />
-    <Compile Include="ECU_MOD_ESPModule_Part.cs" />
-    <Compile Include="ECU_MOD_MountingPlate_Part.cs" />
-    <Compile Include="ECU_MOD_TCSModule_Part.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

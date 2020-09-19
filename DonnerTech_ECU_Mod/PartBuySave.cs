@@ -7,63 +7,19 @@ namespace DonnerTech_ECU_Mod
 {
     class PartBuySave
     {
-        public bool boughtInfoPanel
-        {
-            get;
-            set;
-        }
-        public bool boughtAwdGearbox
-        {
-            get;
-            set;
-        }
-        public bool boughtAwdDifferential
-        {
-            get;
-            set;
-        }
-        public bool boughtAwdPropshaft
-        {
-            get;
-            set;
-        }
-
-        public bool boughtABSModule
-        {
-            get;
-            set;
-        }
-        public bool boughtESPModule
-        {
-            get;
-            set;
-        }
-        public bool boughtTCSModule
-        {
-            get;
-            set;
-        }
-        public bool boughtMountingPlate
-        {
-            get;
-            set;
-        }
-        public bool boughtCableHarness
-        {
-            get;
-            set;
-        }
-
-        public bool boughtSmartEngineModule
-        {
-            get;
-            set;
-        }
-
-        public bool boughtCruiseControlPanel
-        {
-            get;
-            set;
-        }
+        public bool bought_airrideFL { get; set; } = false;
+        public bool bought_rainLightSensorboard { get; set; } = false;
+        public bool bought_reverseCamera { get; set; } = false;
+        public bool boughtInfoPanel { get; set; } = false;
+        public bool boughtAwdGearbox { get; set; } = false;
+        public bool boughtAwdDifferential { get; set; } = false;
+        public bool boughtAwdPropshaft { get; set; } = false;
+        public bool boughtABSModule { get; set; } = false;
+        public bool boughtESPModule { get; set; } = false;
+        public bool boughtTCSModule { get; set; } = false;
+        public bool boughtMountingPlate { get; set; } = false;
+        public bool boughtCableHarness { get; set; } = false;
+        public bool boughtSmartEngineModule { get; set; } = false;
+        public bool boughtCruiseControlPanel { get; set; } = false;
     }
 }

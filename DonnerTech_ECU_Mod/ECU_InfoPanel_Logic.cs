@@ -1,4 +1,5 @@
 ﻿using HutongGames.PlayMaker;
+using HutongGames.PlayMaker.Actions;
 using ModApi;
 using MSCLoader;
 using System;
@@ -43,6 +44,10 @@ namespace DonnerTech_ECU_Mod
             3,      //Faults 2 page
             4,      //Tuner page
             5,      //Turbocharger mod page
+            6,      //Advanced assistance page
+#if DEBUG
+            7,      //Airride
+#endif
         };
         //Animation
         private const float ecu_InfoPanel_Needle_maxAngle = 270;
@@ -76,6 +81,29 @@ namespace DonnerTech_ECU_Mod
 
         private GameObject ecu_InfoPanel_NeedleObject;
         private GameObject ecu_InfoPanel_TurboWheelObject;
+
+        //Reverse Camera stuff
+        private MeshRenderer ecu_InfoPanel_Display_Reverse_Camera;
+
+        //Airride stuff
+        //camber -> wheelFL, .... 
+
+        private ECU_Airride_Logic ecu_airride_logic;
+
+        private string ecu_airride_operation = "";
+        private float ecu_airride_timer = 0f;
+        private FsmFloat travelRally;
+        private FsmFloat rallyFrontRate;
+        private FsmFloat rallyRearRate;
+        private FsmFloat wheelPosRally;
+
+
+        private float ecu_airride_wheelPosRally_min = -0.06f;
+        private float ecu_airride_wheelPosRally_max = -0.18f;
+        private float ecu_airride_wheelPosRally_default = -0.165f;
+
+        //Lightsensor stuff
+        private bool isNight = false;
 
         private TextMesh ecu_InfoPanel_Display_Value_01;
         private TextMesh ecu_InfoPanel_Display_Value_02;
@@ -186,6 +214,7 @@ namespace DonnerTech_ECU_Mod
         FsmFloat cylinder4intake;
 
         FsmBool raceCarb_installed;
+        FsmFloat raceCarbAdjustAverage;
         FsmFloat raceCarbAdjust1;
         FsmFloat raceCarbAdjust2;
         FsmFloat raceCarbAdjust3;
@@ -254,6 +283,44 @@ namespace DonnerTech_ECU_Mod
             "Start Autotune ECO",
             "Start Autotune RACE",
         };
+        private string[] page6_GuiTexts = new string[]
+        {
+            "Enable Rainsensor",
+            "Enable Lightsensor",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+        };
+        private string[] page7_GuiTexts = new string[]
+{
+            "",
+            "Lowest Pressure",
+            "Highest Pressure",
+            "Default Pressure",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+};
 
         //Tuner AutoTune
         private bool autoTune_running = false;
@@ -263,6 +330,16 @@ namespace DonnerTech_ECU_Mod
         private int autoTune_state = 0;
         private float autoTune_counter = 0;
         private float autoTune_timer = 0;
+
+        //Assistancesystem
+        private FsmFloat rainIntensity;
+        PlayMakerFSM wiperLogicFSM;
+        private bool rainsensor_enabled = false;
+        private bool rainsensor_wasEnabled = false;
+
+
+        private bool lightsensor_enabled = false;
+        private bool lightsensor_wasEnabled = false;
 
         //ECU-Mod-Panel-Page0
         //ECU-Mod-Panel_Modules-Page1.png
@@ -278,6 +355,8 @@ namespace DonnerTech_ECU_Mod
         private Sprite ecu_mod_panel_faults_page3;
         private Sprite ecu_mod_panel_tuner_page4;
         private Sprite ecu_mod_panel_turbo_page5;
+        private Sprite ecu_mod_panel_assistance_page6;
+        private Sprite ecu_mod_panel_airride_page7;
 
         private Sprite ecu_mod_panel_needle;
         private Sprite ecu_mod_panel_turbineWheel;
@@ -322,6 +401,8 @@ namespace DonnerTech_ECU_Mod
             }
             
             donnerTech_ecu_mod = (DonnerTech_ECU_Mod) mainMod;
+            ecu_airride_logic = this.gameObject.AddComponent<ECU_Airride_Logic>();
+
 
             worldTime = PlayMakerGlobals.Instance.Variables.FindFsmFloat("GlobalTime");
             clockHours = PlayMakerGlobals.Instance.Variables.FindFsmFloat("TimeRotationHour");
@@ -333,17 +414,17 @@ namespace DonnerTech_ECU_Mod
 
             playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
 
-            GameObject electrics = GameObject.Find("CarSimulation/Car/Electrics");
+            GameObject electrics = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/Car/Electrics");
             PlayMakerFSM electricsFSM = electrics.GetComponent<PlayMakerFSM>();
             voltage = electricsFSM.FsmVariables.FindFsmFloat("Volts");
-            GameObject dataBaseMechanics = GameObject.Find("DatabaseMechanics");
+            GameObject dataBaseMechanics = GameObject.Find("Database/DatabaseMechanics");
 
             GameObject odometer = GameObject.Find("dashboard meters(Clone)/Gauges/Odometer");
             PlayMakerFSM odometerFSM = odometer.GetComponentInChildren<PlayMakerFSM>();
             odometerKM = odometerFSM.FsmVariables.FindFsmInt("OdometerReading");
 
             PlayMakerFSM[] dataBaseMechanicsFSMs = dataBaseMechanics.GetComponentsInChildren<PlayMakerFSM>();
-            GameObject cooling = satsuma.transform.Find("CarSimulation/Car/Cooling").gameObject;
+            GameObject cooling = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/Car/Cooling").gameObject;
             PlayMakerFSM coolingFSM = PlayMakerFSM.FindFsmOnGameObject(cooling, "Cooling");
             coolantTemp = coolingFSM.FsmVariables.FindFsmFloat("CoolantTemp");
             coolantPressurePSI = coolingFSM.FsmVariables.FindFsmFloat("WaterPressurePSI");
@@ -373,7 +454,8 @@ namespace DonnerTech_ECU_Mod
             infoPanel = this.gameObject;
             ecu_InfoPanel_NeedleObject = GameObject.Find("ECU-Panel-Needle");
             ecu_InfoPanel_TurboWheelObject = GameObject.Find("ECU-Panel-TurboWheel");
-
+            ecu_InfoPanel_Display_Reverse_Camera = GameObject.Find("ECU-Panel-Display-Reverse-Camera").GetComponent<MeshRenderer>();
+            ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
             TextMesh[] ecu_InfoPanel_TextMeshes = infoPanel.GetComponentsInChildren<TextMesh>();
             foreach (TextMesh textMesh in ecu_InfoPanel_TextMeshes)
             {
@@ -580,7 +662,7 @@ namespace DonnerTech_ECU_Mod
                 }
             }
 
-            PlayMakerFSM mechanicalWear = GameObject.Find("MechanicalWear").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM mechanicalWear = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear").GetComponent<PlayMakerFSM>();
 
             wearAlternator = mechanicalWear.FsmVariables.FindFsmFloat("WearAlternator");
             wearClutch = mechanicalWear.FsmVariables.FindFsmFloat("WearClutch");
@@ -688,6 +770,7 @@ namespace DonnerTech_ECU_Mod
 
             PlayMakerFSM raceCarbFSM = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
             raceCarb_installed = raceCarbFSM.FsmVariables.FindFsmBool("Installed");
+            raceCarbAdjustAverage = raceCarbFSM.FsmVariables.FindFsmFloat("AdjustAverage");
             raceCarbAdjust1 = raceCarbFSM.FsmVariables.FindFsmFloat("Adjust1");
             raceCarbAdjust2 = raceCarbFSM.FsmVariables.FindFsmFloat("Adjust2");
             raceCarbAdjust3 = raceCarbFSM.FsmVariables.FindFsmFloat("Adjust3");
@@ -708,6 +791,8 @@ namespace DonnerTech_ECU_Mod
             ecu_mod_panel_faults_page3 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel_Faults-Page3.png");
             ecu_mod_panel_tuner_page4 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel_Tuner-Page4.png");
             ecu_mod_panel_turbo_page5 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel-Turbocharger-Page5.png");
+            ecu_mod_panel_assistance_page6 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel-Assistance-Page6.png");
+            ecu_mod_panel_airride_page7 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel-Airride-Page7.png");
 
             ecu_mod_panel_needle = assetBundle.LoadAsset<Sprite>("Rpm-Needle.png");
             ecu_mod_panel_turbineWheel = assetBundle.LoadAsset<Sprite>("TurbineWheel.png");
@@ -718,9 +803,38 @@ namespace DonnerTech_ECU_Mod
             ecu_mod_panel_highBeam = assetBundle.LoadAsset<Sprite>("LowBeam-Icon.png");
             ecu_mod_panel_lowBeam = assetBundle.LoadAsset<Sprite>("Needle-Icon.png");
 
-            //Fehler beim anzeigen der oberen icons
+            rainIntensity = PlayMakerGlobals.Instance.Variables.FindFsmFloat("RainIntensity");
+            GameObject buttonWipers = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/pivot_dashboard/dashboard(Clone)/pivot_meters/dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers");
+            PlayMakerFSM[] buttonWipersFSMs = buttonWipers.GetComponents<PlayMakerFSM>();
+            foreach(PlayMakerFSM buttonWiperFSM in buttonWipersFSMs)
+            {
+                if(buttonWiperFSM.FsmName == "Function")
+                {
+                    wiperLogicFSM = buttonWiperFSM;
+                    break;
+                }
+            }
             LoadECU_PanelImageOverride();
             assetBundle.Unload(false);
+
+            PlayMakerFSM suspension = GameObject.Find("Suspension").GetComponent<PlayMakerFSM>();
+            travelRally = suspension.FsmVariables.FindFsmFloat("TravelRally");
+            wheelPosRally = suspension.FsmVariables.FindFsmFloat("WheelPosRally");
+
+            rallyFrontRate = suspension.FsmVariables.FindFsmFloat("RallyFrontRate");
+            rallyRearRate = suspension.FsmVariables.FindFsmFloat("RallyRearRate");
+
+            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Day", SwitchToDay);
+            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Night", SwitchToNight);
+        }
+
+        private void SwitchToDay()
+        {
+            isNight = false;
+        }
+        private void SwitchToNight()
+        {
+            isNight = true;
         }
         private void LoadECU_PanelImageOverride()
         {
@@ -753,6 +867,24 @@ namespace DonnerTech_ECU_Mod
             if (loadedSprite != null)
             {
                 ecu_mod_panel_tuner_page4 = loadedSprite;
+            }
+
+            loadedSprite = LoadNewSprite(Path.Combine(ModLoader.GetModAssetsFolder(donnerTech_ecu_mod), "OVERRIDE" + "_" + "ECU-Mod-Panel-Turbocharger-Page5.png"));
+            if (loadedSprite != null)
+            {
+                ecu_mod_panel_turbo_page5 = loadedSprite;
+            }
+
+            loadedSprite = LoadNewSprite(Path.Combine(ModLoader.GetModAssetsFolder(donnerTech_ecu_mod), "OVERRIDE" + "_" + "ECU-Mod-Panel-Assistance-Page6.png"));
+            if (loadedSprite != null)
+            {
+                ecu_mod_panel_assistance_page6 = loadedSprite;
+            }
+
+            loadedSprite = LoadNewSprite(Path.Combine(ModLoader.GetModAssetsFolder(donnerTech_ecu_mod), "OVERRIDE" + "_" + "ECU-Mod-Panel-Airride-Page7.png"));
+            if (loadedSprite != null)
+            {
+                ecu_mod_panel_airride_page7 = loadedSprite;
             }
 
             loadedSprite = LoadNewSprite(Path.Combine(ModLoader.GetModAssetsFolder(donnerTech_ecu_mod), "OVERRIDE" + "_" + "Handbrake-Icon.png"));
@@ -793,8 +925,8 @@ namespace DonnerTech_ECU_Mod
             loadedSprite = LoadNewSprite(Path.Combine(ModLoader.GetModAssetsFolder(donnerTech_ecu_mod), "OVERRIDE" + "_" + "Rpm-Needle.png"));
             if (loadedSprite != null)
             {
-                ecu_mod_panel_lowBeam = loadedSprite;
-                ecu_InfoPanel_LowBeam.sprite = ecu_mod_panel_lowBeam;
+                ecu_mod_panel_needle = loadedSprite;
+                ecu_InfoPanel_Needle.sprite = ecu_mod_panel_needle;
             }
 
             loadedSprite = LoadNewSprite(Path.Combine(ModLoader.GetModAssetsFolder(donnerTech_ecu_mod), "OVERRIDE" + "_" + "TurbineWheel.png"));
@@ -921,71 +1053,38 @@ namespace DonnerTech_ECU_Mod
             {
                 if (!isBooted)
                 {
-                    if (isBooting)
-                    {
-                        Play_ECU_InfoPanel_Animation();
-                    }
-                    else
-                    {
-                        ecu_InfoPanel_Background.sprite = ecu_mod_panel_page0;
-
-                        ecu_InfoPanel_Needle.enabled = true;
-                        ecu_InfoPanel_TurboWheel.enabled = false;
-                        ecu_InfoPanel_Background.enabled = true;
-                        ecu_InfoPanel_IndicatorLeft.enabled = false;
-                        ecu_InfoPanel_IndicatorRight.enabled = false;
-                        ecu_InfoPanel_Handbrake.enabled = false;
-                        ecu_InfoPanel_LowBeam.enabled = false;
-                        ecu_InfoPanel_HighBeam.enabled = false;
-                        ecu_InfoPanel_Display_Value_01.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_02.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_03.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_04.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_05.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_06.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_07.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_08.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_09.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_10.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_11.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_12.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_13.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_14.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_15.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_16.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Gear.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_kmh.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_km.gameObject.SetActive(true);
-                        ecu_InfoPanel_Display_Value_01.text = "";
-                        ecu_InfoPanel_Display_Value_02.text = "";
-                        ecu_InfoPanel_Display_Value_03.text = "";
-                        ecu_InfoPanel_Display_Value_04.text = "";
-                        ecu_InfoPanel_Display_Value_05.text = "";
-                        ecu_InfoPanel_Display_Value_06.text = "";
-                        ecu_InfoPanel_Display_Value_07.text = "";
-                        ecu_InfoPanel_Display_Value_08.text = "";
-                        ecu_InfoPanel_Display_Value_09.text = "";
-                        ecu_InfoPanel_Display_Value_10.text = "";
-                        ecu_InfoPanel_Display_Value_11.text = "";
-                        ecu_InfoPanel_Display_Value_12.text = "";
-                        ecu_InfoPanel_Display_Value_13.text = "";
-                        ecu_InfoPanel_Display_Value_14.text = "";
-                        ecu_InfoPanel_Display_Value_15.text = "";
-                        ecu_InfoPanel_Display_Value_16.text = "";
-                        ecu_InfoPanel_Display_Gear.text = "";
-                        ecu_InfoPanel_Display_kmh.text = "";
-                        ecu_InfoPanel_Display_km.text = "";
-
-                        isBooting = true;
-                    }
-                    
-                    
+                    HandleBootAnimation();
                 }
                 else
                 {
                     HandleKeybinds();
                     HandleButtonPresses();
-                    
+
+                    if (true/*donnerTech_ecu_mod.GetAirrideInstalledScrewed()*/)
+                    {
+                        HandleAirride();
+                    } 
+
+                    HandleReverseCamera();
+                    if (rainsensor_enabled)
+                        HandleRainsensorLogic();
+                    else if (rainsensor_wasEnabled)
+                    {
+                        FsmBool wiperOn = wiperLogicFSM.FsmVariables.FindFsmBool("On");
+                        FsmFloat wiperDelay = wiperLogicFSM.FsmVariables.FindFsmFloat("Delay");
+                        wiperOn.Value = false;
+                        wiperDelay.Value = 0f;
+                        rainsensor_wasEnabled = false;
+                    }
+                    if (lightsensor_enabled)
+                        HandleLightsensorLogic();
+                    else if (lightsensor_wasEnabled)
+                    {
+
+                        lightsensor_wasEnabled = false;
+                    }
+
+
                     DisplayGeneralInfomation();
                     if (currentPage == 0)
                     {
@@ -1021,6 +1120,16 @@ namespace DonnerTech_ECU_Mod
                     else if(currentPage == 5)
                     {
                         DisplayPage5Values();
+                    }
+                    else if(currentPage == 6)
+                    {
+                        HandleTouchPresses(page6_GuiTexts);
+                        DisplayPage6Values();
+                    }
+                    else if (currentPage == 7)
+                    {
+                        HandleTouchPresses(page7_GuiTexts);
+                        DisplayPage7Values();
                     }
                 }
             }
@@ -1120,6 +1229,139 @@ namespace DonnerTech_ECU_Mod
 
             }
             
+        }
+
+        private float counter = 0;
+        private void HandleAirride()
+        {
+            
+        }
+        private void HandleReverseCamera()
+        {
+            if (donnerTech_ecu_mod.GetReverseCameraInstalledScrewed())
+            {
+                if (satsumaDriveTrain.gear == 0)
+                {
+                    ecu_InfoPanel_Display_Reverse_Camera.enabled = true;
+                    donnerTech_ecu_mod.SetReverseCameraEnabled(true);
+                }
+                else
+                {
+                    ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
+                    donnerTech_ecu_mod.SetReverseCameraEnabled(false);
+                }
+            }
+            else
+            {
+                ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
+                donnerTech_ecu_mod.SetReverseCameraEnabled(false);
+            }
+            
+        }
+
+        private void HandleRainsensorLogic()
+        {
+            rainsensor_wasEnabled = true;
+            FsmBool wiperOn = wiperLogicFSM.FsmVariables.FindFsmBool("On");
+            FsmFloat wiperDelay = wiperLogicFSM.FsmVariables.FindFsmFloat("Delay");
+            if (rainsensor_enabled)
+            {
+                if (rainIntensity.Value >= 0.5f)
+                {
+                    wiperOn.Value = true;
+                    wiperDelay.Value = 0f;
+                }
+                else if (rainIntensity.Value > 0f)
+                {
+                    wiperOn.Value = true;
+                    wiperDelay.Value = 3f;
+                }
+                else
+                {
+                    wiperOn.Value = false;
+                    wiperDelay.Value = 0f;
+                }
+            }
+            else
+            {
+                wiperOn.Value = false;
+                wiperDelay.Value = 0f;
+            }
+
+        }
+
+        private void HandleLightsensorLogic()
+        {
+            lightsensor_wasEnabled = true;
+            if (lightsensor_enabled)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
+        private void HandleBootAnimation()
+        {
+            if (isBooting)
+            {
+                Play_ECU_InfoPanel_Animation();
+            }
+            else
+            {
+                ecu_InfoPanel_Background.sprite = ecu_mod_panel_page0;
+
+                ecu_InfoPanel_Needle.enabled = true;
+                ecu_InfoPanel_TurboWheel.enabled = false;
+                ecu_InfoPanel_Background.enabled = true;
+                ecu_InfoPanel_IndicatorLeft.enabled = false;
+                ecu_InfoPanel_IndicatorRight.enabled = false;
+                ecu_InfoPanel_Handbrake.enabled = false;
+                ecu_InfoPanel_LowBeam.enabled = false;
+                ecu_InfoPanel_HighBeam.enabled = false;
+                ecu_InfoPanel_Display_Value_01.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_02.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_03.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_04.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_05.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_06.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_07.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_08.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_09.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_10.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_11.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_12.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_13.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_14.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_15.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_16.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Gear.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_kmh.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_km.gameObject.SetActive(true);
+                ecu_InfoPanel_Display_Value_01.text = "";
+                ecu_InfoPanel_Display_Value_02.text = "";
+                ecu_InfoPanel_Display_Value_03.text = "";
+                ecu_InfoPanel_Display_Value_04.text = "";
+                ecu_InfoPanel_Display_Value_05.text = "";
+                ecu_InfoPanel_Display_Value_06.text = "";
+                ecu_InfoPanel_Display_Value_07.text = "";
+                ecu_InfoPanel_Display_Value_08.text = "";
+                ecu_InfoPanel_Display_Value_09.text = "";
+                ecu_InfoPanel_Display_Value_10.text = "";
+                ecu_InfoPanel_Display_Value_11.text = "";
+                ecu_InfoPanel_Display_Value_12.text = "";
+                ecu_InfoPanel_Display_Value_13.text = "";
+                ecu_InfoPanel_Display_Value_14.text = "";
+                ecu_InfoPanel_Display_Value_15.text = "";
+                ecu_InfoPanel_Display_Value_16.text = "";
+                ecu_InfoPanel_Display_Gear.text = "";
+                ecu_InfoPanel_Display_kmh.text = "";
+                ecu_InfoPanel_Display_km.text = "";
+
+                isBooting = true;
+            }
         }
 
         private string ConvertToDigitalTime(float hours, float minutes)
@@ -1341,6 +1583,32 @@ namespace DonnerTech_ECU_Mod
                         }
                         break;
                     }
+                case "Enable Rainsensor":
+                    {
+                        rainsensor_enabled = !rainsensor_enabled;
+                        break;
+                    }
+                case "Enable Lightsensor":
+                    {
+                        lightsensor_enabled = !lightsensor_enabled;
+                        break;
+                    }
+                case "Lowest Pressure":
+                    {
+                        //ecu_airride_logic.increaseAirride(true, true, 0.05f);
+                        ecu_airride_operation = "to lowest";
+                        break;
+                    }
+                case "Highest Pressure":
+                    {
+                        ecu_airride_operation = "to highest";
+                        break;
+                    }
+                case "Default Pressure":
+                    {
+                        ecu_airride_operation = "to default";
+                        break;
+                    }
                 default:
                     {
                         playSound = false;
@@ -1439,6 +1707,7 @@ namespace DonnerTech_ECU_Mod
                         raceCarbAdjust2.Value = autoTune_counter;
                         raceCarbAdjust3.Value = autoTune_counter;
                         raceCarbAdjust4.Value = autoTune_counter;
+                        raceCarbAdjustAverage.Value = autoTune_counter;
                     }
                     autoTune_state = 4;
                 }
@@ -1461,6 +1730,7 @@ namespace DonnerTech_ECU_Mod
                             raceCarbAdjust2.Value = autoTune_counter;
                             raceCarbAdjust3.Value = autoTune_counter;
                             raceCarbAdjust4.Value = autoTune_counter;
+                            raceCarbAdjustAverage.Value = autoTune_counter;
                         }
                     }
                     else
@@ -1485,6 +1755,7 @@ namespace DonnerTech_ECU_Mod
                         raceCarbAdjust2.Value = autoTune_counter;
                         raceCarbAdjust3.Value = autoTune_counter;
                         raceCarbAdjust4.Value = autoTune_counter;
+                        raceCarbAdjustAverage.Value = autoTune_counter;
                     }
 
 
@@ -1504,6 +1775,7 @@ namespace DonnerTech_ECU_Mod
                             raceCarbAdjust2.Value = desiredSetting;
                             raceCarbAdjust3.Value = desiredSetting;
                             raceCarbAdjust4.Value = desiredSetting;
+                            raceCarbAdjustAverage.Value = desiredSetting;
                         }
                         autoTune_state = 6;
                     }
@@ -1659,22 +1931,37 @@ namespace DonnerTech_ECU_Mod
 
         private void Pressed_Button_Plus()
         {
-            if(selectededSetting == "Select 2Step RPM")
+            if(currentPage == 1)
             {
-                step2RevRpm += 100;
+                if (selectededSetting == "Select 2Step RPM")
+                {
+                    step2RevRpm += 100;
+                }
+                if (step2RevRpm >= 10000)
+                    step2RevRpm = 10000;
             }
-            if (step2RevRpm >= 10000)
-                step2RevRpm = 10000;
+            else if(currentPage == 7)
+            {
+                ecu_airride_logic.increaseAirride(true, true, 0.05f);
+            }
         }
 
         private void Pressed_Button_Minus()
         {
-            if (selectededSetting == "Select 2Step RPM")
+            
+            if (currentPage == 1)
             {
-                step2RevRpm -= 100;
+                if (selectededSetting == "Select 2Step RPM")
+                {
+                    step2RevRpm -= 100;
+                }
+                if (step2RevRpm <= 2000)
+                    step2RevRpm = 2000;
             }
-            if (step2RevRpm <= 2000)
-                step2RevRpm = 2000;
+            else if (currentPage == 7)
+            {
+                ecu_airride_logic.increaseAirride(true, true, -0.05f);
+            }
         }
 
         private void Pressed_Button_Cross()
@@ -1752,7 +2039,12 @@ namespace DonnerTech_ECU_Mod
                 ecu_InfoPanel_Background.sprite = ecu_mod_panel_turbo_page5;
                 ecu_InfoPanel_Needle.enabled = false;
                 ecu_InfoPanel_TurboWheel.enabled = true;
-
+            }
+            else if(currentPage == 6)
+            {
+                ecu_InfoPanel_Background.sprite = ecu_mod_panel_assistance_page6;
+                ecu_InfoPanel_Needle.enabled = false;
+                ecu_InfoPanel_TurboWheel.enabled = false;
             }
 
             ecu_InfoPanel_Display_Gear.text = "";
@@ -2135,6 +2427,52 @@ namespace DonnerTech_ECU_Mod
                 ecu_InfoPanel_Display_km.text = "";
             }
         }
+        private void DisplayPage6Values()
+        {
+            ecu_InfoPanel_Display_Value_01.text = BoolToOnOffString(rainsensor_enabled);
+            ecu_InfoPanel_Display_Value_02.text = BoolToOnOffString(lightsensor_enabled);
+            ecu_InfoPanel_Display_Value_03.text = "";
+            ecu_InfoPanel_Display_Value_04.text = "";
+            ecu_InfoPanel_Display_Value_05.text = "";
+            ecu_InfoPanel_Display_Value_06.text = "";
+            ecu_InfoPanel_Display_Value_07.text = "";
+            ecu_InfoPanel_Display_Value_08.text = "";
+            ecu_InfoPanel_Display_Value_09.text = "";
+            ecu_InfoPanel_Display_Value_10.text = "";
+            ecu_InfoPanel_Display_Value_11.text = "";
+            ecu_InfoPanel_Display_Value_12.text = "";
+            ecu_InfoPanel_Display_Value_13.text = "";
+            ecu_InfoPanel_Display_Value_14.text = "";
+            ecu_InfoPanel_Display_Value_15.text = "";
+            ecu_InfoPanel_Display_Value_16.text = "";
+            ecu_InfoPanel_Display_Gear.text = "";
+            ecu_InfoPanel_Display_kmh.text = "";
+            ecu_InfoPanel_Display_km.text = "";
+        }
+
+        private void DisplayPage7Values()
+        {
+            ecu_InfoPanel_Display_Value_01.text = "";
+            ecu_InfoPanel_Display_Value_02.text = "Lowest";
+            ecu_InfoPanel_Display_Value_03.text = "Highest";
+            ecu_InfoPanel_Display_Value_04.text = "Default";
+            ecu_InfoPanel_Display_Value_05.text = "";
+            ecu_InfoPanel_Display_Value_06.text = "";
+            ecu_InfoPanel_Display_Value_07.text = "";
+            ecu_InfoPanel_Display_Value_08.text = "";
+            ecu_InfoPanel_Display_Value_09.text = "";
+            ecu_InfoPanel_Display_Value_10.text = "";
+            ecu_InfoPanel_Display_Value_11.text = "";
+            ecu_InfoPanel_Display_Value_12.text = "";
+            ecu_InfoPanel_Display_Value_13.text = "";
+            ecu_InfoPanel_Display_Value_14.text = "";
+            ecu_InfoPanel_Display_Value_15.text = "";
+            ecu_InfoPanel_Display_Value_16.text = "";
+            ecu_InfoPanel_Display_Gear.text = "";
+            ecu_InfoPanel_Display_kmh.text = "";
+            ecu_InfoPanel_Display_km.text = "";
+        }
+
 
         private void DisplayGeneralInfomation()
         {

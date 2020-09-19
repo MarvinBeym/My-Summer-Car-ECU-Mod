@@ -3,9 +3,9 @@ using ModApi.Attachable;
 
 namespace DonnerTech_ECU_Mod
 {
-    public class ECU_InfoPanel_Part : Part
+    public class ECU_Airride_FL_Part : Part
     {
-        public ECU_InfoPanel_Part(PartSaveInfo inPartSaveInfo, GameObject inPart, GameObject inParent, Trigger inPartTrigger, Vector3 inPartPosition, Quaternion inPartRotation) : base(inPartSaveInfo, inPart, inParent, inPartTrigger, inPartPosition, inPartRotation)
+        public ECU_Airride_FL_Part(PartSaveInfo inPartSaveInfo, GameObject inPart, GameObject inParent, Trigger inPartTrigger, Vector3 inPartPosition, Quaternion inPartRotation) : base(inPartSaveInfo, inPart, inParent, inPartTrigger, inPartPosition, inPartRotation)
         {
 
         }
@@ -14,8 +14,8 @@ namespace DonnerTech_ECU_Mod
         {
             installed = false, //Will make part installed
 
-            position = new Vector3(0, 0, 0), //Sets the spawn location -> where i can be found
-            rotation = Quaternion.Euler(0, 0, 0), // Rotation at spawn location
+            position = ModsShop.FleetariSpawnLocation.desk,
+            rotation = Quaternion.Euler(0, 0, 0),
         };
 
         public override GameObject rigidPart
@@ -33,6 +33,7 @@ namespace DonnerTech_ECU_Mod
         {
             // do stuff on assemble.
             base.assemble(startUp); // if you want assemble function, you need to call base!
+
         }
 
         protected override void disassemble(bool startup = false)

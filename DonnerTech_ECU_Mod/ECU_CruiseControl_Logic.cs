@@ -14,9 +14,9 @@ namespace DonnerTech_ECU_Mod
 
         private GameObject cruiseControlPanel;
         private TextMesh cruiseControlText;
-        private ECU_MOD_SmartEngineModule_Part ecu_mod_smartEngineModule_Part;
-        private ECU_MOD_CableHarness_Part ecu_mod_cableHarness_Part;
-        private ECU_MOD_MountingPlate_Part ecu_mod_mountingPlate_Part;
+        private SimplePart ecu_mod_smartEngineModule_Part;
+        private SimplePart ecu_mod_cableHarness_Part;
+        private SimplePart ecu_mod_mountingPlate_Part;
         private ScrewablePart ecu_mod_smartEngineModule_Part_screwable;
         private ScrewablePart ecu_mod_mountingPlate_Part_screwable;
 
