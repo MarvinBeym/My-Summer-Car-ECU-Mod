@@ -81,7 +81,6 @@
     <Compile Include="ECU_InfoPanel_Logic.cs" />
     <Compile Include="ECU_ReverseCamera_Logic.cs" />
     <Compile Include="ECU_SmartEngineModule_Logic.cs" />
-    <Compile Include="ModCommunication.cs" />
     <Compile Include="SimplePart.cs" />
     <Compile Include="PartBuySave.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
