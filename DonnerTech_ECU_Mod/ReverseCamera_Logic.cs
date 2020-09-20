@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
 {
-    public class ECU_ReverseCamera_Logic : MonoBehaviour
+    public class ReverseCamera_Logic : MonoBehaviour
     {
         private Mod mainMod;
         private DonnerTech_ECU_Mod donnerTech_ecu_mod;

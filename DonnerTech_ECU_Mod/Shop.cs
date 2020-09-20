@@ -74,7 +74,6 @@ namespace DonnerTech_ECU_Mod
             {
                 product.gameObjectName = this.shopItems[product.product.productName].activePart.name;
                 this.modsShopItem.Add(this.donnerTech_ECU_Mod, product.product, ModsShop.ShopType.Fleetari, PurchaseMade, this.shopItems[product.product.productName].activePart);
-                ModConsole.Print(shopItems[product.product.productName].activePart.name + " " + "!bought!");
                 shopItems[product.product.productName].activePart.SetActive(false);
             }
         }
@@ -170,7 +169,6 @@ namespace DonnerTech_ECU_Mod
                     productPrice = 4000
                 }, bought = partBuySave.boughtInfoPanel
             });
-            ModConsole.Print("TTTTTTTTTTTTT: " + partBuySave.boughtInfoPanel);
             products.Add(new ProductBought
             {
                 product = new ModsShop.ProductDetails

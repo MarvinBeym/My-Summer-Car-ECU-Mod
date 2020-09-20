@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
 {
-    public class ECU_Airride_Logic : MonoBehaviour
+    public class Airride_Logic : MonoBehaviour
     {
         private GameObject wheelFL, wheelFR, wheelRL, wheelRR;
         private PlayMakerFSM suspension;

@@ -7,7 +7,7 @@ using ModApi;
 
 namespace DonnerTech_ECU_Mod
 {
-    public class ECU_CruiseControl_Logic : MonoBehaviour
+    public class CruiseControl_Logic : MonoBehaviour
     {
         private Mod mainMod;
         private DonnerTech_ECU_Mod donnerTech_ecu_mod;

@@ -57,7 +57,7 @@ namespace DonnerTech_ECU_Mod
 
         protected override void disassemble(bool startup = false)
         {
-            if (DonnerTech_ECU_Mod.absModuleEnabled)
+            if (DonnerTech_ECU_Mod.abs_module_enabled)
             {
                 DonnerTech_ECU_Mod.ToggleABS();
             }

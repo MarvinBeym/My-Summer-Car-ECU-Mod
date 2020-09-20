@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
 {
-    public class ECU_SmartEngineModule_Logic : MonoBehaviour
+    public class SmartEngineModule_Logic : MonoBehaviour
     {
         private Mod mainMod;
         private DonnerTech_ECU_Mod donnerTech_ecu_mod;

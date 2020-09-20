@@ -71,16 +71,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ECU_CruiseControl_Logic.cs" />
+    <Compile Include="CruiseControl_Logic.cs" />
+    <Compile Include="info_panel_pages\InfoPanelPage.cs" />
+    <Compile Include="info_panel_pages\Page6.cs" />
+    <Compile Include="info_panel_pages\Page7.cs" />
+    <Compile Include="info_panel_pages\Page5.cs" />
+    <Compile Include="info_panel_pages\Page4.cs" />
+    <Compile Include="info_panel_pages\Page3.cs" />
+    <Compile Include="info_panel_pages\Page2.cs" />
+    <Compile Include="info_panel_pages\Page0.cs" />
+    <Compile Include="info_panel_pages\Page1.cs" />
+    <Compile Include="old_file_checker\OldFileRenamer.cs" />
+    <Compile Include="old_file_checker\OverrideFileRenamer.cs" />
+    <Compile Include="old_file_checker\SaveFileRenamer.cs" />
     <Compile Include="ProductBought.cs" />
     <Compile Include="Shop.cs" />
     <Compile Include="TcsPart.cs" />
     <Compile Include="AbsPart.cs" />
-    <Compile Include="ECU_Airride_FL_Part.cs" />
-    <Compile Include="ECU_Airride_Logic.cs" />
-    <Compile Include="ECU_InfoPanel_Logic.cs" />
-    <Compile Include="ECU_ReverseCamera_Logic.cs" />
-    <Compile Include="ECU_SmartEngineModule_Logic.cs" />
+    <Compile Include="Airride_Logic.cs" />
+    <Compile Include="InfoPanel_Logic.cs" />
+    <Compile Include="ReverseCamera_Logic.cs" />
+    <Compile Include="SmartEngineModule_Logic.cs" />
     <Compile Include="SimplePart.cs" />
     <Compile Include="PartBuySave.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
