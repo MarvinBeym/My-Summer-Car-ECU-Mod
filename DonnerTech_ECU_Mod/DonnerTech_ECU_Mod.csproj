@@ -84,18 +84,20 @@
     <Compile Include="old_file_checker\OldFileRenamer.cs" />
     <Compile Include="old_file_checker\OverrideFileRenamer.cs" />
     <Compile Include="old_file_checker\SaveFileRenamer.cs" />
+    <Compile Include="parts\EspPart.cs" />
     <Compile Include="ProductBought.cs" />
     <Compile Include="Shop.cs" />
-    <Compile Include="TcsPart.cs" />
-    <Compile Include="AbsPart.cs" />
+    <Compile Include="parts\TcsPart.cs" />
+    <Compile Include="parts\AbsPart.cs" />
     <Compile Include="Airride_Logic.cs" />
     <Compile Include="InfoPanel_Logic.cs" />
     <Compile Include="ReverseCamera_Logic.cs" />
     <Compile Include="SmartEngineModule_Logic.cs" />
-    <Compile Include="SimplePart.cs" />
+    <Compile Include="parts\SimplePart.cs" />
     <Compile Include="PartBuySave.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="timers\Timer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

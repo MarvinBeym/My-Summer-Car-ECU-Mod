@@ -5,25 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Object = System.Object;
 
 namespace DonnerTech_ECU_Mod
 {
-    public class AbsPart : Part
+    public class TcsPart : SimplePart
     {
-        private ScrewablePart screwablePart;
-        private Vector3 installLocation;
-
-        public AbsPart(PartSaveInfo partSaveInfo, GameObject part, GameObject partParent, Trigger trigger, Vector3 installLocation, Quaternion installRotation) : base(partSaveInfo, part, partParent, trigger, installLocation, installRotation)
+        public TcsPart(Object[] loadedData, GameObject part, GameObject partParent, Trigger trigger, Vector3 installLocation, Quaternion installRotation) : base(loadedData, part, partParent, trigger, installLocation, installRotation)
         {
-            this.installLocation = installLocation;
-        }
-        public void SetScrewablePart(ScrewablePart screwablePart)
-        {
-            this.screwablePart = screwablePart;
-        }
-        public ScrewablePart GetScrewablePart()
-        {
-            return this.screwablePart;
         }
 
         public override PartSaveInfo defaultPartSaveInfo => new PartSaveInfo()
@@ -57,9 +46,9 @@ namespace DonnerTech_ECU_Mod
 
         protected override void disassemble(bool startup = false)
         {
-            if (DonnerTech_ECU_Mod.abs_module_enabled)
+            if (mod != null && mod.smart_engine_module_logic != null && mod.smart_engine_module_logic.tcsModule_enabled != null && mod.smart_engine_module_logic.tcsModule_enabled.Value)
             {
-                DonnerTech_ECU_Mod.ToggleABS();
+                mod.smart_engine_module_logic.ToggleTCS();
             }
             // do stuff on dissemble.
             base.disassemble(startup); // if you want dissemble function, you need to call base!
@@ -67,10 +56,6 @@ namespace DonnerTech_ECU_Mod
             {
                 this.screwablePart.resetScrewsOnDisassemble();
             }
-        }
-        public void removePart()
-        {
-            disassemble(false);
         }
     }
 }

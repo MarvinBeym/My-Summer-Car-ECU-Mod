@@ -18,7 +18,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private const float needle_maxAngle = 270;
         private const float needle_minAngle = 0;
         private const float needle_maxRPM = 9000;
-        private RaycastHit hit;
 
         public InfoPanelPage()
         {

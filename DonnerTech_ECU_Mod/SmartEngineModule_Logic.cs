@@ -7,8 +7,7 @@ namespace DonnerTech_ECU_Mod
 {
     public class SmartEngineModule_Logic : MonoBehaviour
     {
-        private Mod mainMod;
-        private DonnerTech_ECU_Mod donnerTech_ecu_mod;
+        private DonnerTech_ECU_Mod mod;
 
         //Car
         private static GameObject satsuma;
@@ -18,17 +17,29 @@ namespace DonnerTech_ECU_Mod
 
         private FsmString playerCurrentVehicle;
 
-        
-        private bool alsModule_enabled = false;
-        private bool step2RevLimiterModule_enabled = false;
-
         private PlayMakerFSM smart_engine_moduleFSM;
         private FsmBool smart_engine_module_allInstalled;
-        private FsmBool smart_engine_module_alsModuleEnabled;
-        private FsmBool smart_engine_module_step2RevLimiterModuleEnabled;
+        
+        public FsmBool absModule_enabled { get; set; }
+        public FsmBool espModule_enabled { get; set; }
+        public FsmBool tcsModule_enabled { get; set; }
+        public FsmBool alsModule_enabled { get; set; }
+        public FsmBool step2RevLimiterModule_enabled { get; set; }
+       
 
         void Start()
         {
+            System.Collections.Generic.List<Mod> mods = ModLoader.LoadedMods;
+            Mod[] modsArr = mods.ToArray();
+            foreach (Mod mod in modsArr)
+            {
+                if (mod.Name == "DonnerTechRacing ECUs")
+                {
+                    this.mod = (DonnerTech_ECU_Mod)mod;
+                    break;
+                }
+            }
+
             satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
             satsumaCarController = satsuma.GetComponent<CarController>();
@@ -42,49 +53,40 @@ namespace DonnerTech_ECU_Mod
 
 
             smart_engine_module_allInstalled = new FsmBool("All installed");
-            smart_engine_module_alsModuleEnabled = new FsmBool("ALS Enabled");
-            smart_engine_module_step2RevLimiterModuleEnabled = new FsmBool("Step2RevLimiter Enabled");
+            alsModule_enabled = new FsmBool("ALS Enabled");
+            step2RevLimiterModule_enabled = new FsmBool("Step2RevLimiter Enabled");
 
             smart_engine_moduleFSM.FsmVariables.BoolVariables = new FsmBool[]
             {
-                smart_engine_module_alsModuleEnabled,
                 smart_engine_module_allInstalled,
-                smart_engine_module_step2RevLimiterModuleEnabled
+                absModule_enabled,
+                espModule_enabled,
+                tcsModule_enabled,
+                alsModule_enabled,
+                step2RevLimiterModule_enabled
             };
         }
 
 
         void Update()
         {
-            System.Collections.Generic.List<Mod> mods = ModLoader.LoadedMods;
-            Mod[] modsArr = mods.ToArray();
-            foreach (Mod mod in modsArr)
-            {
-                if (mod.Name == "DonnerTechRacing ECUs")
-                {
-                    mainMod = mod;
-                    break;
-                }
-            }
-            donnerTech_ecu_mod = (DonnerTech_ECU_Mod)mainMod;
-
-            if (donnerTech_ecu_mod.GetSmartEngineModuleInstalledFixed() && !step2RevLimiterModule_enabled && satsumaDriveTrain.maxRPM != 8500)
+            if (mod.smart_engine_module_part.InstalledScrewed() && !step2RevLimiterModule_enabled.Value && satsumaDriveTrain.maxRPM != 8500)
             {
                 satsumaDriveTrain.maxRPM = 8500;
             }
 
-            if (hasPower)
+            if (mod.hasPower)
             {
-                if(donnerTech_ecu_mod.GetCableHarness_Part().installed && donnerTech_ecu_mod.GetMountingPlate_Part().installed && donnerTech_ecu_mod.GetMountingPlate_Screwable().partFixed)
+                if(mod.cable_harness_part.installed && mod.mounting_plate_part.installed && mod.mounting_plate_part.InstalledScrewed())
                 {
                     if (playerCurrentVehicle.Value == "Satsuma")
                     {
-                        if (step2RevLimiterModule_enabled)
+                        if (step2RevLimiterModule_enabled.Value)
                         {
                             HandleStep2RevLimiterModule();
                         }
 
-                        if (alsModule_enabled)
+                        if (alsModule_enabled.Value)
                         {
                             HandleALSModuleLogic();
                         }
@@ -116,78 +118,73 @@ namespace DonnerTech_ECU_Mod
             */
         }
 
-        private void HandleStep2RevLimiterModule()
+        public void ToggleABS()
         {
-            if(step2RevLimiterModule_enabled && satsumaDriveTrain.velo < 3.5f)
+            if (mod.abs_module_part.InstalledScrewed())
             {
-                satsumaDriveTrain.revLimiterTime = 0;
-                satsumaDriveTrain.maxRPM = donnerTech_ecu_mod.GetStep2RevRpm();
+                satsuma.GetComponent<CarController>().ABS = !satsuma.GetComponent<CarController>().ABS;
+                absModule_enabled.Value = satsuma.GetComponent<CarController>().ABS;
             }
             else
             {
-                satsumaDriveTrain.revLimiterTime = 0.2f;
-                if (step2RevLimiterModule_enabled)
-                {
-                    ToggleStep2RevLimiter();
-                }
+                satsuma.GetComponent<CarController>().ABS = false;
+                absModule_enabled.Value = false;
             }
+
+
+        }
+        public void ToggleESP()
+        {
+            if (mod.esp_module_part.InstalledScrewed())
+            {
+                satsuma.GetComponent<CarController>().ESP = !satsuma.GetComponent<CarController>().ESP;
+                espModule_enabled.Value = satsuma.GetComponent<CarController>().ESP;
+            }
+            else
+            {
+                satsuma.GetComponent<CarController>().ESP = false;
+                espModule_enabled.Value = false;
+            }
+
+        }
+        public void ToggleTCS()
+        {
+            if (mod.tcs_module_part.InstalledScrewed())
+            {
+                satsuma.GetComponent<CarController>().TCS = !satsuma.GetComponent<CarController>().TCS;
+                tcsModule_enabled.Value = satsuma.GetComponent<CarController>().TCS;
+            }
+            else
+            {
+                satsuma.GetComponent<CarController>().TCS = false;
+                tcsModule_enabled.Value = false;
+            }
+
         }
 
         public void ToggleALS()
         {
-            alsModule_enabled = !alsModule_enabled;
-            smart_engine_module_alsModuleEnabled.Value = alsModule_enabled;
+            alsModule_enabled.Value = !alsModule_enabled.Value;
         }
-        public void ToggleStep2RevLimiter()
+        public void Toggle2StepRevLimiter()
         {
-            step2RevLimiterModule_enabled = !step2RevLimiterModule_enabled;
-            smart_engine_module_step2RevLimiterModuleEnabled.Value = step2RevLimiterModule_enabled;
-            if (!step2RevLimiterModule_enabled)
+            step2RevLimiterModule_enabled.Value = !step2RevLimiterModule_enabled.Value;
+        }
+
+        public void HandleStep2RevLimiterModule()
+        {
+            if(step2RevLimiterModule_enabled.Value && satsumaDriveTrain.velo < 3.5f)
             {
-                satsumaDriveTrain.maxRPM = 8500;
+                satsumaDriveTrain.revLimiterTime = 0;
+                satsumaDriveTrain.maxRPM = mod.GetStep2RevRpm();
             }
-        }
-        public bool GetAlsEnabled()
-        {
-            return alsModule_enabled;
-        }
-        public bool GetStep2RevLimiterEnabled()
-        {
-            return step2RevLimiterModule_enabled;
-        }
-
-        public void SetAlsModuleEnabled(bool enabled)
-        {
-            this.alsModule_enabled = enabled;
-        }
-
-        public void SetStep2RevModuleEnabled(bool enabled)
-        {
-            this.step2RevLimiterModule_enabled = enabled;
-        }
-
-        private static bool hasPower
-        {
-            get
+            else
             {
-                GameObject carElectrics = GameObject.Find("SATSUMA(557kg, 248)/Electricity");
-                PlayMakerFSM carElectricsPower = PlayMakerFSM.FindFsmOnGameObject(carElectrics, "Power");
-                return carElectricsPower.FsmVariables.FindFsmBool("ElectricsOK").Value;
-            }
-        }
-        internal static bool useButtonDown
-        {
-            get
-            {
-                return cInput.GetKeyDown("Use");
-            }
-        }
-
-        internal static bool useThrottleButton
-        {
-            get
-            {
-                return cInput.GetKey("Throttle");
+                satsumaDriveTrain.revLimiterTime = 0.2f;
+                if (step2RevLimiterModule_enabled.Value)
+                {
+                    Toggle2StepRevLimiter();
+                }
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using HutongGames.PlayMaker;
+﻿using DonnerTech_ECU_Mod.timers;
+using HutongGames.PlayMaker;
+using MSCLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +21,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat coolantPressurePSI;
         private FsmFloat coolantTemp;
         private FsmFloat clockHours;
-        private FsmFloat clockMinutes;
         private FsmFloat voltage;
         private FsmFloat afRatio;
 
@@ -28,6 +29,11 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private float oldValue = 0;
         private float consumptionCounter = 0;
         private FsmFloat fuelLeft;
+
+        private Timer clockUpdateTimer;
+        private Timer gearUpdateTimer;
+        private Timer odometerUpdateTimer;
+        private Timer voltageUpdateTimer;
 
         public Page0(DonnerTech_ECU_Mod mod, InfoPanel_Logic logic, GameObject needle, Dictionary<string, TextMesh> display_values)
         {
@@ -56,7 +62,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             coolantPressurePSI = coolingFSM.FsmVariables.FindFsmFloat("WaterPressurePSI");
 
             clockHours = PlayMakerGlobals.Instance.Variables.FindFsmFloat("TimeRotationHour");
-            clockMinutes = PlayMakerGlobals.Instance.Variables.FindFsmFloat("TimeRotationMinute");
 
 
             foreach (PlayMakerFSM fsm in dataBaseMechanicsFSMs)
@@ -67,8 +72,17 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
                     break;
                 }
             }
+            InitTimers();
         }
         public override string[] guiTexts => new string[0];
+
+        public void InitTimers()
+        {
+            clockUpdateTimer = new Timer(delegate () { display_values["value_13"].text = ConvertToDigitalTime(clockHours.Value); }, 1);
+            gearUpdateTimer = new Timer(delegate () { display_values["value_gear"].text = GearToString(); }, 0.1f);
+            odometerUpdateTimer = new Timer(delegate () { display_values["value_km"].text = odometerKM.Value.ToString(); }, 1.0f);
+            voltageUpdateTimer = new Timer(delegate () { display_values["value_14"].text = voltage.Value.ToString("00 .0") + "V"; }, 0.2f);
+        }
 
         public override void DisplayValues()
         {
@@ -82,8 +96,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             }
             
             display_values["value_4"].text = Convert.ToInt32(coolantPressurePSI.Value).ToString();
-            display_values["value_13"].text = ConvertToDigitalTime(clockHours.Value, clockMinutes.Value);
-            display_values["value_14"].text = voltage.Value.ToString("00 .0") + "V";
+
             if (fuelCalculated != null && fuelCalculated[1] >= 0 && fuelCalculated[1] <= 9000)
             {
                 if (fuelCalculated[1] >= 0 && fuelCalculated[1] <= 9000)
@@ -92,25 +105,41 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
                     display_values["value_16"].text = Convert.ToInt32(fuelCalculated[0]).ToString();
                 }
             }
-            display_values["value_km"].text = odometerKM.Value.ToString();
+            
             display_values["value_kmh"].text = Convert.ToInt32(satsumaDriveTrain.differentialSpeed).ToString();
 
-            display_values["value_gear"].text = GearToString();
+            clockUpdateTimer.Call();
+            voltageUpdateTimer.Call();
+            odometerUpdateTimer.Call();
+            gearUpdateTimer.Call();
 
             needle.transform.localRotation = Quaternion.Euler(new Vector3(-90f, GetRPMRotation(-1f), 0));
         }
-
+        
         public override void Handle()
         {
             logic.HandleTouchPresses(guiTexts, this);
             DisplayValues();
         }
 
-        private string ConvertToDigitalTime(float hours, float minutes)
+        private string ConvertToDigitalTime(float hours)
         {
-            string hour = ((360 - hours) / 30f + 2f).ToString("00");
-            string minute = (Mathf.FloorToInt((360f - minutes) / 6f)).ToString("00");
-            return (hour + ":" + minute);
+            if (hours > 0)
+            {
+                float calculatedHours = ((360 - hours) / 30) + 2f;
+                if (hours > 180)
+                {
+                    calculatedHours += 12;
+                }
+
+                float calculatedMinutes = calculatedHours * 60f;
+                TimeSpan ts = TimeSpan.FromMinutes(calculatedMinutes);
+                return new DateTime(ts.Ticks).ToString("HH:mm");
+            }
+            else
+            {
+                return display_values["value_13"].text;
+            }
         }
 
         private float[] FuelKMCalculate()
@@ -139,11 +168,13 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
         public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
         {
+            /*
             switch (value)
             {
                 
             }
             playTouchSound(gameObjectHit);
+            */
         }
     }
 }

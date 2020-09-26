@@ -14,12 +14,15 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private GameObject needle;
         private Dictionary<string, TextMesh> display_values;
         private InfoPanel_Logic logic;
-        
+        private SmartEngineModule_Logic smartEngineLogic;
+
         private FsmInt odometerKM;
+
 
         public Page1(DonnerTech_ECU_Mod mod, InfoPanel_Logic logic, GameObject needle, Dictionary<string, TextMesh> display_values)
         {
             this.mod = mod;
+            this.smartEngineLogic = mod.smart_engine_module_logic;
             this.needle = needle;
             this.display_values = display_values;
             this.logic = logic;
@@ -57,11 +60,11 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         public override void DisplayValues()
         {
             
-            display_values["value_1"].text = BoolToOnOffString(mod.GetAbsModuleEnabled());
-            display_values["value_2"].text = BoolToOnOffString(mod.GetEspModuleEnabled());
-            display_values["value_3"].text = BoolToOnOffString(mod.GetTcsModuleEnabled());
-            display_values["value_4"].text = BoolToOnOffString(mod.GetStep2RevModuleEnabled());
-            display_values["value_13"].text = BoolToOnOffString(mod.GetAlsModuleEnabled());
+            display_values["value_1"].text = BoolToOnOffString(smartEngineLogic.absModule_enabled.Value);
+            display_values["value_2"].text = BoolToOnOffString(smartEngineLogic.espModule_enabled.Value);
+            display_values["value_3"].text = BoolToOnOffString(smartEngineLogic.tcsModule_enabled.Value);
+            display_values["value_4"].text = BoolToOnOffString(smartEngineLogic.step2RevLimiterModule_enabled.Value);
+            display_values["value_13"].text = BoolToOnOffString(smartEngineLogic.alsModule_enabled.Value);
             display_values["value_16"].text = logic.GetStep2RevRpm().ToString();
             if (logic.GetSelectedSetting() == "Select 2Step RPM")
             {
@@ -85,19 +88,19 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             switch (value)
             {
                 case "Enable ABS":
-                    DonnerTech_ECU_Mod.ToggleABS();
+                    smartEngineLogic.ToggleABS();
                     break;
                 case "Enable ESP":
-                    DonnerTech_ECU_Mod.ToggleESP();
+                    smartEngineLogic.ToggleESP();
                     break;
                 case "Enable TCS":
-                    DonnerTech_ECU_Mod.ToggleTCS();
+                    smartEngineLogic.ToggleTCS();
                     break;
                 case "Enable 2StepRevLimiter":
-                    mod.Toggle2StepRevLimiter();
+                    smartEngineLogic.Toggle2StepRevLimiter();
                     break;
                 case "Enable Antilag":
-                    mod.ToggleALS();
+                    smartEngineLogic.ToggleALS();
                     break;
                 case "Select 2Step RPM":
                     if (logic.GetSelectedSetting() == "Select 2Step RPM")

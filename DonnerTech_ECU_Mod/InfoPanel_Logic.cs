@@ -109,7 +109,6 @@ namespace DonnerTech_ECU_Mod
         private CarController satsumaCarController;
         private Axles satsumaAxles;
         private FsmString playerCurrentVehicle;
-        private PlayMakerFSM carElectricsPower;
 
         private RaycastHit hit;
         private AssetBundle assetBundle;
@@ -145,6 +144,14 @@ namespace DonnerTech_ECU_Mod
 
         public int step2RevRpm = 6500;
 
+        private MeshRenderer shift_indicator_renderer;
+        private Gradient shift_indicator_gradient;
+
+        private float shift_indicator_blink_timer = 0;
+        private int shift_indicator_baseLine = 3500;
+        public int shift_indicator_greenLine = 6500;
+        public int shift_indicator_redLine = 7500;
+
         private void Start()
         {
             System.Collections.Generic.List<Mod> mods = ModLoader.LoadedMods;
@@ -173,6 +180,10 @@ namespace DonnerTech_ECU_Mod
             ecu_InfoPanel_TurboWheelObject = GameObject.Find("ECU-Panel-TurboWheel");
             ecu_InfoPanel_Display_Reverse_Camera = GameObject.Find("ECU-Panel-Display-Reverse-Camera").GetComponent<MeshRenderer>();
             ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
+
+            
+            shift_indicator_renderer = GameObject.Find("ECU-Shift-Indicator").GetComponent<MeshRenderer>();
+            SetupShiftIndicator();
 
             TextMesh[] ecu_InfoPanel_TextMeshes = infoPanel.GetComponentsInChildren<TextMesh>();
             foreach (TextMesh textMesh in ecu_InfoPanel_TextMeshes)
@@ -400,7 +411,7 @@ namespace DonnerTech_ECU_Mod
                 }
             }
 
-            if (hasPower && mod.GetInfoPanelScrewed())
+            if (mod.hasPower && mod.info_panel_part.InstalledScrewed())
             {
                 if (!isBooted)
                 {
@@ -408,6 +419,7 @@ namespace DonnerTech_ECU_Mod
                 }
                 else
                 {
+                    HandleShiftIndicator();
                     HandleKeybinds();
                     HandleButtonPresses();
 
@@ -514,7 +526,7 @@ namespace DonnerTech_ECU_Mod
         }
         private void HandleReverseCamera()
         {
-            if (!mod.GetReverseCameraInstalledScrewed())
+            if (!mod.reverse_camera_part.InstalledScrewed())
             {
                 ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
                 mod.SetReverseCameraEnabled(false);
@@ -584,6 +596,7 @@ namespace DonnerTech_ECU_Mod
             }
             else
             {
+                ModConsole.Print("not booting");
                 currentPage = 0;
                 ChangeInfoPanelPage(currentPage);
                 ecu_InfoPanel_Background.sprite = ecu_mod_panel_page0;
@@ -605,11 +618,67 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
+        private void SetupShiftIndicator()
+        {
+            shift_indicator_gradient = new Gradient();
+            GradientColorKey[] colorKey = new GradientColorKey[3];
+            colorKey[0].color = new Color(1.0f, 0.64f, 0.0f); //Orange
+            colorKey[0].time = (float)shift_indicator_baseLine / 10000;
+
+            colorKey[1].color = Color.green;
+            colorKey[1].time = (float) shift_indicator_greenLine / 10000;
+
+            colorKey[2].color = Color.red;
+            colorKey[2].time = (float)shift_indicator_redLine / 10000;
+
+            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+            GradientAlphaKey[] alphaKey = new GradientAlphaKey[3];
+            alphaKey[0].alpha = 1f - (float)shift_indicator_baseLine / 10000;
+            alphaKey[0].time = (float)shift_indicator_baseLine / 10000;
+
+            alphaKey[1].alpha = 1f - (float)shift_indicator_greenLine / 10000;
+            alphaKey[1].time = (float)shift_indicator_greenLine / 10000;
+
+            alphaKey[2].alpha = 1f - (float) shift_indicator_redLine / 10000;
+            alphaKey[2].time = (float) shift_indicator_redLine / 10000;
+
+            shift_indicator_gradient.SetKeys(colorKey, alphaKey);
+        }
+
+        private void HandleShiftIndicator()
+        {
+            if(satsumaDriveTrain.rpm > 0)
+            {
+                float gradientValue = satsumaDriveTrain.rpm / 10000;
+                
+                if (satsumaDriveTrain.rpm >= 7500)
+                {
+                    shift_indicator_blink_timer += Time.deltaTime;
+
+                    if (shift_indicator_blink_timer <= 0.15f)
+                    {
+
+                        shift_indicator_renderer.material.color = Color.black;
+                    }
+                    if (shift_indicator_blink_timer >= 0.3f)
+                    {
+                        shift_indicator_blink_timer = 0;
+
+                        shift_indicator_renderer.material.color = shift_indicator_gradient.Evaluate(gradientValue);
+                    }
+                }
+                else
+                {
+                    shift_indicator_renderer.material.color = shift_indicator_gradient.Evaluate(gradientValue);
+                }
+            }
+
+        }
 
 
         private void HandleKeybinds()
         {
-            if(playerCurrentVehicle.Value == "Satsuma" && hasPower)
+            if(playerCurrentVehicle.Value == "Satsuma")
             {
                 if (mod.info_panel_arrowUp.GetKeybindDown())
                 {
@@ -664,7 +733,7 @@ namespace DonnerTech_ECU_Mod
                         if (foundObject)
                         {
                             ModClient.guiInteract(guiText);
-                            if (useButtonDown || Input.GetMouseButtonDown(0))
+                            if (mod.useButtonDown || mod.leftMouseDown)
                             {
                                 page.Pressed_Display_Value(valueToPass, gameObjectHit);
                             }
@@ -735,7 +804,7 @@ namespace DonnerTech_ECU_Mod
                         if (foundObject)
                         {
                             ModClient.guiInteract(guiText);
-                            if (useButtonDown || Input.GetMouseButtonDown(0))
+                            if (mod.useButtonDown || mod.leftMouseDown)
                             {
                                 actionToPerform.Invoke();
                                 AudioSource audio = dashButtonAudioSource;
@@ -752,37 +821,53 @@ namespace DonnerTech_ECU_Mod
 
         private void Pressed_Button_Plus()
         {
-            if(currentPage == 1)
+            switch (selectedSetting)
             {
-                if (selectedSetting == "Select 2Step RPM")
-                {
+                case "Select 2Step RPM":
                     step2RevRpm += 100;
-                }
-                if (step2RevRpm >= 10000)
-                    step2RevRpm = 10000;
+                    if (step2RevRpm >= 10000) { step2RevRpm = 10000; }
+                    break;
+                case "Select Shift Indicator green line":
+                    shift_indicator_greenLine += 100;
+                    if(shift_indicator_greenLine >= shift_indicator_redLine) { shift_indicator_greenLine -= 100; }
+                    SetupShiftIndicator();
+                    break;
+                case "Select Shift Indicator red line":
+                    shift_indicator_redLine += 100;
+                    SetupShiftIndicator();
+                    break;
             }
-            else if(currentPage == 7)
+            /*else if(currentPage == 7)
             {
-                ecu_airride_logic.increaseAirride(true, true, 0.05f);
+                //ecu_airride_logic.increaseAirride(true, true, 0.05f);
             }
+            */
         }
 
         private void Pressed_Button_Minus()
         {
-            
-            if (currentPage == 1)
+            switch (selectedSetting)
             {
-                if (selectedSetting == "Select 2Step RPM")
-                {
+                case "Select 2Step RPM":
                     step2RevRpm -= 100;
-                }
-                if (step2RevRpm <= 2000)
-                    step2RevRpm = 2000;
+                    if (step2RevRpm <= 2000) { step2RevRpm = 2000; }
+                    break;
+                case "Select Shift Indicator green line":
+                    shift_indicator_greenLine -= 100;
+                    if(shift_indicator_greenLine <= shift_indicator_baseLine) { shift_indicator_greenLine += 100; }
+                    SetupShiftIndicator();
+                    break;
+                case "Select Shift Indicator red line":
+                    shift_indicator_redLine -= 100;
+                    if (shift_indicator_redLine <= shift_indicator_greenLine) { shift_indicator_redLine += 100; }
+                    SetupShiftIndicator();
+                    break;
             }
-            else if (currentPage == 7)
+            /*else if (currentPage == 7)
             {
                 ecu_airride_logic.increaseAirride(true, true, -0.05f);
             }
+            */
         }
 
         private void Pressed_Button_Cross()
@@ -974,29 +1059,6 @@ namespace DonnerTech_ECU_Mod
                 isBooted = true;
                 isBooting = false;
             }
-        }
-
-
-
-        public bool hasPower
-        {
-            get
-            {
-                if (carElectricsPower == null)
-                {
-                    GameObject carElectrics = GameObject.Find("SATSUMA(557kg, 248)/Electricity");
-                    carElectricsPower = PlayMakerFSM.FindFsmOnGameObject(carElectrics, "Power");
-                    return carElectricsPower.FsmVariables.FindFsmBool("ElectricsOK").Value;
-                }
-                else
-                {
-                    return carElectricsPower.FsmVariables.FindFsmBool("ElectricsOK").Value;
-                }
-            }
-        }
-        public bool useButtonDown
-        {
-            get { return cInput.GetKeyDown("Use"); }
         }
 
         private AudioSource dashButtonAudioSource

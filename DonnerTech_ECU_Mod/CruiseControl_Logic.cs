@@ -9,25 +9,23 @@ namespace DonnerTech_ECU_Mod
 {
     public class CruiseControl_Logic : MonoBehaviour
     {
-        private Mod mainMod;
-        private DonnerTech_ECU_Mod donnerTech_ecu_mod;
+        private DonnerTech_ECU_Mod mod;
 
         private GameObject cruiseControlPanel;
         private TextMesh cruiseControlText;
-        private SimplePart ecu_mod_smartEngineModule_Part;
-        private SimplePart ecu_mod_cableHarness_Part;
-        private SimplePart ecu_mod_mountingPlate_Part;
-        private ScrewablePart ecu_mod_smartEngineModule_Part_screwable;
-        private ScrewablePart ecu_mod_mountingPlate_Part_screwable;
 
-        private bool allPartsFixed = false;
+        private AudioSource dashButtonAudio;
+
+        private bool allPartsFixed
+        {
+            get { return (mod.smart_engine_module_part.InstalledScrewed() && mod.cable_harness_part.InstalledScrewed() && mod.mounting_plate_part.InstalledScrewed()); }
+        }
 
 
         //Car
         private GameObject satsuma;
         private Drivetrain satsumaDriveTrain;
         private CarController satsumaCarController;
-        private PlayMakerFSM carElectricsPower;
 
         private RaycastHit hit;
 
@@ -44,7 +42,8 @@ namespace DonnerTech_ECU_Mod
             {
                 if (mod.Name == "DonnerTechRacing ECUs")
                 {
-                    mainMod = mod;
+                    this.mod = (DonnerTech_ECU_Mod)mod;
+                    break;
                 }
             }
 
@@ -52,32 +51,16 @@ namespace DonnerTech_ECU_Mod
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
             satsumaCarController = satsuma.GetComponent<CarController>();
 
-            donnerTech_ecu_mod = (DonnerTech_ECU_Mod) mainMod;
-
             cruiseControlPanel = this.gameObject;
             cruiseControlText = cruiseControlPanel.GetComponentInChildren<TextMesh>();
-
-            ecu_mod_smartEngineModule_Part = donnerTech_ecu_mod.GetSmartEngineModule_Part();
-            ecu_mod_cableHarness_Part = donnerTech_ecu_mod.GetCableHarness_Part();
-            ecu_mod_mountingPlate_Part = donnerTech_ecu_mod.GetMountingPlate_Part();
-
-            ecu_mod_smartEngineModule_Part_screwable = donnerTech_ecu_mod.GetSmartEngineModule_Screwable();
-            ecu_mod_mountingPlate_Part_screwable = donnerTech_ecu_mod.GetMountingPlate_Screwable();
         }
+
+
 
         // Update is called once per frame
         void Update()
         {
-            if (ecu_mod_smartEngineModule_Part.installed && ecu_mod_cableHarness_Part.installed && ecu_mod_mountingPlate_Part.installed && ecu_mod_smartEngineModule_Part_screwable.partFixed && ecu_mod_mountingPlate_Part_screwable.partFixed)
-            {
-                allPartsFixed = true;
-            }
-            else
-            {
-                allPartsFixed = false;
-            }
-            
-            if (hasPower && allPartsFixed)
+            if (mod.hasPower && allPartsFixed)
             {
                 HandleButtonPresses();
 
@@ -115,7 +98,7 @@ namespace DonnerTech_ECU_Mod
 
                 }
             }
-            else if (!hasPower)
+            else if (!mod.hasPower)
             {
                 setCruiseControlSpeed = 0;
                 cruiseControlModuleEnabled = false;
@@ -165,7 +148,7 @@ namespace DonnerTech_ECU_Mod
                         if (foundObject)
                         {
                             ModClient.guiInteract(guiText);
-                            if (useButtonDown)
+                            if (mod.useButtonDown)
                             {
                                 actionToPerform.Invoke();
                                 AudioSource audio = dashButtonAudioSource;
@@ -215,37 +198,15 @@ namespace DonnerTech_ECU_Mod
             cruiseControlModuleEnabled = false;
         }
 
-        private bool hasPower
+        private AudioSource dashButtonAudioSource
         {
             get
             {
-                if (carElectricsPower == null)
+                if (dashButtonAudio == null)
                 {
-                    GameObject carElectrics = GameObject.Find("SATSUMA(557kg, 248)/Electricity");
-                    carElectricsPower = PlayMakerFSM.FindFsmOnGameObject(carElectrics, "Power");
-                    return carElectricsPower.FsmVariables.FindFsmBool("ElectricsOK").Value;
+                    dashButtonAudio =  GameObject.Find("dash_button").GetComponent<AudioSource>();
                 }
-                else
-                {
-                    return carElectricsPower.FsmVariables.FindFsmBool("ElectricsOK").Value;
-                }
-
-
-            }
-        }
-        internal static bool useButtonDown
-        {
-            get
-            {
-                return cInput.GetKeyDown("Use");
-            }
-        }
-
-        private static AudioSource dashButtonAudioSource
-        {
-            get
-            {
-                return GameObject.Find("dash_button").GetComponent<AudioSource>();
+                return dashButtonAudio;
             }
         }
 
