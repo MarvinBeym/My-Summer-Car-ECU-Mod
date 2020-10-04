@@ -1,0 +1,130 @@
+ManifestFileVersion: 0
+CRC: 925504624
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 49ce182ddfc83ff8cd7a90b6c61fb264
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: c5a884b89addab5564417e38dee077c6
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 20
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 54
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 84
+  Script: {instanceID: 0}
+- Class: 102
+  Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 1392445389, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 1980459831, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 1301386320, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: -2095666955, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 575553740, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: -900027084, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 77dee5e3eedbf44429953f526853b47a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 42c456882fd3ae4478832c536ae24c14, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 212
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 223
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+Assets:
+- Assets/LowBeam-Icon.png
+- Assets/FuelSystem/throttle_bodies_box.prefab
+- Assets/ReverseCamera-Texture.renderTexture
+- Assets/Indicator-Left-Icon.png
+- Assets/ECU-Mod_TCS-Module.prefab
+- Assets/ECU-Mod-Panel_Modules-Page1.png
+- Assets/ProductImages/ecu_cable_harness_productImage.png
+- Assets/ECU-Mod_ESP-Module.prefab
+- Assets/FuelSystem/fuel_injector.prefab
+- Assets/ECU-Mod-Panel_Tuner-Page4.png
+- Assets/AWD-Gearbox.prefab
+- Assets/ProductImages/ecu_esp_module_productImage.png
+- Assets/ProductImages/ecu_tcs_module_productImage.png
+- Assets/ProductImages/ecu_mounting_plate_productImage.png
+- Assets/FuelSystem/fuel_injection_manifold.prefab
+- Assets/FuelSystem/fuel_rail.prefab
+- Assets/ProductImages/ecu_reverseCamera_productImage.png
+- Assets/ProductImages/ecu_cruise_control_productImage.png
+- Assets/Handbrake-Icon.png
+- Assets/AWD-Propshaft.prefab
+- Assets/ProductImages/ecu_abs_module_productImage.png
+- Assets/TurbineWheel.png
+- Assets/ECU-Mod-Panel-Turbocharger-Page5.png
+- Assets/HighBeam-Icon.png
+- Assets/AWD-Differential.prefab
+- Assets/ECU-Mod-Panel_Faults-Page2.png
+- Assets/Airride_FL.prefab
+- Assets/ProductImages/ecu_info_panel_productImage.png
+- Assets/FuelSystem/throttle_body.prefab
+- Assets/ECU-Mod_SmartEngine-Module.prefab
+- Assets/ProductImages/ecu_smart_engine_module_productImage.png
+- Assets/ECU-Mod-Panel-Page0.png
+- Assets/ECU-Mod_InfoPanel.prefab
+- Assets/Rpm-Needle.png
+- Assets/ECU-Mod_Cable-Harness.prefab
+- Assets/Indicator-Right-Icon.png
+- Assets/ECU-Mod-Panel-Assistance-Page6.png
+- Assets/FuelSystem/ui_interface.prefab
+- Assets/FuelSystem/fuel_pump_cover.prefab
+- Assets/ECU-Mod_Reverse-Camera.prefab
+- Assets/ECU-Mod_CruiseControl-Panel.prefab
+- Assets/FuelSystem/chip_programmer.prefab
+- Assets/FuelSystem/chip.prefab
+- Assets/ECU-Mod_Rain_Light-Sensorboard.prefab
+- Assets/ECU-Mod-Panel_Faults-Page3.png
+- Assets/ECU-Mod_Mounting-Plate.prefab
+- Assets/ECU-Mod_ABS-Module.prefab
+- Assets/FuelSystem/fuel_injectors_box.prefab
+- Assets/ProductImages/ecu_rainLightSensorboard_productImage.png
+Dependencies: []
