@@ -20,23 +20,27 @@ namespace DonnerTech_ECU_Mod
         protected DonnerTech_ECU_Mod mod;
         protected ScrewablePart screwablePart;
         public Vector3 installLocation;
-        private static PartSaveInfo partSaveInfo;
-
+        public PartSaveInfo partSaveInfo;
+        public bool bought;
+        private Action disassembleFunction;
+        //could be because of static at partSaveInfo
         public string saveFile { get; set; }
 
-        public SimplePart(Object[] loadedData, GameObject part, GameObject partParent, Trigger trigger, Vector3 installLocation, Quaternion installRotation) : base(partSaveInfo, part, partParent, trigger, installLocation, installRotation)
+        public SimplePart(Object[] loadedData, GameObject part, GameObject partParent, Trigger trigger, Vector3 installLocation, Quaternion installRotation) : base((PartSaveInfo)loadedData[2], part, partParent, trigger, installLocation, installRotation)
         {
             mod = (DonnerTech_ECU_Mod) loadedData[0];
             saveFile = (string) loadedData[1];
             partSaveInfo = (PartSaveInfo)loadedData[2];
             
             this.installLocation = installLocation;
-            
+            this.bought = (bool)loadedData[3];
+
+            fixRigidPartNaming();
         }
 
         public static Object[] LoadData(DonnerTech_ECU_Mod mod, string saveFile, bool bought)
         {
-            Object[] loadedData = new Object[3];
+            Object[] loadedData = new Object[4];
 
             PartSaveInfo partSaveInfo = null;
             if (bought)
@@ -45,8 +49,9 @@ namespace DonnerTech_ECU_Mod
                 {
                     partSaveInfo = SaveLoad.DeserializeSaveFile<PartSaveInfo>(mod, saveFile);
                 }
-                catch (System.NullReferenceException)
+                catch (Exception ex)
                 {
+                    //Logger log here
                     partSaveInfo = null;
                 }
                 
@@ -54,7 +59,13 @@ namespace DonnerTech_ECU_Mod
             loadedData[0] = mod;
             loadedData[1] = saveFile;
             loadedData[2] = partSaveInfo;
+            loadedData[3] = bought;
             return loadedData;
+        }
+
+        public void SetDisassembleFunction(Action action)
+        {
+            this.disassembleFunction = action;
         }
 
         public bool InstalledScrewed()
@@ -94,6 +105,11 @@ namespace DonnerTech_ECU_Mod
             set;
         }
 
+        private void fixRigidPartNaming()
+        {
+            this.rigidPart.name = this.rigidPart.name.Replace("(Clone)(Clone)", "(Clone)");
+        }
+
         protected override void assemble(bool startUp = false)
         {
             // do stuff on assemble.
@@ -108,14 +124,21 @@ namespace DonnerTech_ECU_Mod
         {
             // do stuff on dissemble.
             base.disassemble(startup); // if you want dissemble function, you need to call base!
-            if (this.screwablePart != null)
+            if(disassembleFunction != null)
             {
-                this.screwablePart.resetScrewsOnDisassemble();
+                disassembleFunction.Invoke();
+            }
+            if (screwablePart != null)
+            {
+                screwablePart.resetScrewsOnDisassemble();
             }
         }
         public void removePart()
         {
-            disassemble(false);
+            if (installed)
+            {
+                disassemble(false);
+            }
         }
     }
 }

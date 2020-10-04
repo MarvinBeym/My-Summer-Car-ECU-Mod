@@ -9,6 +9,8 @@ using ScrewablePartAPI;
 using System.Collections.Generic;
 using ModsShop;
 using DonnerTech_ECU_Mod.old_file_checker;
+using DonnerTech_ECU_Mod.shop;
+using DonnerTech_ECU_Mod.fuelsystem;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -16,8 +18,11 @@ namespace DonnerTech_ECU_Mod
     {
 
         /*  ToDo:
-         *  Add auto renaming of old file names to new file names (incase someone old installs mod
-         *  Add logic that uses Page classes
+         *  finish fuel injection logic
+         *  Find a way to prevent race carb and fuel pump installing themself after game load
+         *  -> currently they get uninstalled but then the lie in the engine bay
+         *  -> maybe teleport them away? -> by getting the location, then uninstalling, then teleporting away
+         *  -> or saving the location in a file and restoring it from there
          *  
          *  
          *  https://en.wikipedia.org/wiki/Advanced_driver-assistance_systems#Feature_Examples
@@ -119,7 +124,8 @@ namespace DonnerTech_ECU_Mod
 
         SaveFileRenamer saveFileRenamer;
         OverrideFileRenamer overrideFileRenamer;
-        AssetBundle assetBundle;
+        public AssetBundle assetBundle;
+        public Logger logger;
 
         public float GetStep2RevRpm()
         {
@@ -151,7 +157,22 @@ namespace DonnerTech_ECU_Mod
         public Keybind info_panel_plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
         public Keybind info_panel_minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
 
+        public Keybind programmer_ui_open = new Keybind("programmer_ui_open", "Open/Close", KeyCode.Keypad0);
 
+        //FuelSystem
+        public FuelSystem fuel_system;
+        private GameObject carb_trigger;
+        private FsmBool carb_installed;
+
+        private GameObject twinCarb_trigger;
+        private FsmBool twinCarb_installed;
+
+        private GameObject racingCarb_trigger;
+        private FsmBool racingCarb_installed;
+        private FsmBool racingCarb_bolted;
+
+        private GameObject pump_trigger;
+        private FsmBool pump_installed;
 
 
         private FsmString playerCurrentVehicle;
@@ -160,10 +181,13 @@ namespace DonnerTech_ECU_Mod
         public InfoPanel_Logic info_panel_logic { get; set; }
         public CruiseControl_Logic cruise_control_logic { get; set; }
         public SmartEngineModule_Logic smart_engine_module_logic { get; set; }
+        public BoxLogic fuel_injectors_box_logic {get; set;}
+        public BoxLogic throttle_bodies_box_logic { get; set; }
+
         public ReverseCamera_Logic reverse_camera_logic { get; set; }
 
-        private static Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false, new Action(ToggleSixGears));
-        private static Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false, new Action(ToggleAWD));
+        private Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false);
+        private Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false);
 
 
         private static bool cruiseControlDebugEnabled = false;
@@ -183,10 +207,47 @@ namespace DonnerTech_ECU_Mod
         public SimplePart reverse_camera_part { get; set; }
         public SimplePart rain_light_sensor_board_part { get; set; }
 
-        private static List<SimplePart> partsList;
+        public SimplePart fuel_injector1_part { get; set; }
+        public SimplePart fuel_injector2_part { get; set; }
+        public SimplePart fuel_injector3_part { get; set; }
+        public SimplePart fuel_injector4_part { get; set; }
+
+        public SimplePart throttle_body1_part { get; set; }
+        public SimplePart throttle_body2_part { get; set; }
+        public SimplePart throttle_body3_part { get; set; }
+        public SimplePart throttle_body4_part { get; set; }
+
+
+        public SimplePart fuel_pump_cover_part { get; set; }
+        public SimplePart fuel_injection_manifold_part { get; set; }
+        public SimplePart fuel_rail_part { get; set; }
+        public static GameObject fuel_injectors_box { get; set; }
+        public static GameObject throttle_bodies_box { get; set; }
+
+        public GameObject chip { get; set; }
+        public SimplePart chip_programmer_part { get; set; }
+
+
+        public static List<SimplePart> partsList;
 
         public Vector3 reverse_camera_installLocation = new Vector3(0, -0.343f, -0.157f);
         public Vector3 rain_light_sensor_board_installLocation = new Vector3(-0.0015f, 0.086f, 0.1235f);
+
+        public Vector3 fuel_injector1_installLocation = new Vector3(0.105f, 0.0074f, -0.0012f);
+        public Vector3 fuel_injector2_installLocation = new Vector3(0.0675f, 0.0074f, -0.0012f);
+        public Vector3 fuel_injector3_installLocation = new Vector3(-0.068f, 0.0074f, -0.0012f);
+        public Vector3 fuel_injector4_installLocation = new Vector3(-0.105f, 0.0074f, -0.0012f);
+
+        public Vector3 throttle_body1_installLocation = new Vector3(0.095f, 0.034f, 0.0785f);
+        public Vector3 throttle_body2_installLocation = new Vector3(0.033f, 0.034f, 0.0785f);
+        public Vector3 throttle_body3_installLocation = new Vector3(-0.033f, 0.034f, 0.0785f);
+        public Vector3 throttle_body4_installLocation = new Vector3(-0.095f, 0.034f, 0.0785f);
+
+        public Vector3 fuel_pump_cover_installLocation = new Vector3(-0.0515f, 0.105f, 0.006f);
+        public Vector3 fuel_injection_manifold_installLocation = new Vector3(-0.009f, -0.0775f, 0.02f);
+        public Vector3 fuel_rail_installLocation = new Vector3(0, 0.03f, 0.012f);
+       
+
 
         private static GameObject satsuma;
         private static Drivetrain satsumaDriveTrain;
@@ -194,6 +255,8 @@ namespace DonnerTech_ECU_Mod
         private Axles satsumaAxles;
         private FsmBool electricsOK;
 
+
+        private const string logger_saveFile = "logger_saveFile.txt";
         private const string abs_module_saveFile = "abs_module_saveFile.txt";
         private const string esp_module_saveFile = "esp_module_saveFile.txt";
         private const string tcs_module_saveFile = "tcs_module_saveFile.txt";
@@ -207,10 +270,33 @@ namespace DonnerTech_ECU_Mod
         private const string reverse_camera_saveFile = "reverse_camera_saveFile.txt";
         private const string rain_light_sensor_board_saveFile = "rain_light_sensor_board_saveFile.txt";
 
+        private const string fuel_injector1_saveFile = "fuel_injector1_saveFile.txt";
+        private const string fuel_injector2_saveFile = "fuel_injector2_saveFile.txt";
+        private const string fuel_injector3_saveFile = "fuel_injector3_saveFile.txt";
+        private const string fuel_injector4_saveFile = "fuel_injector4_saveFile.txt";
+        private const string fuel_injectors_box_saveFile = "fuel_injectors_box_saveFile.txt";
+
+        private const string throttle_body1_saveFile = "throttle_body1_saveFile.txt";
+        private const string throttle_body2_saveFile = "throttle_body2_saveFile.txt";
+        private const string throttle_body3_saveFile = "throttle_body3_saveFile.txt";
+        private const string throttle_body4_saveFile = "throttle_body4_saveFile.txt";
+        private const string throttle_bodies_box_saveFile = "throttle_bodies_box_saveFile.txt";
+
+        private const string fuel_pump_cover_saveFile = "fuel_pump_cover_saveFile.txt";
+        private const string fuel_injection_manifold_saveFile = "fuel_injection_manifold_saveFile.txt";
+        private const string fuel_rail_saveFile = "fuel_rail_saveFile.txt";
+        private const string chip_programmer_saveFile = "chip_programmer_saveFile.txt";
+
+
         private const string screwable_saveFile = "screwable_saveFile.txt";
 
-        private Settings resetPosSetting = new Settings("resetPos", "Reset uninstalled parts location", new Action(PosReset));
-        private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Enable/Disable", SwitchCruiseControlDebug);
+        private Settings resetPosSetting = new Settings("resetPos", "Reset uninstalled parts location", WorkAroundAction);
+        private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Enable/Disable", WorkAroundAction);
+
+        private static void WorkAroundAction()
+        {
+
+        }
 
         private static float[] originalGearRatios;
         private static float[] newGearRatio = new float[]
@@ -249,21 +335,9 @@ namespace DonnerTech_ECU_Mod
         {
             get { return Input.GetMouseButtonDown(0); }
         }
-
-        private PartSaveInfo loadSaveData(string saveFile, bool installed)
+        public bool rightMouseDown
         {
-            if (!installed)
-            {
-                return null;
-            }
-            try
-            {
-                return SaveLoad.DeserializeSaveFile<PartSaveInfo>(this, saveFile);
-            }
-            catch (System.NullReferenceException)
-            {
-                return null;
-            }
+            get { return Input.GetMouseButtonDown(1); }
         }
 
         public override void OnNewGame()
@@ -272,10 +346,23 @@ namespace DonnerTech_ECU_Mod
             {
                 SaveLoad.SerializeSaveFile<PartSaveInfo>(this, null, part.saveFile);
             });
+            fuel_system.chip_parts.ForEach(delegate (ChipPart chip)
+            {
+                SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.fuelMap_saveFile);
+                SaveLoad.SerializeSaveFile<PartSaveInfo>(this, null, chip.saveFile);
+            });
+            SaveLoad.SerializeSaveFile<PartBuySave>(this, partBuySave, mod_shop_saveFile);
         }
         public override void OnLoad()
         {
+            
             ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " started loading");
+            resetPosSetting.DoAction = PosReset;
+            toggleAWD.DoAction = ToggleAWD;
+            toggleSixGears.DoAction = ToggleSixGears;
+            debugCruiseControlSetting.DoAction = SwitchCruiseControlDebug;
+
+            logger = new Logger(this, logger_saveFile);
             if (!ModLoader.CheckSteam())
             {
                 ModUI.ShowMessage("Cunt", "CUNT");
@@ -288,6 +375,7 @@ namespace DonnerTech_ECU_Mod
             Keybind.Add(this, info_panel_cross);
             Keybind.Add(this, info_panel_plus);
             Keybind.Add(this, info_panel_minus);
+            Keybind.Add(this, programmer_ui_open);
 
             partsList = new List<SimplePart>();
 
@@ -335,9 +423,38 @@ namespace DonnerTech_ECU_Mod
             GameObject smart_engine_module = (assetBundle.LoadAsset("ECU-Mod_SmartEngine-Module.prefab") as GameObject);
             GameObject cruise_control_panel = (assetBundle.LoadAsset("ECU-Mod_CruiseControl-Panel.prefab") as GameObject);
             GameObject info_panel = (assetBundle.LoadAsset("ECU-Mod_InfoPanel.prefab") as GameObject);
+            
             GameObject reverse_camera = (assetBundle.LoadAsset("ECU-Mod_Reverse-Camera.prefab") as GameObject);
             GameObject rain_light_sensor_board = (assetBundle.LoadAsset("ECU-Mod_Rain_Light-Sensorboard.prefab") as GameObject);
 
+
+            GameObject fuel_injector = (assetBundle.LoadAsset("fuel_injector.prefab") as GameObject);
+            GameObject fuel_injector1 = GameObject.Instantiate(fuel_injector);
+            GameObject fuel_injector2 = GameObject.Instantiate(fuel_injector);
+            GameObject fuel_injector3 = GameObject.Instantiate(fuel_injector);
+            GameObject fuel_injector4 = GameObject.Instantiate(fuel_injector);
+            
+            fuel_injectors_box =  GameObject.Instantiate((assetBundle.LoadAsset("fuel_injectors_box.prefab") as GameObject));
+            fuel_injectors_box_logic = fuel_injectors_box.AddComponent<BoxLogic>();
+
+
+            GameObject fuel_pump_cover = (assetBundle.LoadAsset("fuel_pump_cover.prefab") as GameObject);
+            GameObject fuel_injection_manifold = (assetBundle.LoadAsset("fuel_injection_manifold.prefab") as GameObject);
+            GameObject fuel_rail = (assetBundle.LoadAsset("fuel_rail.prefab") as GameObject);
+            GameObject chip_programmer = (assetBundle.LoadAsset("chip_programmer.prefab") as GameObject);
+
+
+            GameObject throttle_body = (assetBundle.LoadAsset("throttle_body.prefab") as GameObject);
+            GameObject throttle_body1 = GameObject.Instantiate(throttle_body);
+            GameObject throttle_body2 = GameObject.Instantiate(throttle_body);
+            GameObject throttle_body3 = GameObject.Instantiate(throttle_body);
+            GameObject throttle_body4 = GameObject.Instantiate(throttle_body);
+
+            throttle_bodies_box = GameObject.Instantiate((assetBundle.LoadAsset("throttle_bodies_box.prefab") as GameObject));
+            throttle_bodies_box_logic = throttle_bodies_box.AddComponent<BoxLogic>();
+
+            chip = GameObject.Instantiate((assetBundle.LoadAsset("chip.prefab") as GameObject));
+            chip.SetActive(false);
 #if DEBUG
             GameObject awd_gearbox = (assetBundle.LoadAsset("AWD-Gearbox.prefab") as GameObject);
             GameObject awd_differential = (assetBundle.LoadAsset("AWD-Differential.prefab") as GameObject);
@@ -360,6 +477,25 @@ namespace DonnerTech_ECU_Mod
             SetObjectNameTagLayer(info_panel, "DonnerTech Info Panel");
             SetObjectNameTagLayer(reverse_camera, "Reverse Camera");
             SetObjectNameTagLayer(rain_light_sensor_board, "Rain & Light Sensorboard");
+
+            SetObjectNameTagLayer(fuel_injector1, "Fuel Injector 1(Clone)");
+            SetObjectNameTagLayer(fuel_injector2, "Fuel Injector 2(Clone)");
+            SetObjectNameTagLayer(fuel_injector3, "Fuel Injector 3(Clone)");
+            SetObjectNameTagLayer(fuel_injector4, "Fuel Injector 4(Clone)");
+            SetObjectNameTagLayer(fuel_injectors_box, "Fuel Injectors(Clone)");
+
+            SetObjectNameTagLayer(throttle_body1, "Throttle Body 1(Clone)");
+            SetObjectNameTagLayer(throttle_body2, "Throttle Body 2(Clone)");
+            SetObjectNameTagLayer(throttle_body3, "Throttle Body 3(Clone)");
+            SetObjectNameTagLayer(throttle_body4, "Throttle Body 4(Clone)");
+            SetObjectNameTagLayer(throttle_bodies_box, "Throttle Bodies(Clone)");
+
+            SetObjectNameTagLayer(chip, "Chip");
+            SetObjectNameTagLayer(chip_programmer, "Chip Programmer");
+
+            SetObjectNameTagLayer(fuel_pump_cover, "Fuel Pump Cover");
+            SetObjectNameTagLayer(fuel_injection_manifold, "Fuel Injection Manifold");
+            SetObjectNameTagLayer(fuel_rail, "Fuel Rail");
 
             try
             {
@@ -439,9 +575,9 @@ namespace DonnerTech_ECU_Mod
                 new Vector3(0.2398f, -0.248f, 0.104f),
                 new Quaternion(0, 0, 0, 0)
             );
+            smart_engine_module_part.SetDisassembleFunction(new Action(DisassembleSmartEngineModule));
             smart_engine_module_logic = smart_engine_module_part.rigidPart.AddComponent<SmartEngineModule_Logic>();
-
-
+            
             abs_module_part = new AbsPart(
                 SimplePart.LoadData(this, abs_module_saveFile, partBuySave.boughtABSModule),
                 abs_module,
@@ -516,14 +652,137 @@ namespace DonnerTech_ECU_Mod
             );
 
             reverse_camera_part = new SimplePart(
-            SimplePart.LoadData(this, reverse_camera_saveFile, partBuySave.bought_reverseCamera),
-            reverse_camera,
+                SimplePart.LoadData(this, reverse_camera_saveFile, partBuySave.bought_reverseCamera),
+                reverse_camera,
                 GameObject.Find("bootlid(Clone)"),
                 new Trigger("reverse_camera_trigger", GameObject.Find("bootlid(Clone)"), reverse_camera_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
                 reverse_camera_installLocation,
                 new Quaternion { eulerAngles = new Vector3(120, 0, 0) }
             );
             reverse_camera_logic = reverse_camera_part.rigidPart.AddComponent<ReverseCamera_Logic>();
+
+            fuel_injection_manifold_part = new SimplePart(
+                SimplePart.LoadData(this, fuel_injection_manifold_saveFile, partBuySave.bought_fuel_injection_manifold),
+                fuel_injection_manifold,
+                GameObject.Find("cylinder head(Clone)"),
+                new Trigger("fuel_injection", GameObject.Find("cylinder head(Clone)"), fuel_injection_manifold_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                fuel_injection_manifold_installLocation,
+                new Quaternion { eulerAngles = new Vector3(90, 0, 0) }
+            );
+            fuel_injection_manifold_part.SetDisassembleFunction(new Action(DisassembleFuelInjectionManifold));
+
+
+            fuel_injector1_part = new SimplePart(
+            SimplePart.LoadData(this, fuel_injector1_saveFile, partBuySave.bought_fuel_injectors_box),
+            fuel_injector1,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("fuel_injector1", fuel_injection_manifold_part.rigidPart, fuel_injector1_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                fuel_injector1_installLocation,
+                new Quaternion { eulerAngles = new Vector3(30, 0, 0) }
+            );
+            fuel_injector2_part = new SimplePart(
+            SimplePart.LoadData(this, fuel_injector2_saveFile, partBuySave.bought_fuel_injectors_box),
+            fuel_injector2,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("fuel_injector2", fuel_injection_manifold_part.rigidPart, fuel_injector2_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                fuel_injector2_installLocation,
+                new Quaternion { eulerAngles = new Vector3(30, 0, 0) }
+            );
+            fuel_injector3_part = new SimplePart(
+            SimplePart.LoadData(this, fuel_injector3_saveFile, partBuySave.bought_fuel_injectors_box),
+            fuel_injector3,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("fuel_injector3", fuel_injection_manifold_part.rigidPart, fuel_injector3_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                fuel_injector3_installLocation,
+                new Quaternion { eulerAngles = new Vector3(30, 0, 0) }
+            );
+            fuel_injector4_part = new SimplePart(
+                SimplePart.LoadData(this, fuel_injector4_saveFile, partBuySave.bought_fuel_injectors_box),
+                fuel_injector4,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("fuel_injector4", fuel_injection_manifold_part.rigidPart, fuel_injector4_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                fuel_injector4_installLocation,
+                new Quaternion { eulerAngles = new Vector3(30, 0, 0) }
+            );
+
+            fuel_pump_cover_part = new SimplePart(
+                SimplePart.LoadData(this, fuel_pump_cover_saveFile, partBuySave.bought_fuel_pump_cover),
+                fuel_pump_cover,
+                GameObject.Find("block(Clone)"),
+                new Trigger("fuel_pump_cover", GameObject.Find("block(Clone)"), fuel_pump_cover_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                fuel_pump_cover_installLocation,
+                new Quaternion { eulerAngles = new Vector3(90, 0, 0) }
+            );
+
+            fuel_rail_part = new SimplePart(
+                SimplePart.LoadData(this, fuel_rail_saveFile, partBuySave.bought_fuel_rail),
+                fuel_rail,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("fuel_rail", fuel_injection_manifold_part.rigidPart, fuel_rail_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                fuel_rail_installLocation,
+                new Quaternion { eulerAngles = new Vector3(30, 0, 0) }
+            );
+
+
+            throttle_body1_part = new SimplePart(
+                SimplePart.LoadData(this, throttle_body1_saveFile, partBuySave.bought_throttle_bodies_box),
+                throttle_body1,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("throttle_body1", fuel_injection_manifold_part.rigidPart, throttle_body1_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                throttle_body1_installLocation,
+                new Quaternion { eulerAngles = new Vector3(-40, 0, 0) }
+            );
+
+            throttle_body2_part = new SimplePart(
+                SimplePart.LoadData(this, throttle_body2_saveFile, partBuySave.bought_throttle_bodies_box),
+                throttle_body2,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("throttle_body2", fuel_injection_manifold_part.rigidPart, throttle_body2_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                throttle_body2_installLocation,
+                new Quaternion { eulerAngles = new Vector3(-40, 0, 0) }
+            );
+
+            throttle_body3_part = new SimplePart(
+                SimplePart.LoadData(this, throttle_body3_saveFile, partBuySave.bought_throttle_bodies_box),
+                throttle_body3,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("throttle_body3", fuel_injection_manifold_part.rigidPart, throttle_body3_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                throttle_body3_installLocation,
+                new Quaternion { eulerAngles = new Vector3(-40, 0, 0) }
+            );
+            throttle_body4_part = new SimplePart(
+                SimplePart.LoadData(this, throttle_body4_saveFile, partBuySave.bought_throttle_bodies_box),
+                throttle_body4,
+                fuel_injection_manifold_part.rigidPart,
+                new Trigger("throttle_body4", fuel_injection_manifold_part.rigidPart, throttle_body4_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                throttle_body4_installLocation,
+                new Quaternion { eulerAngles = new Vector3(-40, 0, 0) }
+            );
+            GameObject test = new GameObject();
+            chip_programmer_part = new SimplePart(
+                SimplePart.LoadData(this, chip_programmer_saveFile, partBuySave.bought_chip_programmer),
+                chip_programmer,
+                test,
+                new Trigger("chip_programmer", test, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
+                new Vector3(0, 0, 0),
+                new Quaternion { eulerAngles = new Vector3(0, 0, 0) }
+                );
+
+            throttle_bodies_box_logic.Init(this, new SimplePart[]
+            {
+                throttle_body1_part,
+                throttle_body2_part,
+                throttle_body3_part,
+                throttle_body4_part,
+            }, "Unpack throttle body");
+            fuel_injectors_box_logic.Init(this, new SimplePart[]
+            {
+                fuel_injector1_part,
+                fuel_injector2_part,
+                fuel_injector3_part,
+                fuel_injector4_part,
+            }, "Unpack injector");
+
 
             partsList.Add(abs_module_part);
             partsList.Add(esp_module_part);
@@ -533,8 +792,24 @@ namespace DonnerTech_ECU_Mod
             partsList.Add(smart_engine_module_part);
             partsList.Add(cruise_control_panel_part);
             partsList.Add(info_panel_part);
+
             partsList.Add(rain_light_sensor_board_part);
             partsList.Add(reverse_camera_part);
+
+            partsList.Add(fuel_injector1_part);
+            partsList.Add(fuel_injector2_part);
+            partsList.Add(fuel_injector3_part);
+            partsList.Add(fuel_injector4_part);
+
+            partsList.Add(throttle_body1_part);
+            partsList.Add(throttle_body2_part);
+            partsList.Add(throttle_body3_part);
+            partsList.Add(throttle_body4_part);
+
+            partsList.Add(fuel_pump_cover_part);
+            partsList.Add(fuel_injection_manifold_part);
+            partsList.Add(fuel_rail_part);
+            partsList.Add(chip_programmer_part);
 
             TextMesh[] info_panel_TextMeshes = info_panel_part.activePart.GetComponentsInChildren<TextMesh>();
             foreach (TextMesh textMesh in info_panel_TextMeshes)
@@ -705,27 +980,64 @@ namespace DonnerTech_ECU_Mod
             if (GameObject.Find("Shop for mods") != null)
             {
                 ModsShop.ShopItem modsShopItem = GameObject.Find("Shop for mods").GetComponent<ModsShop.ShopItem>();
-                
-                IDictionary<string, Part> shopItems = new Dictionary<string, Part>();
-                shopItems["ABS Module ECU"] = abs_module_part;
-                shopItems["ESP Module ECU"] = esp_module_part;
-                shopItems["TCS Module ECU"] = tcs_module_part;
-                shopItems["ECU Cable Harness"] = cable_harness_part;
-                shopItems["ECU Mounting Plate"] = mounting_plate_part;
-                shopItems["Smart Engine Module ECU"] = smart_engine_module_part;
-                shopItems["Cruise Control Panel with Controller"] = cruise_control_panel_part;
-                shopItems["ECU Info Panel"] = info_panel_part;
-                shopItems["Rain & Light Sensorboard"] = rain_light_sensor_board_part;
-                shopItems["Reverse Camera"] = reverse_camera_part;
+
+                List<ProductInformation> shopItemss = new List<ProductInformation>();
+           
+                shopItemss.Add(new ProductInformation(abs_module_part.activePart, "ABS Module", 800, assetBundle.LoadAsset<Sprite>("ecu_abs_module_productImage.png"), abs_module_part.bought));
+                shopItemss.Add(new ProductInformation(esp_module_part.activePart, "ESP Module", 1200, assetBundle.LoadAsset<Sprite>("ecu_esp_module_productImage.png"), esp_module_part.bought));
+                shopItemss.Add(new ProductInformation(tcs_module_part.activePart, "TCS Module", 1800, assetBundle.LoadAsset<Sprite>("ecu_tcs_module_productImage.png"), tcs_module_part.bought));
+                shopItemss.Add(new ProductInformation(cable_harness_part.activePart, "ECU Cable Harness", 300, assetBundle.LoadAsset<Sprite>("ecu_cable_harness_productImage.png"), cable_harness_part.bought));
+                shopItemss.Add(new ProductInformation(mounting_plate_part.activePart, "ECU Mounting Plate", 100, assetBundle.LoadAsset<Sprite>("ecu_mounting_plate_productImage.png"), mounting_plate_part.bought));
+                shopItemss.Add(new ProductInformation(smart_engine_module_part.activePart, "Smart Engine Module ECU", 4600, assetBundle.LoadAsset<Sprite>("ecu_smart_engine_module_productImage.png"), smart_engine_module_part.bought));
+                shopItemss.Add(new ProductInformation(cruise_control_panel_part.activePart, "Cruise Control Panel with Controller", 2000, assetBundle.LoadAsset<Sprite>("ecu_cruise_control_productImage.png"), cruise_control_panel_part.bought));
+                shopItemss.Add(new ProductInformation(info_panel_part.activePart, "ECU Info Panel", 4000, assetBundle.LoadAsset<Sprite>("ecu_info_panel_productImage.png"), info_panel_part.bought));
+                shopItemss.Add(new ProductInformation(rain_light_sensor_board_part.activePart, "Rain & Light Sensorboard", 1000, assetBundle.LoadAsset<Sprite>("ecu_rainLightSensorboard_productImage.png"), rain_light_sensor_board_part.bought));
+                shopItemss.Add(new ProductInformation(reverse_camera_part.activePart, "Reverse Camera", 1500, assetBundle.LoadAsset<Sprite>("ecu_reverseCamera_productImage.png"), reverse_camera_part.bought));
 #if DEBUG
-                shopItems["Airride FL"] = airride_fl_part;
-                shopItems["AWD Gearbox"] = awd_gearbox_part;
-                shopItems["AWD Differential"] = awd_differential_part;
-                shopItems["AWD Propshaft"] = awd_propshaft_part;
+                shopItemss.Add(new ProductInformation(airride_fl_part.activePart, "Airride fl", 0, null, airride_fl_part.bought));
+                shopItemss.Add(new ProductInformation(awd_gearbox_part.activePart, "AWD Gearbox", 0, null, awd_gearbox_part.bought));
+                shopItemss.Add(new ProductInformation(awd_differential_part.activePart, "AWD Differential", 0, null, awd_differential_part.bought));
+                shopItemss.Add(new ProductInformation(awd_propshaft_part.activePart, "AWD Propshaft", 0, null, awd_propshaft_part.bought));
 #endif
-                Shop shop = new Shop(this, modsShopItem, assetBundle, partBuySave, shopItems);
+
+                shopItemss.Add(new ProductInformation(fuel_injectors_box, "Fuel Injectors", 1, null, partBuySave.bought_fuel_injectors_box));
+                shopItemss.Add(new ProductInformation(throttle_bodies_box, "Throttle Bodies", 1, null, partBuySave.bought_throttle_bodies_box));
+
+                shopItemss.Add(new ProductInformation(fuel_pump_cover_part.activePart, "Fuel Pump Cover", 5, null, partBuySave.bought_fuel_pump_cover));
+                shopItemss.Add(new ProductInformation(fuel_injection_manifold_part.activePart, "Fuel Injection Manifold", 6, null, partBuySave.bought_fuel_injection_manifold));
+                shopItemss.Add(new ProductInformation(fuel_rail_part.activePart, "Fuel Rail", 7, null, partBuySave.bought_fuel_rail));
+                shopItemss.Add(new ProductInformation(chip_programmer_part.activePart, "Chip Programmer", 7, null, partBuySave.bought_chip_programmer));
+
+                //Add a way of buying the throttle bodies
+
+                if (!partBuySave.bought_fuel_injectors_box)
+                {
+                    fuel_injector1_part.removePart();
+                    fuel_injector2_part.removePart();
+                    fuel_injector3_part.removePart();
+                    fuel_injector4_part.removePart();
+
+                    fuel_injector1_part.activePart.SetActive(false);
+                    fuel_injector2_part.activePart.SetActive(false);
+                    fuel_injector3_part.activePart.SetActive(false);
+                    fuel_injector4_part.activePart.SetActive(false);
+                }
+                if (!partBuySave.bought_throttle_bodies_box)
+                {
+                    throttle_body1_part.removePart();
+                    throttle_body2_part.removePart();
+                    throttle_body3_part.removePart();
+                    throttle_body4_part.removePart();
+
+                    throttle_body1_part.activePart.SetActive(false);
+                    throttle_body2_part.activePart.SetActive(false);
+                    throttle_body3_part.activePart.SetActive(false);
+                    throttle_body4_part.activePart.SetActive(false);
+                }
 
 
+                //Shop shop = new Shop(this, modsShopItem, assetBundle, partBuySave, shopItems);
+                Shop shop = new Shop(this, modsShopItem, assetBundle, partBuySave, shopItemss);
                 shop.SetupShopItems();
 
             }
@@ -737,6 +1049,8 @@ namespace DonnerTech_ECU_Mod
                "There should have been a ModsShop.dll and unity3d file (inside Assets) inside the archive of this mod",
                "Installation of ModsShop (by piotrulos) needed");
             }
+
+            fuel_system = new FuelSystem(this);
 
             assetBundle.Unload(false);
             UnityEngine.Object.Destroy(abs_module);
@@ -752,8 +1066,19 @@ namespace DonnerTech_ECU_Mod
 #if DEBUG
             UnityEngine.Object.Destroy(airride_fl);
             UnityEngine.Object.Destroy(awd_gearbox);
+            UnityEngine.Object.Destroy(awd_differential);
+            UnityEngine.Object.Destroy(awd_propshaft);
 #endif
+            UnityEngine.Object.Destroy(fuel_pump_cover);
+            UnityEngine.Object.Destroy(fuel_injection_manifold);
+            UnityEngine.Object.Destroy(fuel_rail);
+            UnityEngine.Object.Destroy(fuel_injector);
+            UnityEngine.Object.Destroy(throttle_body);
+            UnityEngine.Object.Destroy(chip_programmer);
+
             playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
+
+            
             ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " finished loading");
         }
 
@@ -762,6 +1087,34 @@ namespace DonnerTech_ECU_Mod
             reverse_camera_logic.SetReverseCameraEnabled(enabled);
 
 
+        }
+
+        public void DisassembleFuelInjectionManifold()
+        {
+            fuel_injector1_part.removePart();
+            fuel_injector2_part.removePart();
+            fuel_injector3_part.removePart();
+            fuel_injector4_part.removePart();
+
+            fuel_rail_part.removePart();
+
+            throttle_body1_part.removePart();
+            throttle_body2_part.removePart();
+            throttle_body3_part.removePart();
+            throttle_body4_part.removePart();
+
+            racingCarb_installed.Value = false;
+            racingCarb_bolted.Value = false;
+        }
+        public void DisassembleSmartEngineModule()
+        {
+            for(int i = 0; i < fuel_system.chip_parts.Count; i++)
+            {
+                if (fuel_system.chip_parts[i].installed)
+                {
+                    fuel_system.chip_parts[i].removePart();
+                }
+            }
         }
 
         public override void ModSettings()
@@ -790,10 +1143,23 @@ namespace DonnerTech_ECU_Mod
                 {
                     SaveLoad.SerializeSaveFile<PartSaveInfo>(this, part.getSaveInfo(), part.saveFile);
                 });
-                SaveLoad.SerializeSaveFile<PartBuySave>(this, partBuySave, mod_shop_saveFile);
-
-                ScrewablePart.SaveScrews(this, new ScrewablePart[]
+                fuel_system.chip_parts.ForEach(delegate (ChipPart chip)
                 {
+
+                    SaveLoad.SerializeSaveFile<ChipSave>(this, chip.chipSave, chip.fuelMap_saveFile);
+                    SaveLoad.SerializeSaveFile<PartSaveInfo>(this, chip.getSaveInfo(), chip.saveFile);
+                });
+                SaveLoad.SerializeSaveFile<PartBuySave>(this, partBuySave, mod_shop_saveFile);
+            }
+            catch(Exception ex)
+            {
+                //Logger
+            }
+
+            try
+            {
+                ScrewablePart.SaveScrews(this, new ScrewablePart[]
+{
                     abs_module_part.GetScrewablePart(),
                     esp_module_part.GetScrewablePart(),
                     tcs_module_part.GetScrewablePart(),
@@ -804,9 +1170,20 @@ namespace DonnerTech_ECU_Mod
                     reverse_camera_part.GetScrewablePart(),
                 }, screwable_saveFile);
             }
-            catch (System.Exception ex)
+            catch
             {
-                ModConsole.Error("<b>[ECU_MOD]</b> - an error occured while attempting to save see: " + ex.ToString());
+                //Logger
+            }
+
+            try
+            {
+
+               // fuel_system.SaveChips();
+
+            }
+            catch (Exception ex)
+            {
+               //Logger 
             }
         }
 
@@ -837,10 +1214,9 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-
-
         public override void Update()
         {
+            fuel_system.Handle();
             //InfoPanel scale workaround
             if (!info_panel_part.installed)
             {
@@ -870,7 +1246,7 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        private GameObject SetObjectNameTagLayer(GameObject gameObject, string name)
+        public GameObject SetObjectNameTagLayer(GameObject gameObject, string name)
         {
             gameObject.name = name;
             gameObject.tag = "PART";
@@ -894,7 +1270,7 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        private static void PosReset()
+        private void PosReset()
         {
             try
             {
@@ -905,14 +1281,31 @@ namespace DonnerTech_ECU_Mod
                         part.activePart.transform.position = part.defaultPartSaveInfo.position;
                     }
                 }
+                if (fuel_injectors_box.activeSelf)
+                {
+                    fuel_injectors_box.transform.position = ModsShop.FleetariSpawnLocation.desk;
+                }
+                if (throttle_bodies_box.activeSelf)
+                {
+                    throttle_bodies_box.transform.position = ModsShop.FleetariSpawnLocation.desk;
+                }
+                foreach (ChipPart chip in fuel_system.chip_parts)
+                {
+                    if (!chip.installed)
+                    {
+                        chip.activePart.transform.position = chip.defaultPartSaveInfo.position;
+                    }
+                }
+
             }
             catch (Exception ex)
             {
+
                 ModConsole.Error("Error while trying to save parts: " + ex.Message);
             }
         }
 
-        private static void ToggleSixGears()
+        private void ToggleSixGears()
         {
             if (toggleSixGears.Value is bool value)
             {
@@ -925,7 +1318,7 @@ namespace DonnerTech_ECU_Mod
             satsumaDriveTrain.gearRatios = originalGearRatios;
             return;
         }
-        private static void ToggleAWD()
+        private void ToggleAWD()
         {
             if (toggleAWD.Value is bool value)
             {
@@ -938,7 +1331,7 @@ namespace DonnerTech_ECU_Mod
             satsumaDriveTrain.SetTransmission(Drivetrain.Transmissions.FWD);
         }
 
-        private static void SwitchCruiseControlDebug()
+        private void SwitchCruiseControlDebug()
         {
             cruiseControlDebugEnabled = !cruiseControlDebugEnabled;
         }

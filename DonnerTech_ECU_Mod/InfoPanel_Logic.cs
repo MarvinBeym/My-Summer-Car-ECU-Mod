@@ -596,7 +596,6 @@ namespace DonnerTech_ECU_Mod
             }
             else
             {
-                ModConsole.Print("not booting");
                 currentPage = 0;
                 ChangeInfoPanelPage(currentPage);
                 ecu_InfoPanel_Background.sprite = ecu_mod_panel_page0;
