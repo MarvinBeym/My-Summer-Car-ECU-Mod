@@ -9,6 +9,9 @@
 *.user
 *.userosscache
 *.sln.docstates
+Project Files/Blender files
+Project Files/Fusion 360 stl files
+Project Files/*.blend[0-9]
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
