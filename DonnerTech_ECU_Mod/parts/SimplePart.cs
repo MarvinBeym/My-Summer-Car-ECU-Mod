@@ -51,7 +51,6 @@ namespace DonnerTech_ECU_Mod
                 }
                 catch (Exception ex)
                 {
-                    //Logger log here
                     partSaveInfo = null;
                 }
                 

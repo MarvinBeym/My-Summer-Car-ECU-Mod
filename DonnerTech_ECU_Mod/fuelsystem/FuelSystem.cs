@@ -208,7 +208,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                         }
                         catch
                         {
-                            //Write to logger
+                            mod.logger.New("Error while trying to write chip map");
                         }
                     }
                 }
@@ -236,7 +236,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 }
                 else
                 {
-                    //Logger?
                     //Display error message stuff
                 }
                 
@@ -251,9 +250,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                         {
                             inputFieldMap[y, x].text = "10.0";
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            //Write to logger
+                            mod.logger.New("Error while trying to reset programmer input field", $"y - x index: {y} - {x}");
                         }
                     }
                 }
@@ -586,7 +585,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                                         }
                                         catch
                                         {
-                                            //Write to logger
+                                            mod.logger.New("Error while trying to write chip map");
                                         }
                                     }
                                 }
@@ -600,15 +599,23 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         public void SaveOriginals()
         {
-            originalPartsSave.fuelPump_installed = pumpInstalled;
-            originalPartsSave.fuelPump_position = pump_gameObject.transform.position;
-            originalPartsSave.fuelPump_rotation = pump_gameObject.transform.rotation;
+            try
+            {
+                originalPartsSave.fuelPump_installed = pumpInstalled;
+                originalPartsSave.fuelPump_position = pump_gameObject.transform.position;
+                originalPartsSave.fuelPump_rotation = pump_gameObject.transform.rotation;
 
-            originalPartsSave.racingCarb_installed = racingCarbInstalled;
-            originalPartsSave.racingCarb_position = racingCarb_gameObject.transform.position;
-            originalPartsSave.racingCarb_rotation = racingCarb_gameObject.transform.rotation;
+                originalPartsSave.racingCarb_installed = racingCarbInstalled;
+                originalPartsSave.racingCarb_position = racingCarb_gameObject.transform.position;
+                originalPartsSave.racingCarb_rotation = racingCarb_gameObject.transform.rotation;
 
-            SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
+                SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
+            }
+            catch (Exception ex)
+            {
+                mod.logger.New("Error while trying to save original parts replaced by fuel injection system", $"path of save file: {Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile })}", ex);
+            }
+
         }
 
         public void SaveChips()
@@ -629,7 +636,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             
             if(chip_saveFiles.Length != chip_map_saveFiles.Length)
             {
-                //Logger
+                mod.logger.New("Chip part save and map save do not match. Atleast one or more files are missing.", $"save files found: {chip_saveFiles.Length} | chip map files found: {chip_map_saveFiles.Length}");
                 return;
             }
             for(int i = 0; i < chip_saveFiles.Length; i++)
@@ -676,7 +683,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             }
             catch (Exception ex)
             {
-                //Logger
+                mod.logger.New("Unable to save chips, there was an error while trying to save the chip", $"save file: {part.fuelMap_saveFile}", ex);
             }
         }
     }

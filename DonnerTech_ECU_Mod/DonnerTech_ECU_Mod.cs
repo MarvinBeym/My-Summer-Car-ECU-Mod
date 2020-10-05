@@ -244,7 +244,7 @@ namespace DonnerTech_ECU_Mod
         private FsmBool electricsOK;
 
 
-        private const string logger_saveFile = "logger_saveFile.txt";
+        private const string logger_saveFile = "ecu_mod_logs.txt";
         private const string abs_module_saveFile = "abs_module_saveFile.txt";
         private const string esp_module_saveFile = "esp_module_saveFile.txt";
         private const string tcs_module_saveFile = "tcs_module_saveFile.txt";
@@ -350,7 +350,7 @@ namespace DonnerTech_ECU_Mod
             toggleSixGears.DoAction = ToggleSixGears;
             debugCruiseControlSetting.DoAction = SwitchCruiseControlDebug;
 
-            logger = new Logger(this, logger_saveFile);
+            logger = new Logger(this, logger_saveFile, 100);
             if (!ModLoader.CheckSteam())
             {
                 ModUI.ShowMessage("Cunt", "CUNT");
@@ -1132,17 +1132,33 @@ namespace DonnerTech_ECU_Mod
                 {
                     SaveLoad.SerializeSaveFile<PartSaveInfo>(this, part.getSaveInfo(), part.saveFile);
                 });
+            }
+            catch(Exception ex)
+            {
+                logger.New("Error while trying to save part", "", ex);
+            }
+
+            try
+            {
                 fuel_system.chip_parts.ForEach(delegate (ChipPart chip)
                 {
 
                     SaveLoad.SerializeSaveFile<ChipSave>(this, chip.chipSave, chip.fuelMap_saveFile);
                     SaveLoad.SerializeSaveFile<PartSaveInfo>(this, chip.getSaveInfo(), chip.saveFile);
                 });
+            }
+            catch (Exception ex)
+            {
+                logger.New("Error while trying to save chip part", "", ex);
+            }
+
+            try
+            {
                 SaveLoad.SerializeSaveFile<PartBuySave>(this, partBuySave, mod_shop_saveFile);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                //Logger
+                logger.New("Error while trying to save mod shop bought parts file", "", ex);
             }
 
             try
@@ -1159,30 +1175,14 @@ namespace DonnerTech_ECU_Mod
                     reverse_camera_part.GetScrewablePart(),
                 }, screwable_saveFile);
             }
-            catch
-            {
-                //Logger
-            }
-
-            try
-            {
-
-               // fuel_system.SaveChips();
-
-            }
             catch (Exception ex)
             {
-               //Logger 
+                logger.New("Error while trying to save screws ", $"save file: {screwable_saveFile}", ex);
             }
 
-            try
-            {
-                fuel_system.SaveOriginals();
-            }
-            catch (Exception ex)
-            {
-                //Logger
-            }
+
+            fuel_system.SaveChips();
+            fuel_system.SaveOriginals();
         }
 
         
