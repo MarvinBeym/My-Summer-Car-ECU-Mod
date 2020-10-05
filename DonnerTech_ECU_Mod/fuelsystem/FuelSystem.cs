@@ -58,16 +58,21 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         public FsmFloat racingCarb_max;
         public FsmFloat racingCarb_min;
         public FsmFloat racingCarb_tolerance;
+        public FsmBool racingCarb_detach;
+        public GameObject racingCarb_gameObject;
 
         public GameObject pump_trigger;
         public FsmBool pump_installed;
         public FsmBool pump_bolted;
-
         public FsmBool pump_detach;
-        public FsmBool racingCarb_detach;
+        public GameObject pump_gameObject;
+
 
         public Drivetrain satsumaDriveTrain;
         public AxisCarController axisCarController;
+
+        private const string orignal_parts_saveFile = "original_parts_saveFile.txt";
+        private OriginalPartsSave originalPartsSave;
 
         public InputField[,] inputFieldMap = new InputField[14, 17];
         
@@ -78,7 +83,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         private GameObject chip_programmer_chip;
         private FsmGameObject itemPivot;
-        private bool fuel_injection_manifold_applied = false;
+        public bool fuel_injection_manifold_applied = false;
 
         public Vector3 chip_installLocation = new Vector3(0, 0, 0);
 
@@ -98,6 +103,22 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             }
         }
 
+        public bool pumpInstalled
+        {
+            get
+            {
+                return (pump_gameObject.transform.parent != null);
+            }
+        }
+
+        public bool racingCarbInstalled
+        {
+            get
+            {
+                return (racingCarb_gameObject.transform.parent != null);
+            }
+        }
+
         public FuelSystem(DonnerTech_ECU_Mod mod)
         {
 
@@ -112,7 +133,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             PlayMakerFSM race_carb = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
             PlayMakerFSM pump = GameObject.Find("Fuelpump").GetComponent<PlayMakerFSM>();
 
-            PlayMakerFSM[] comps = GameObject.Find("fuel pump(Clone)").GetComponents<PlayMakerFSM>();
+            pump_gameObject = GameObject.Find("fuel pump(Clone)");
+
+            PlayMakerFSM[] comps = pump_gameObject.GetComponents<PlayMakerFSM>();
             foreach(PlayMakerFSM comp in comps)
             {
                 if(comp.FsmName == "Removal")
@@ -121,7 +144,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 }
             }
 
-            comps = GameObject.Find("racing carburators(Clone)").GetComponents<PlayMakerFSM>();
+            racingCarb_gameObject = GameObject.Find("racing carburators(Clone)");
+            comps = racingCarb_gameObject.GetComponents<PlayMakerFSM>();
             foreach (PlayMakerFSM comp in comps)
             {
                 if (comp.FsmName == "Removal")
@@ -209,7 +233,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                             break;
                         }
                     }
-                    SaveChips();
                 }
                 else
                 {
@@ -321,13 +344,34 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             fuel_system_logic = mod.smart_engine_module_part.rigidPart.AddComponent<FuelSystemLogic>();
             fuel_system_logic.Init(this);
 
+
+            originalPartsSave = SaveLoad.DeserializeSaveFile<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
+            if(originalPartsSave == null)
+            {
+                originalPartsSave = new OriginalPartsSave();
+            }
+
+
+
             if (fuel_injection_manifold_part.installed)
             {
                 racingCarb_detach.Value = true;
+                if (!Helper.ApproximatelyVector(originalPartsSave.racingCarb_position, Vector3.zero) && !Helper.ApproximatelyQuaternion(originalPartsSave.racingCarb_rotation, Quaternion.identity))
+                {
+                    racingCarb_gameObject.transform.position = originalPartsSave.racingCarb_position;
+                    racingCarb_gameObject.transform.rotation = originalPartsSave.racingCarb_rotation;
+                }
+
             }
             if (fuel_pump_cover_part.installed)
             {
                 pump_detach.Value = true;
+                if(!Helper.ApproximatelyVector(originalPartsSave.fuelPump_position, Vector3.zero) && !Helper.ApproximatelyQuaternion(originalPartsSave.fuelPump_rotation, Quaternion.identity))
+                {
+                    pump_gameObject.transform.position = originalPartsSave.fuelPump_position;
+                    pump_gameObject.transform.rotation = originalPartsSave.fuelPump_rotation;
+                }
+
             }
             LoadChips();
 #if DEBUG
@@ -375,7 +419,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 }
             }
 
-            if (carb_installed.Value || twinCarb_installed.Value || (racingCarb_installed.Value && !fuel_injection_manifold_part.installed))
+            if (carb_installed.Value || twinCarb_installed.Value || (racingCarbInstalled && !fuel_injection_manifold_part.installed))
             {
                 if (fuel_injection_manifold_part.installed)
                 {
@@ -401,9 +445,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 racingCarb_trigger.SetActive(true);
             }
 
-            fuel_pump_cover_part.partTrigger.triggerGameObject.SetActive(!pump_installed.Value);
+            fuel_pump_cover_part.partTrigger.triggerGameObject.SetActive(!pumpInstalled);
 
-            pump_trigger.SetActive(!fuel_pump_cover_part.InstalledScrewed());
+            pump_trigger.SetActive(!fuel_pump_cover_part.installed);
 
             if (fuel_pump_cover_part.installed)
             {
@@ -429,7 +473,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             {
                 if (allInstalled && fuel_system_logic.fuelMap != null)
                 {
-                    if (!fuel_injection_manifold_applied && !racingCarb_installed.Value)
+                    if (!fuel_injection_manifold_applied && !racingCarbInstalled)
                     {
                         racingCarb_installed.Value = true;
                         racingCarb_bolted.Value = true;
@@ -552,6 +596,19 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     }
                 }
             }
+        }
+
+        public void SaveOriginals()
+        {
+            originalPartsSave.fuelPump_installed = pumpInstalled;
+            originalPartsSave.fuelPump_position = pump_gameObject.transform.position;
+            originalPartsSave.fuelPump_rotation = pump_gameObject.transform.rotation;
+
+            originalPartsSave.racingCarb_installed = racingCarbInstalled;
+            originalPartsSave.racingCarb_position = racingCarb_gameObject.transform.position;
+            originalPartsSave.racingCarb_rotation = racingCarb_gameObject.transform.rotation;
+
+            SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
         }
 
         public void SaveChips()

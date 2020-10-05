@@ -87,6 +87,7 @@
     <Compile Include="fuelsystem\FloatForce.cs" />
     <Compile Include="fuelsystem\FuelSystem.cs" />
     <Compile Include="fuelsystem\FuelSystemLogic.cs" />
+    <Compile Include="fuelsystem\OriginalPartsSave.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="info_panel_pages\InfoPanelPage.cs" />
     <Compile Include="info_panel_pages\Page6.cs" />

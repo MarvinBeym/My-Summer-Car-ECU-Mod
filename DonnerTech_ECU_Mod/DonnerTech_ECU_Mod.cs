@@ -161,18 +161,6 @@ namespace DonnerTech_ECU_Mod
 
         //FuelSystem
         public FuelSystem fuel_system;
-        private GameObject carb_trigger;
-        private FsmBool carb_installed;
-
-        private GameObject twinCarb_trigger;
-        private FsmBool twinCarb_installed;
-
-        private GameObject racingCarb_trigger;
-        private FsmBool racingCarb_installed;
-        private FsmBool racingCarb_bolted;
-
-        private GameObject pump_trigger;
-        private FsmBool pump_installed;
 
 
         private FsmString playerCurrentVehicle;
@@ -1103,8 +1091,9 @@ namespace DonnerTech_ECU_Mod
             throttle_body3_part.removePart();
             throttle_body4_part.removePart();
 
-            racingCarb_installed.Value = false;
-            racingCarb_bolted.Value = false;
+            fuel_system.racingCarb_installed.Value = false;
+            fuel_system.racingCarb_bolted.Value = false;
+            fuel_system.fuel_injection_manifold_applied = false;
         }
         public void DisassembleSmartEngineModule()
         {
@@ -1184,6 +1173,15 @@ namespace DonnerTech_ECU_Mod
             catch (Exception ex)
             {
                //Logger 
+            }
+
+            try
+            {
+                fuel_system.SaveOriginals();
+            }
+            catch (Exception ex)
+            {
+                //Logger
             }
         }
 
