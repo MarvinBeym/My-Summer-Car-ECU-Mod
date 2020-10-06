@@ -19,44 +19,77 @@ namespace DonnerTech_ECU_Mod
         public float[,] fuelMap;
 
         private Drivetrain satsumaDriveTrain;
+        private Transform throttle_body1_valve;
+        private Transform throttle_body2_valve;
+        private Transform throttle_body3_valve;
+        private Transform throttle_body4_valve;
+
+        private float maxRotation = 90f;
+        private float minRotation = 0f;
 
         // Use this for initialization
         void Start()
         {
+            throttle_body1_valve = fuel_system.mod.throttle_body1_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body2_valve = fuel_system.mod.throttle_body2_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body3_valve = fuel_system.mod.throttle_body3_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body4_valve = fuel_system.mod.throttle_body4_part.rigidPart.transform.FindChild("Butterfly-Valve");
             this.satsumaDriveTrain = fuel_system.satsumaDriveTrain;
         }
 
        
         void Update()
         {
-            if (fuel_system.allInstalled && fuel_system.mod.smart_engine_module_part.InstalledScrewed())
+            if (fuel_system.mod.hasPower)
             {
-
-
-                for (int index = 0; index < fuel_system.chip_parts.Count; index++)
+                if (
+                    (bool)fuel_system.mod.settingThrottleBodieTurning.Value
+                    && fuel_system.mod.throttle_body1_part.InstalledScrewed()
+                    && fuel_system.mod.throttle_body2_part.InstalledScrewed()
+                    && fuel_system.mod.throttle_body3_part.InstalledScrewed()
+                    && fuel_system.mod.throttle_body4_part.InstalledScrewed()
+                    )
                 {
-                    ChipPart part = fuel_system.chip_parts[index];
-                    if (part.installed && part.chipSave.chipProgrammed)
+                    HandleThrottleBodyMovement();
+                }
+
+                if (fuel_system.allInstalled && fuel_system.mod.smart_engine_module_part.InstalledScrewed())
+                {
+
+
+                    for (int index = 0; index < fuel_system.chip_parts.Count; index++)
                     {
-                        fuelMap = part.chipSave.map;
-                        break;
+                        ChipPart part = fuel_system.chip_parts[index];
+                        if (part.installed && part.chipSave.chipProgrammed)
+                        {
+                            fuelMap = part.chipSave.map;
+                            break;
+                        }
+                    }
+
+                    if (fuelMap != null && satsumaDriveTrain.rpm > 0)
+                    {
+
+                        int mapRpmIndex = GetRPMIndex(Convert.ToInt32(satsumaDriveTrain.rpm));
+                        int mapThrottleIndex = GetThrottleIndex((int)(fuel_system.axisCarController.throttle) * 100);
+                        fuel_system.racingCarb_adjustAverage.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
+                    }
+                    else
+                    {
+                        //Prevent engine from starting/running
+                        //Maybe show error on info panel
                     }
                 }
-
-                if (fuelMap != null && satsumaDriveTrain.rpm > 0)
-                {
-
-                    int mapRpmIndex = GetRPMIndex(Convert.ToInt32(satsumaDriveTrain.rpm));
-                    int mapThrottleIndex = GetThrottleIndex((int)(fuel_system.axisCarController.throttle) * 100);
-                    fuel_system.racingCarb_adjustAverage.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
-                }
-                else
-                {
-                    //Prevent engine from starting/running
-                    //Maybe show error on info panel
-                }
             }
+        }
 
+        private void HandleThrottleBodyMovement()
+        {
+            //Currently not working (rotates to the side first);
+            throttle_body1_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body2_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body3_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body4_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
         }
 
         private int GetThrottleIndex(int throttle)

@@ -163,7 +163,7 @@ namespace DonnerTech_ECU_Mod
         public FuelSystem fuel_system;
 
 
-        private FsmString playerCurrentVehicle;
+        public FsmString playerCurrentVehicle;
 
         //Part logic
         public InfoPanel_Logic info_panel_logic { get; set; }
@@ -173,9 +173,6 @@ namespace DonnerTech_ECU_Mod
         public BoxLogic throttle_bodies_box_logic { get; set; }
 
         public ReverseCamera_Logic reverse_camera_logic { get; set; }
-
-        private Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false);
-        private Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false);
 
 
         private static bool cruiseControlDebugEnabled = false;
@@ -280,6 +277,9 @@ namespace DonnerTech_ECU_Mod
 
         private Settings resetPosSetting = new Settings("resetPos", "Reset uninstalled parts location", WorkAroundAction);
         private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Enable/Disable", WorkAroundAction);
+        public Settings settingThrottleBodieTurning = new Settings("settingThrottleBodieTurning", "Enable/Disable", true);
+        private Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false);
+        private Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false);
 
         private static void WorkAroundAction()
         {
@@ -1111,6 +1111,7 @@ namespace DonnerTech_ECU_Mod
             Settings.AddButton(this, debugCruiseControlSetting, "DEBUG Cruise Control");
             Settings.AddCheckBox(this, toggleSixGears);
             Settings.AddCheckBox(this, toggleAWD);
+            Settings.AddCheckBox(this, settingThrottleBodieTurning);
             Settings.AddButton(this, resetPosSetting, "reset part location");
             Settings.AddHeader(this, "", Color.clear);
             
@@ -1215,6 +1216,7 @@ namespace DonnerTech_ECU_Mod
         public override void Update()
         {
             fuel_system.Handle();
+
             //InfoPanel scale workaround
             if (!info_panel_part.installed)
             {

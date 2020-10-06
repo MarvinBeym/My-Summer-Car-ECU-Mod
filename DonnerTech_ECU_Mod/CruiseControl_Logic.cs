@@ -60,7 +60,7 @@ namespace DonnerTech_ECU_Mod
         // Update is called once per frame
         void Update()
         {
-            if (mod.hasPower && allPartsFixed)
+            if (mod.hasPower && allPartsFixed && mod.playerCurrentVehicle.Value == "Satsuma")
             {
                 HandleButtonPresses();
 
