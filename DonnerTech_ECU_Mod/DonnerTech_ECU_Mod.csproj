@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -38,6 +40,9 @@
     <Reference Include="cInput">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\cInput.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="modapi_v0120-alpha">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\modapi_v0120-alpha.dll</HintPath>
@@ -106,6 +111,7 @@
     <Compile Include="ProductBought.cs" />
     <Compile Include="Reporter\Reporter.cs" />
     <Compile Include="Reporter\Report.cs" />
+    <Compile Include="Reporter\ReportResponse.cs" />
     <Compile Include="shop\ProductInformation.cs" />
     <Compile Include="shop\Shop.cs" />
     <Compile Include="parts\TcsPart.cs" />

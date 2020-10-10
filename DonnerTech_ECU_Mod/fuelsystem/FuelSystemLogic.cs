@@ -85,7 +85,6 @@ namespace DonnerTech_ECU_Mod
 
         private void HandleThrottleBodyMovement()
         {
-            //Currently not working (rotates to the side first);
             throttle_body1_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
             throttle_body2_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
             throttle_body3_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };

@@ -1,4 +1,5 @@
 ﻿
+using DonnerTech_ECU_Mod.Reporter;
 using HutongGames.PlayMaker;
 using ModApi;
 using ModApi.Attachable;
@@ -373,22 +374,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
             }
             LoadChips();
-#if DEBUG
-            /*
-            Report modSettings_report = new Report();
-            modSettings_report.name = "Mod Settings";
-            modSettings_report.files = Directory.GetFiles(ModLoader.GetModConfigFolder(mod));
-            
-            Report modLoaderOutputLog_report = new Report();
-            modLoaderOutputLog_report.name = "ModLoader Output";
-            modLoaderOutputLog_report.files = new string[] { Helper.CombinePaths(new string[] { Path.GetFullPath("."), "mysummercar_Data", "output_log.txt" }) };
-
-            Report gameSave_report = new Report();
-            gameSave_report.name = "MSC Savegame";
-            gameSave_report.files = Directory.GetFiles(Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\")));
-            Reporter.Reporter.GenerateReport(mod, new Report[] { modSettings_report, modLoaderOutputLog_report, gameSave_report });
-            */
-#endif
         }
 
         public void DisassembleChip()

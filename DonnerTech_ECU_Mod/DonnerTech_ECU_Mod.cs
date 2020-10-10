@@ -11,6 +11,9 @@ using ModsShop;
 using DonnerTech_ECU_Mod.old_file_checker;
 using DonnerTech_ECU_Mod.shop;
 using DonnerTech_ECU_Mod.fuelsystem;
+using DonnerTech_ECU_Mod.Reporter;
+using System.Net;
+using System.Collections.Specialized;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -70,6 +73,10 @@ namespace DonnerTech_ECU_Mod
          *  Added logic for light sensor
          *  Added shift indicator
          *  Added ability to set shift indicator green line and red line (it's a gradient. so ex. 6500 won't mean it will instantly switch to green at 6500)
+         *  Added logger
+         *  Added bug reporter that compresses all needed files for a complete bug report into a .zip file, password protects it and saves it on the desktop.
+         *  Added ability to upload bug report to my server (files are deleted after 7days), (ip will be logged in a database to prevent spam (only allows a new report for a mod each hour))
+         *  
          *  
          *  
          *  Changed image override file names:
@@ -280,6 +287,27 @@ namespace DonnerTech_ECU_Mod
         public Settings settingThrottleBodieTurning = new Settings("settingThrottleBodieTurning", "Enable/Disable", true);
         private Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false);
         private Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false);
+        private Settings agreeUpload = new Settings("agreeUpload", "Agree to upload to server", false);
+        private Settings generateReport = new Settings("agreeUpload", "Generate", WorkAroundAction);
+
+        private void GenerateBugReport()
+        {
+            Report modSettings_report = new Report();
+            modSettings_report.name = "Mod Settings";
+            modSettings_report.files = new string[] { ModLoader.GetModConfigFolder(this) };
+            modSettings_report.directory = true;
+
+            Report modLoaderOutputLog_report = new Report();
+            modLoaderOutputLog_report.name = "ModLoader Output";
+            modLoaderOutputLog_report.files = new string[] { Helper.CombinePaths(new string[] { Path.GetFullPath("."), "mysummercar_Data", "output_log.txt" }) };
+
+            Report gameSave_report = new Report();
+            gameSave_report.name = "MSC Savegame";
+            gameSave_report.files = Directory.GetFiles(Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\")));
+            Reporter.Reporter.GenerateReport(this, new Report[] { modSettings_report, modLoaderOutputLog_report, gameSave_report }, "ecu_report");
+        }
+
+
 
         private static void WorkAroundAction()
         {
@@ -349,6 +377,7 @@ namespace DonnerTech_ECU_Mod
             toggleAWD.DoAction = ToggleAWD;
             toggleSixGears.DoAction = ToggleSixGears;
             debugCruiseControlSetting.DoAction = SwitchCruiseControlDebug;
+            generateReport.DoAction = GenerateBugReport;
 
             logger = new Logger(this, logger_saveFile, 100);
             if (!ModLoader.CheckSteam())
@@ -1108,11 +1137,31 @@ namespace DonnerTech_ECU_Mod
 
         public override void ModSettings()
         {
+            Settings.AddHeader(this, "DEBUG");
             Settings.AddButton(this, debugCruiseControlSetting, "DEBUG Cruise Control");
+            Settings.AddButton(this, resetPosSetting, "reset part location");
+            Settings.AddHeader(this, "Settings");
             Settings.AddCheckBox(this, toggleSixGears);
             Settings.AddCheckBox(this, toggleAWD);
             Settings.AddCheckBox(this, settingThrottleBodieTurning);
-            Settings.AddButton(this, resetPosSetting, "reset part location");
+            Settings.AddHeader(this, "Report");
+            Settings.AddCheckBox(this, agreeUpload);
+            Settings.AddText(this, 
+                "By checking this box you allow the report tool\n" +
+                "to upload the archived mod_report_xyz.zip to my Server\n" +
+                "the file is automatically deleted after 7 days\n" +
+                "And you have the only password"
+                );
+            Settings.AddButton(this, generateReport, "Generate Report");
+            Settings.AddText(this,
+                "This button generates a bug report\n" +
+                "A .zip file will be created on your desktop\n" +
+                "The archive includes: \n" +
+                "ModLoader output_log.txt, MSC Save game, Mod settings\n" +
+                "The archive is password protected. The password is shown after creation only to you\n" +
+                "After creation you can choose to upload it to my server (so you don't have to send it to me)"
+                );
+
             Settings.AddHeader(this, "", Color.clear);
             
             Settings.AddText(this, "New Gear ratios + 5th & 6th gear\n" +
