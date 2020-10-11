@@ -283,26 +283,6 @@ namespace DonnerTech_ECU_Mod
         private Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false);
         private Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false);
 
-        /*
-        private void GenerateBugReport()
-        {
-            Report modSettings_report = new Report();
-            modSettings_report.name = "Mod Settings";
-            modSettings_report.files = new string[] { ModLoader.GetModConfigFolder(this) };
-            modSettings_report.directory = true;
-
-            Report modLoaderOutputLog_report = new Report();
-            modLoaderOutputLog_report.name = "ModLoader Output";
-            modLoaderOutputLog_report.files = new string[] { Helper.CombinePaths(new string[] { Path.GetFullPath("."), "mysummercar_Data", "output_log.txt" }) };
-
-            Report gameSave_report = new Report();
-            gameSave_report.name = "MSC Savegame";
-            gameSave_report.files = Directory.GetFiles(Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\")));
-            Reporter.Reporter.GenerateReport(this, new Report[] { modSettings_report, modLoaderOutputLog_report, gameSave_report }, "ecu_report");
-        }
-        */
-
-
         private static void WorkAroundAction()
         {
 
@@ -381,7 +361,6 @@ namespace DonnerTech_ECU_Mod
             toggleAWD.DoAction = ToggleAWD;
             toggleSixGears.DoAction = ToggleSixGears;
             debugCruiseControlSetting.DoAction = SwitchCruiseControlDebug;
-            //generateReport.DoAction = GenerateBugReport;
 
             logger = new Logger(this, logger_saveFile, 100);
             if (!ModLoader.CheckSteam())
