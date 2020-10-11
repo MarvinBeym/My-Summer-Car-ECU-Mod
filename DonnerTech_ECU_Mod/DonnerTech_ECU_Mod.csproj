@@ -37,6 +37,9 @@
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="BugReporter">
+      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\References\BugReporter.dll</HintPath>
+    </Reference>
     <Reference Include="cInput">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\cInput.dll</HintPath>
       <Private>False</Private>
@@ -109,9 +112,6 @@
     <Compile Include="old_file_checker\SaveFileRenamer.cs" />
     <Compile Include="parts\EspPart.cs" />
     <Compile Include="ProductBought.cs" />
-    <Compile Include="Reporter\Reporter.cs" />
-    <Compile Include="Reporter\Report.cs" />
-    <Compile Include="Reporter\ReportResponse.cs" />
     <Compile Include="shop\ProductInformation.cs" />
     <Compile Include="shop\Shop.cs" />
     <Compile Include="parts\TcsPart.cs" />

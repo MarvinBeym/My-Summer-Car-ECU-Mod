@@ -1,19 +1,14 @@
 ﻿using HutongGames.PlayMaker;
 using ModApi.Attachable;
-using ModApi;
 using MSCLoader;
 using System;
 using System.IO;
 using UnityEngine;
 using ScrewablePartAPI;
 using System.Collections.Generic;
-using ModsShop;
 using DonnerTech_ECU_Mod.old_file_checker;
 using DonnerTech_ECU_Mod.shop;
 using DonnerTech_ECU_Mod.fuelsystem;
-using DonnerTech_ECU_Mod.Reporter;
-using System.Net;
-using System.Collections.Specialized;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -287,9 +282,8 @@ namespace DonnerTech_ECU_Mod
         public Settings settingThrottleBodieTurning = new Settings("settingThrottleBodieTurning", "Enable/Disable", true);
         private Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false);
         private Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false);
-        private Settings agreeUpload = new Settings("agreeUpload", "Agree to upload to server", false);
-        private Settings generateReport = new Settings("agreeUpload", "Generate", WorkAroundAction);
 
+        /*
         private void GenerateBugReport()
         {
             Report modSettings_report = new Report();
@@ -306,7 +300,7 @@ namespace DonnerTech_ECU_Mod
             gameSave_report.files = Directory.GetFiles(Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\")));
             Reporter.Reporter.GenerateReport(this, new Report[] { modSettings_report, modLoaderOutputLog_report, gameSave_report }, "ecu_report");
         }
-
+        */
 
 
         private static void WorkAroundAction()
@@ -371,13 +365,23 @@ namespace DonnerTech_ECU_Mod
         }
         public override void OnLoad()
         {
-            
             ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " started loading");
+
+            List<BugReporter.Report> reports = new List<BugReporter.Report>();
+
+            reports.Add(new BugReporter.Report("Mod Settings", new string[] { ModLoader.GetModConfigFolder(this) }, true));
+            reports.Add(new BugReporter.Report("ModLoader Output", new string[] { Helper.CombinePaths(new string[] { Path.GetFullPath("."), "mysummercar_Data", "output_log.txt" }) }));
+
+            BugReporter.Report gameSave_report = new BugReporter.Report("MSC Savegame");
+            gameSave_report.files = Directory.GetFiles(Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\")));
+
+            BugReporter.BugReporter bugReporter = new BugReporter.BugReporter(this, "ecu_report", reports);
+
             resetPosSetting.DoAction = PosReset;
             toggleAWD.DoAction = ToggleAWD;
             toggleSixGears.DoAction = ToggleSixGears;
             debugCruiseControlSetting.DoAction = SwitchCruiseControlDebug;
-            generateReport.DoAction = GenerateBugReport;
+            //generateReport.DoAction = GenerateBugReport;
 
             logger = new Logger(this, logger_saveFile, 100);
             if (!ModLoader.CheckSteam())
@@ -1144,24 +1148,6 @@ namespace DonnerTech_ECU_Mod
             Settings.AddCheckBox(this, toggleSixGears);
             Settings.AddCheckBox(this, toggleAWD);
             Settings.AddCheckBox(this, settingThrottleBodieTurning);
-            Settings.AddHeader(this, "Report");
-            Settings.AddCheckBox(this, agreeUpload);
-            Settings.AddText(this, 
-                "By checking this box you allow the report tool\n" +
-                "to upload the archived mod_report_xyz.zip to my Server\n" +
-                "the file is automatically deleted after 7 days\n" +
-                "And you have the only password"
-                );
-            Settings.AddButton(this, generateReport, "Generate Report");
-            Settings.AddText(this,
-                "This button generates a bug report\n" +
-                "A .zip file will be created on your desktop\n" +
-                "The archive includes: \n" +
-                "ModLoader output_log.txt, MSC Save game, Mod settings\n" +
-                "The archive is password protected. The password is shown after creation only to you\n" +
-                "After creation you can choose to upload it to my server (so you don't have to send it to me)"
-                );
-
             Settings.AddHeader(this, "", Color.clear);
             
             Settings.AddText(this, "New Gear ratios + 5th & 6th gear\n" +
@@ -1172,6 +1158,7 @@ namespace DonnerTech_ECU_Mod
                 "5.Gear: " + newGearRatio[6] + "\n" +
                 "6.Gear: " + newGearRatio[7]
                 );
+            BugReporter.BugReporter.SetupModSettings(this);
 
         }
         public override void OnSave()
