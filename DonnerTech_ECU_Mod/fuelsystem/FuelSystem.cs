@@ -122,7 +122,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             GameObject satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
             axisCarController = satsuma.GetComponent<AxisCarController>();
-            axisCarController.smoothInput = true;//Have to set to get smooth throttle value
+            //axisCarController.smoothInput = true;//Have to set to get smooth throttle value
             PlayMakerFSM carb = GameObject.Find("Carburator").GetComponent<PlayMakerFSM>();
             PlayMakerFSM twinCarb = GameObject.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
             PlayMakerFSM race_carb = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
