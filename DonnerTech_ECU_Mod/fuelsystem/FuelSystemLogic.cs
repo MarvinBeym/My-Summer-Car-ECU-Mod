@@ -13,6 +13,7 @@ namespace DonnerTech_ECU_Mod
     public class FuelSystemLogic : MonoBehaviour
     {
 
+        private DonnerTech_ECU_Mod mod;
         private FuelSystem fuel_system;
 
 
@@ -30,30 +31,30 @@ namespace DonnerTech_ECU_Mod
         // Use this for initialization
         void Start()
         {
-            throttle_body1_valve = fuel_system.mod.throttle_body1_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body2_valve = fuel_system.mod.throttle_body2_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body3_valve = fuel_system.mod.throttle_body3_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body4_valve = fuel_system.mod.throttle_body4_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body1_valve = mod.throttle_body1_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body2_valve = mod.throttle_body2_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body3_valve = mod.throttle_body3_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body4_valve = mod.throttle_body4_part.rigidPart.transform.FindChild("Butterfly-Valve");
             this.satsumaDriveTrain = fuel_system.satsumaDriveTrain;
         }
 
        
         void Update()
         {
-            if (fuel_system.mod.hasPower)
+            if (mod.hasPower)
             {
                 if (
-                    (bool)fuel_system.mod.settingThrottleBodieTurning.Value
-                    && fuel_system.mod.throttle_body1_part.InstalledScrewed()
-                    && fuel_system.mod.throttle_body2_part.InstalledScrewed()
-                    && fuel_system.mod.throttle_body3_part.InstalledScrewed()
-                    && fuel_system.mod.throttle_body4_part.InstalledScrewed()
+                    (bool)mod.settingThrottleBodieTurning.Value
+                    && mod.throttle_body1_part.InstalledScrewed()
+                    && mod.throttle_body2_part.InstalledScrewed()
+                    && mod.throttle_body3_part.InstalledScrewed()
+                    && mod.throttle_body4_part.InstalledScrewed()
                     )
                 {
                     HandleThrottleBodyMovement();
                 }
 
-                if (fuel_system.allInstalled && fuel_system.mod.smart_engine_module_part.InstalledScrewed())
+                if (fuel_system.allInstalled && mod.smart_engine_module_part.InstalledScrewed())
                 {
 
 
@@ -71,7 +72,7 @@ namespace DonnerTech_ECU_Mod
                     {
 
                         int mapRpmIndex = GetRPMIndex(Convert.ToInt32(satsumaDriveTrain.rpm));
-                        int mapThrottleIndex = GetThrottleIndex((int)(fuel_system.axisCarController.throttle) * 100);
+                        int mapThrottleIndex = GetThrottleIndex((int)(mod.axisCarController.throttle) * 100);
                         fuel_system.racingCarb_adjustAverage.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
                     }
                     else
@@ -85,10 +86,10 @@ namespace DonnerTech_ECU_Mod
 
         private void HandleThrottleBodyMovement()
         {
-            throttle_body1_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
-            throttle_body2_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
-            throttle_body3_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
-            throttle_body4_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(fuel_system.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body1_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body2_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body3_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body4_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
         }
 
         private int GetThrottleIndex(int throttle)
@@ -167,8 +168,9 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        public void Init(FuelSystem fuel_system)
+        public void Init(FuelSystem fuel_system, DonnerTech_ECU_Mod mod)
         {
+            this.mod = mod;
             this.fuel_system = fuel_system;
         }
     }

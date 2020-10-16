@@ -64,7 +64,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 
         public Drivetrain satsumaDriveTrain;
-        public AxisCarController axisCarController;
 
         private const string orignal_parts_saveFile = "original_parts_saveFile.txt";
         private OriginalPartsSave originalPartsSave;
@@ -121,8 +120,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             itemPivot = PlayMakerGlobals.Instance.Variables.FindFsmGameObject("ItemPivot");
             GameObject satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-            axisCarController = satsuma.GetComponent<AxisCarController>();
-            //axisCarController.smoothInput = true;//Have to set to get smooth throttle value
+
             PlayMakerFSM carb = GameObject.Find("Carburator").GetComponent<PlayMakerFSM>();
             PlayMakerFSM twinCarb = GameObject.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
             PlayMakerFSM race_carb = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
@@ -336,7 +334,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             chip_programmer_chip.SetActive(false);
 
             fuel_system_logic = mod.smart_engine_module_part.rigidPart.AddComponent<FuelSystemLogic>();
-            fuel_system_logic.Init(this);
+            fuel_system_logic.Init(this, mod);
 
 
             originalPartsSave = SaveLoad.DeserializeSaveFile<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));

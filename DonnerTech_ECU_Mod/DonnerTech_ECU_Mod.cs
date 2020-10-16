@@ -239,6 +239,7 @@ namespace DonnerTech_ECU_Mod
         private static GameObject satsuma;
         private static Drivetrain satsumaDriveTrain;
         private CarController satsumaCarController;
+        public AxisCarController axisCarController;
         private Axles satsumaAxles;
         private FsmBool electricsOK;
 
@@ -277,11 +278,12 @@ namespace DonnerTech_ECU_Mod
 
         private const string screwable_saveFile = "screwable_saveFile.txt";
 
-        private Settings resetPosSetting = new Settings("resetPos", "Reset uninstalled parts location", WorkAroundAction);
-        private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Enable/Disable", WorkAroundAction);
-        public Settings settingThrottleBodieTurning = new Settings("settingThrottleBodieTurning", "Enable/Disable", true);
-        private Settings toggleSixGears = new Settings("toggleSixGears", "Enable/Disable SixGears Mod", false);
-        private Settings toggleAWD = new Settings("toggleAWD", "Toggle All Wheel Drive", false);
+        private Settings resetPosSetting = new Settings("resetPos", "Reset", WorkAroundAction);
+        private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Show/Hide", WorkAroundAction);
+        public Settings settingThrottleBodieTurning = new Settings("settingThrottleBodieTurning", "Throttle body valve rotation", true);
+        private Settings toggleSixGears = new Settings("toggleSixGears", "SixGears Mod (with gear ratio changes)", false);
+        private Settings toggleAWD = new Settings("toggleAWD", "All Wheel Drive (AWD)", false);
+        private Settings toggleSmoothInput = new Settings("toggleSmoothInput", "Smooth throttle input", false);
 
         private static void WorkAroundAction()
         {
@@ -359,6 +361,7 @@ namespace DonnerTech_ECU_Mod
 
             resetPosSetting.DoAction = PosReset;
             toggleAWD.DoAction = ToggleAWD;
+            toggleSmoothInput.DoAction = ToggleSmoothInput;
             toggleSixGears.DoAction = ToggleSixGears;
             debugCruiseControlSetting.DoAction = SwitchCruiseControlDebug;
 
@@ -383,6 +386,7 @@ namespace DonnerTech_ECU_Mod
             satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
             satsumaCarController = satsuma.GetComponent<CarController>();
+            axisCarController = satsuma.GetComponent<AxisCarController>();
             satsumaAxles = satsuma.GetComponent<Axles>();
             
             originalGearRatios = satsumaDriveTrain.gearRatios;
@@ -1122,10 +1126,12 @@ namespace DonnerTech_ECU_Mod
         {
             Settings.AddHeader(this, "DEBUG");
             Settings.AddButton(this, debugCruiseControlSetting, "DEBUG Cruise Control");
-            Settings.AddButton(this, resetPosSetting, "reset part location");
+            Settings.AddButton(this, resetPosSetting, "Reset uninstalled part location");
             Settings.AddHeader(this, "Settings");
             Settings.AddCheckBox(this, toggleSixGears);
             Settings.AddCheckBox(this, toggleAWD);
+            Settings.AddCheckBox(this, toggleSmoothInput);
+            Settings.AddText(this, "This will make throttle input increase over time\n !Dont enable when using controller or any other analog input method!");
             Settings.AddCheckBox(this, settingThrottleBodieTurning);
             Settings.AddHeader(this, "", Color.clear);
             
@@ -1332,6 +1338,10 @@ namespace DonnerTech_ECU_Mod
             }
             satsumaDriveTrain.gearRatios = originalGearRatios;
             return;
+        }
+        private void ToggleSmoothInput()
+        {
+            axisCarController.smoothInput = !axisCarController.smoothInput;
         }
         private void ToggleAWD()
         {
