@@ -64,7 +64,7 @@ namespace DonnerTech_ECU_Mod
                     mod.smart_engine_module_part.rigidPart,
                     new Trigger("chip" + nextChipId, mod.smart_engine_module_part.rigidPart, mod.fuel_system.chip_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
                     mod.fuel_system.chip_installLocation,
-                    new Quaternion { eulerAngles = new Vector3(0, 0, 0) }
+                    new Quaternion { eulerAngles = mod.fuel_system.chip_installRotation }
                 );
                 chip_part.SetDisassembleFunction(new Action(mod.fuel_system.DisassembleChip));
                 chip_part.fuelMap_saveFile = fuelMap_saveFile;
