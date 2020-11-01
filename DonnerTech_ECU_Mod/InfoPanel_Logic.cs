@@ -24,34 +24,11 @@ namespace DonnerTech_ECU_Mod
         private GameObject beamLong;
         private GameObject blinkerRight;
         private GameObject blinkerLeft;
-        private GameObject combustion;
-        public FsmFloat afRatio { get; set; }
 
         //Pages
-        private Page0 page0;
-        private Page1 page1;
-        private Page2 page2;
-        private Page3 page3;
+        private InfoPanelPage[] pages;
         private Page4 page4;
-        private Page5 page5;
-        private Page6 page6;
-        private Page7 page7;
-
-
         private int currentPage = 0;
-        private int[] pageIndex = new int[]
-        {
-            0,      //Main page
-            1,      //Modules page
-            2,      //Faults 1 page
-            3,      //Faults 2 page
-            4,      //Tuner page
-            5,      //Turbocharger mod page
-            6,      //Advanced assistance page
-#if DEBUG
-            7,      //Airride
-#endif
-        };
         //Animation
         private const float ecu_InfoPanel_Needle_maxAngle = 270;
         private const float ecu_InfoPanel_Needle_minAngle = 0;
@@ -111,7 +88,7 @@ namespace DonnerTech_ECU_Mod
         private FsmString playerCurrentVehicle;
 
         private RaycastHit hit;
-        private AssetBundle assetBundle;
+        public AssetBundle assetBundle;
 
         private string selectedSetting = "";
 
@@ -142,8 +119,6 @@ namespace DonnerTech_ECU_Mod
         private Sprite ecu_mod_panel_highBeam;
         private Sprite ecu_mod_panel_lowBeam;
 
-        public int step2RevRpm = 6500;
-
         private MeshRenderer shift_indicator_renderer;
         private Gradient shift_indicator_gradient;
 
@@ -154,18 +129,7 @@ namespace DonnerTech_ECU_Mod
 
         private void Start()
         {
-            System.Collections.Generic.List<Mod> mods = ModLoader.LoadedMods;
-            Mod[] modsArr = mods.ToArray();
-            foreach(Mod mod in modsArr)
-            {
-                if(mod.Name == "DonnerTechRacing ECUs")
-                {
-                    mainMod = mod;
-                    break;
-                }
-            }
-            
-            mod = (DonnerTech_ECU_Mod) mainMod;
+            assetBundle = LoadAssets.LoadBundle(mod, "ecu-mod.unity3d");
             infoPanel = this.gameObject;
 
             ecu_airride_logic = this.gameObject.AddComponent<Airride_Logic>();
@@ -208,7 +172,7 @@ namespace DonnerTech_ECU_Mod
                         continue;
                     }
                 }
-                textMesh.gameObject.SetActive(false);
+                textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
             }
 
             SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = infoPanel.GetComponentsInChildren<SpriteRenderer>();
@@ -270,16 +234,6 @@ namespace DonnerTech_ECU_Mod
                 }
             }
 
-            assetBundle = LoadAssets.LoadBundle(mod, "ecu-mod.unity3d");
-            ecu_mod_panel_page0 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel-Page0.png");
-            ecu_mod_panel_modules_page1 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel_Modules-Page1.png");
-            ecu_mod_panel_faults_page2 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel_Faults-Page2.png");
-            ecu_mod_panel_faults_page3 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel_Faults-Page3.png");
-            ecu_mod_panel_tuner_page4 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel_Tuner-Page4.png");
-            ecu_mod_panel_turbo_page5 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel-Turbocharger-Page5.png");
-            ecu_mod_panel_assistance_page6 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel-Assistance-Page6.png");
-            ecu_mod_panel_airride_page7 = assetBundle.LoadAsset<Sprite>("ECU-Mod-Panel-Airride-Page7.png");
-
             ecu_mod_panel_needle = assetBundle.LoadAsset<Sprite>("Rpm-Needle.png");
             ecu_mod_panel_turbineWheel = assetBundle.LoadAsset<Sprite>("TurbineWheel.png");
 
@@ -313,14 +267,21 @@ namespace DonnerTech_ECU_Mod
             FsmHook.FsmInject(GameObject.Find("StreetLights"), "Day", SwitchToDay);
             FsmHook.FsmInject(GameObject.Find("StreetLights"), "Night", SwitchToNight);
 
-            page0 = new Page0(this.mod, this, this.ecu_InfoPanel_NeedleObject, display_values);
-            page1 = new Page1(this.mod, this, this.ecu_InfoPanel_NeedleObject, display_values);
-            page2 = new Page2(this.mod, this, this.ecu_InfoPanel_NeedleObject, display_values);
-            page3 = new Page3(this.mod, this, this.ecu_InfoPanel_NeedleObject, display_values);
-            page4 = new Page4(this.mod, this, this.ecu_InfoPanel_NeedleObject, display_values);
-            page5 = new Page5(this.mod, this, this.ecu_InfoPanel_TurboWheelObject, display_values);
-            page6 = new Page6(this.mod, this, this.ecu_InfoPanel_NeedleObject, display_values);
-            page7 = new Page7(this.mod, this, this.ecu_InfoPanel_NeedleObject, display_values);
+            page4 = new Page4(4, "tuner_page", "ECU-Mod-Panel_Tuner-Page4", this.mod, display_values);
+            
+            pages = new InfoPanelPage[]
+            {
+                new Page0(0, "main_page", "ECU-Mod-Panel-Page0", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
+                 new Page1(1, "modules_page", "ECU-Mod-Panel_Modules-Page1", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
+                 new Page2(2, "faults_page", "ECU-Mod-Panel_Faults-Page2", this.mod, display_values),
+                 new Page3(3, "faults2_page", "ECU-Mod-Panel_Faults-Page3", this.mod, display_values),
+                 page4,
+                 new Page5(5, "turbocharger_page", "ECU-Mod-Panel-Turbocharger-Page5", this.mod, this.ecu_InfoPanel_TurboWheelObject, display_values),
+                 new Page6(6, "assistance_page", "ECU-Mod-Panel-Assistance-Page6", this.mod, display_values),
+#if DEBUG 
+                new Page7(7, "airride_page", "ECU-Mod-Panel-Airride-Page7", this.mod, display_values),
+#endif
+            };
 
             assetBundle.Unload(false);
         }
@@ -335,15 +296,6 @@ namespace DonnerTech_ECU_Mod
         }
         private void LoadECU_PanelImageOverride()
         {
-            ecu_mod_panel_page0 = LoadNewSprite(ecu_mod_panel_page0, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "main_page.png"));
-            ecu_mod_panel_modules_page1 = LoadNewSprite(ecu_mod_panel_modules_page1, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "modules_page.png"));
-            ecu_mod_panel_faults_page2 = LoadNewSprite(ecu_mod_panel_faults_page2, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "faults_page.png"));
-            ecu_mod_panel_faults_page3 = LoadNewSprite(ecu_mod_panel_faults_page3, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "faults2_page.png"));
-            ecu_mod_panel_tuner_page4 = LoadNewSprite(ecu_mod_panel_tuner_page4, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "tuner_page.png"));
-            ecu_mod_panel_turbo_page5 = LoadNewSprite(ecu_mod_panel_turbo_page5, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "turbocharger_page.png"));
-            ecu_mod_panel_assistance_page6 = LoadNewSprite(ecu_mod_panel_assistance_page6, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "assistance_page.png"));
-            ecu_mod_panel_airride_page7 = LoadNewSprite(ecu_mod_panel_airride_page7, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "airride_page.png"));
-
             ecu_mod_panel_handbrake = LoadNewSprite(ecu_mod_panel_handbrake, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "handbrake_icon.png"));
             ecu_InfoPanel_Handbrake.sprite = ecu_mod_panel_handbrake;
 
@@ -394,22 +346,6 @@ namespace DonnerTech_ECU_Mod
 
         void Update()
         {
-            if (combustion == null)
-            {
-                combustion = GameObject.Find("CarSimulation/Engine/Combustion");
-                if(combustion != null)
-                {
-                    PlayMakerFSM[] playMakerFSMs = combustion.GetComponents<PlayMakerFSM>();
-                    foreach (PlayMakerFSM fsm in playMakerFSMs)
-                    {
-                        if (fsm.FsmName == "Cylinders")
-                        {
-                            afRatio = fsm.FsmVariables.FindFsmFloat("AFR");
-                            break;
-                        }
-                    }
-                }
-            }
 
             if (mod.hasPower && mod.info_panel_part.InstalledScrewed())
             {
@@ -450,39 +386,14 @@ namespace DonnerTech_ECU_Mod
 
 
                     DisplayGeneralInfomation();
-                    switch (currentPage)
-                    {
-                        case Page0.page:
-                            page0.Handle();
-                            break;
-                        case Page1.page:
-                            page1.Handle();
-                            break;
-                        case Page2.page:
-                            page2.Handle();
-                            break;
-                        case Page3.page:
-                            page3.Handle();
-                            break;
-                        case Page4.page:
-                            page4.Handle();
-                            break;
-                        case Page5.page:
-                            page5.Handle();
-                            break;
-                        case Page6.page:
-                            page6.Handle();
-                            break;
-                        case Page7.page:
-                            page7.Handle();
-                            break;
-                    }
+                    pages[currentPage].Handle();
                 }
             }
             else
             {
                 try
                 {
+                    shift_indicator_renderer.material.color = Color.black;
                     ecu_InfoPanel_NeedleObject.transform.localRotation = Quaternion.Euler(new Vector3(-90f, 0, 0));
                     rpmIncrementer = 0;
                     rpmDecrementer = 9000;
@@ -499,9 +410,9 @@ namespace DonnerTech_ECU_Mod
                     ecu_InfoPanel_Handbrake.enabled = false;
                     ecu_InfoPanel_LowBeam.enabled = false;
                     ecu_InfoPanel_HighBeam.enabled = false;
+
                     foreach(KeyValuePair<string, TextMesh> display_value in display_values)
                     {
-                        display_value.Value.gameObject.SetActive(false);
                         display_value.Value.text = "";
                         display_value.Value.color = Color.white;
                     }
@@ -598,10 +509,10 @@ namespace DonnerTech_ECU_Mod
             {
                 currentPage = 0;
                 ChangeInfoPanelPage(currentPage);
-                ecu_InfoPanel_Background.sprite = ecu_mod_panel_page0;
+                ecu_InfoPanel_Background.sprite = pages[currentPage].pageSprite;
 
-                ecu_InfoPanel_Needle.enabled = true;
-                ecu_InfoPanel_TurboWheel.enabled = false;
+                ecu_InfoPanel_Needle.enabled = pages[currentPage].needleUsed;
+                ecu_InfoPanel_TurboWheel.enabled = pages[currentPage].turbineUsed;
                 ecu_InfoPanel_Background.enabled = true;
                 ecu_InfoPanel_IndicatorLeft.enabled = false;
                 ecu_InfoPanel_IndicatorRight.enabled = false;
@@ -610,7 +521,7 @@ namespace DonnerTech_ECU_Mod
                 ecu_InfoPanel_HighBeam.enabled = false;
                 foreach(KeyValuePair<string, TextMesh> display_value in display_values)
                 {
-                    display_value.Value.gameObject.SetActive(true);
+                    display_value.Value.gameObject.GetComponent<MeshRenderer>().enabled = true;
                     display_value.Value.text = "";
                 }
                 isBooting = true;
@@ -670,6 +581,10 @@ namespace DonnerTech_ECU_Mod
                 {
                     shift_indicator_renderer.material.color = shift_indicator_gradient.Evaluate(gradientValue);
                 }
+            }
+            else
+            {
+                shift_indicator_renderer.material.color = Color.black;
             }
 
         }
@@ -823,8 +738,8 @@ namespace DonnerTech_ECU_Mod
             switch (selectedSetting)
             {
                 case "Select 2Step RPM":
-                    step2RevRpm += 100;
-                    if (step2RevRpm >= 10000) { step2RevRpm = 10000; }
+                    mod.step2_rpm.Value += 100;
+                    if (mod.step2_rpm.Value >= 10000) { mod.step2_rpm.Value = 10000; }
                     break;
                 case "Select Shift Indicator green line":
                     shift_indicator_greenLine += 100;
@@ -836,11 +751,6 @@ namespace DonnerTech_ECU_Mod
                     SetupShiftIndicator();
                     break;
             }
-            /*else if(currentPage == 7)
-            {
-                //ecu_airride_logic.increaseAirride(true, true, 0.05f);
-            }
-            */
         }
 
         private void Pressed_Button_Minus()
@@ -848,8 +758,8 @@ namespace DonnerTech_ECU_Mod
             switch (selectedSetting)
             {
                 case "Select 2Step RPM":
-                    step2RevRpm -= 100;
-                    if (step2RevRpm <= 2000) { step2RevRpm = 2000; }
+                    mod.step2_rpm.Value -= 100;
+                    if (mod.step2_rpm.Value <= 2000) { mod.step2_rpm.Value = 2000; }
                     break;
                 case "Select Shift Indicator green line":
                     shift_indicator_greenLine -= 100;
@@ -882,13 +792,9 @@ namespace DonnerTech_ECU_Mod
         private void Pressed_Button_ArrowUp()
         {
             currentPage++;
-            if (!pageIndex.Contains(currentPage))
+            if(currentPage > pages.Length - 1)
             {
-                currentPage -= pageIndex.Length;
-                if (!pageIndex.Contains(currentPage))
-                {
-                    currentPage++;
-                }
+                currentPage = 0;
             }
             ChangeInfoPanelPage(currentPage);
         }
@@ -896,58 +802,18 @@ namespace DonnerTech_ECU_Mod
         private void Pressed_Button_ArrowDown()
         {
             currentPage--;
-            if (!pageIndex.Contains(currentPage))
+            if(currentPage < 0)
             {
-                currentPage += pageIndex.Length;
-                if (!pageIndex.Contains(currentPage))
-                {
-                    currentPage--;
-                }
+                currentPage = pages.Length - 1;
             }
             ChangeInfoPanelPage(currentPage);
         }
 
         private void ChangeInfoPanelPage(int currentPage)
         {
-            switch (currentPage)
-            {
-
-                case Page0.page:
-                    ecu_InfoPanel_Background.sprite = ecu_mod_panel_page0;
-                    ecu_InfoPanel_Needle.enabled = true;
-                    ecu_InfoPanel_TurboWheel.enabled = false;
-                    break;
-                case Page1.page:
-                    ecu_InfoPanel_Background.sprite = ecu_mod_panel_modules_page1;
-                    ecu_InfoPanel_Needle.enabled = true;
-                    ecu_InfoPanel_TurboWheel.enabled = false;
-                    break;
-                case Page2.page:
-                    ecu_InfoPanel_Background.sprite = ecu_mod_panel_faults_page2;
-                    ecu_InfoPanel_Needle.enabled = false;
-                    ecu_InfoPanel_TurboWheel.enabled = false;
-                    break;
-                case Page3.page:
-                    ecu_InfoPanel_Background.sprite = ecu_mod_panel_faults_page3;
-                    ecu_InfoPanel_Needle.enabled = false;
-                    ecu_InfoPanel_TurboWheel.enabled = false;
-                    break;
-                case Page4.page:
-                    ecu_InfoPanel_Background.sprite = ecu_mod_panel_tuner_page4;
-                    ecu_InfoPanel_Needle.enabled = false;
-                    ecu_InfoPanel_TurboWheel.enabled = false;
-                    break;
-                case Page5.page:
-                    ecu_InfoPanel_Background.sprite = ecu_mod_panel_turbo_page5;
-                    ecu_InfoPanel_Needle.enabled = false;
-                    ecu_InfoPanel_TurboWheel.enabled = true;
-                    break;
-                case Page6.page:
-                    ecu_InfoPanel_Background.sprite = ecu_mod_panel_assistance_page6;
-                    ecu_InfoPanel_Needle.enabled = false;
-                    ecu_InfoPanel_TurboWheel.enabled = false;
-                    break;
-            }
+            ecu_InfoPanel_Background.sprite = pages[currentPage].pageSprite;
+            ecu_InfoPanel_Needle.enabled = pages[currentPage].needleUsed;
+            ecu_InfoPanel_TurboWheel.enabled = pages[currentPage].turbineUsed;
 
             foreach(KeyValuePair<string, TextMesh> display_value in display_values)
             {
@@ -1060,6 +926,11 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
+        public void Init(DonnerTech_ECU_Mod mod)
+        {
+            this.mod = mod;
+        }
+
         private AudioSource dashButtonAudioSource
         {
             get
@@ -1075,11 +946,6 @@ namespace DonnerTech_ECU_Mod
         public void SetSelectedSetting(string selectedSetting)
         {
             this.selectedSetting = selectedSetting;
-        }
-
-        public int GetStep2RevRpm()
-        {
-            return step2RevRpm;
         }
     }
 }

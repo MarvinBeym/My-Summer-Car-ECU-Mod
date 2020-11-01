@@ -1,4 +1,5 @@
-﻿using DonnerTech_ECU_Mod.shop;
+﻿using DonnerTech_ECU_Mod.fuelsystem;
+using DonnerTech_ECU_Mod.shop;
 using ModApi.Attachable;
 using ModsShop;
 using MSCLoader;
@@ -17,24 +18,23 @@ namespace DonnerTech_ECU_Mod
         private ShopItem modsShopItem;
         private AssetBundle assetBundle;
         private PartBuySave partBuySave;
-        private IDictionary<string, Part> shopItems;
         List<ProductBought> products = new List<ProductBought>();
-        private List<ProductInformation> shopItemss;
+        private List<ProductInformation> shopItems;
 
-        public Shop(DonnerTech_ECU_Mod mod, ShopItem modsShopItem, AssetBundle assetBundle, PartBuySave partBuySave, List<ProductInformation> shopItemss)
+        public Shop(DonnerTech_ECU_Mod mod, ShopItem modsShopItem, AssetBundle assetBundle, PartBuySave partBuySave, List<ProductInformation> shopItems)
         {
             this.mod = mod;
             this.modsShopItem = modsShopItem;
             this.assetBundle = assetBundle;
             this.partBuySave = partBuySave;
-            this.shopItemss = shopItemss;
+            this.shopItems = shopItems;
         }
 
         private void PurchaseMade(PurchaseInfo item)
         {
             item.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
             item.gameObject.SetActive(true);
-            shopItemss.ForEach(delegate (ProductInformation productInformation)
+            shopItems.ForEach(delegate (ProductInformation productInformation)
             {
                 if(productInformation.gameObjectName == item.gameObject.name)
                 {
@@ -42,7 +42,7 @@ namespace DonnerTech_ECU_Mod
                 }
             });
         }
-
+        
         private void PurchaseMadeChip(PurchaseInfo item)
         {
             
@@ -68,6 +68,8 @@ namespace DonnerTech_ECU_Mod
                 );
                 chip_part.SetDisassembleFunction(new Action(mod.fuel_system.DisassembleChip));
                 chip_part.fuelMap_saveFile = fuelMap_saveFile;
+                chip_part.chipSave = new ChipSave();
+                chip_part.saveFile = saveFile;
                 mod.fuel_system.chip_parts.Add(chip_part);
             }
         }
@@ -99,6 +101,7 @@ namespace DonnerTech_ECU_Mod
                 case "Throttle Bodies": partBuySave.bought_throttle_bodies_box = bought; break;
                 case "Fuel Rail": partBuySave.bought_fuel_rail = bought; break;
                 case "Chip Programmer": partBuySave.bought_chip_programmer = bought; break;
+                case "Electric Fuel Pump": partBuySave.bought_electric_fuel_pump = bought; break;
             }
     }
 
@@ -113,14 +116,21 @@ namespace DonnerTech_ECU_Mod
 
         public void SetupShopItems()
         {
-            shopItemss.ForEach(delegate (ProductInformation productInformation)
+
+            
+            shopItems.ForEach(delegate (ProductInformation productInformation)
             {
+                Sprite productIcon = null;
+                if (productInformation.iconName != null && productInformation.iconName != "")
+                {
+                    productIcon = assetBundle.LoadAsset<Sprite>(productInformation.iconName);
+                }
                 ProductDetails product = new ModsShop.ProductDetails
                 {
                     productName = productInformation.productName,
                     multiplePurchases = false,
                     productCategory = "DonnerTech Racing",
-                    productIcon = productInformation.icon,
+                    productIcon = productIcon,
                     productPrice = productInformation.price
                 };
                 productInformation.product = product;
@@ -133,7 +143,7 @@ namespace DonnerTech_ECU_Mod
                 productName = "Programmable Chip",
                 multiplePurchases = true,
                 productCategory = "DonnerTech Racing",
-                productIcon = null,
+                productIcon = assetBundle.LoadAsset<Sprite>("chip_productImage.png"),
                 productPrice = 500
             };
 

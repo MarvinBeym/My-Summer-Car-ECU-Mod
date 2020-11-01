@@ -8,18 +8,9 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
     class Page7 : InfoPanelPage
     {
-        public const int page = 7;
-        private DonnerTech_ECU_Mod mod;
-        private GameObject needle;
-        private Dictionary<string, TextMesh> display_values;
-        private InfoPanel_Logic logic;
-
-        public Page7(DonnerTech_ECU_Mod mod, InfoPanel_Logic logic, GameObject needle, Dictionary<string, TextMesh> display_values)
+        public Page7(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(pageID, mod, pageName, assetSpriteName, display_values)
         {
-            this.mod = mod;
-            this.needle = needle;
-            this.display_values = display_values;
-            this.logic = logic;
+
         }
         public override string[] guiTexts => new string[]
         {

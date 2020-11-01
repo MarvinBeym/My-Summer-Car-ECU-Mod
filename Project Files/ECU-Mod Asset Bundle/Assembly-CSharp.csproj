@@ -46,10 +46,10 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\FloatForce.cs" />
-     <Compile Include="Assets\Test.cs" />
-     <None Include="Assets\Shift-Light-Shader.shader" />
-     <None Include="Assets\Custom3DTextDigital.shader" />
+     <Compile Include="Assets\FuelSystem\FloatForce.cs" />
+     <Compile Include="Assets\Others\Test.cs" />
+     <None Include="Assets\Info-Panel\Shift-Light-Shader.shader" />
+     <None Include="Assets\Others\Custom3DTextDigital.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>P:/Unity 5.0.0/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

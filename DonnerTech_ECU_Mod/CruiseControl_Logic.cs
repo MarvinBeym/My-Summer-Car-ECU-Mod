@@ -16,9 +16,16 @@ namespace DonnerTech_ECU_Mod
 
         private AudioSource dashButtonAudio;
 
-        private bool allPartsFixed
+        private bool allPartsInstalled
         {
-            get { return (mod.smart_engine_module_part.InstalledScrewed() && mod.cable_harness_part.InstalledScrewed() && mod.mounting_plate_part.InstalledScrewed()); }
+            get 
+            { return 
+                    (
+                    mod.smart_engine_module_part.InstalledScrewed() &&
+                    mod.cable_harness_part.InstalledScrewed() &&
+                    mod.mounting_plate_part.InstalledScrewed() &&
+                    mod.fuel_system.allInstalled);
+            }
         }
 
 
@@ -55,12 +62,9 @@ namespace DonnerTech_ECU_Mod
             cruiseControlText = cruiseControlPanel.GetComponentInChildren<TextMesh>();
         }
 
-
-
-        // Update is called once per frame
         void Update()
         {
-            if (mod.hasPower && allPartsFixed && mod.playerCurrentVehicle.Value == "Satsuma")
+            if (mod.hasPower && allPartsInstalled && mod.playerCurrentVehicle.Value == "Satsuma")
             {
                 HandleButtonPresses();
 
@@ -98,7 +102,7 @@ namespace DonnerTech_ECU_Mod
 
                 }
             }
-            else if (!mod.hasPower)
+            else
             {
                 setCruiseControlSpeed = 0;
                 cruiseControlModuleEnabled = false;

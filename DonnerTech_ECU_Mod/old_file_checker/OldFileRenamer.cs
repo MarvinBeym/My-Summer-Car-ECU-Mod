@@ -1,4 +1,5 @@
-﻿using MSCLoader;
+﻿using HutongGames.PlayMaker;
+using MSCLoader;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,10 +41,16 @@ namespace DonnerTech_ECU_Mod
                 bool buttonState = GUI.Button(new Rect((Screen.width / 2) - (guiWidth / 2), (Screen.height / 2) + (guiHeight / 2) - 40, baseGuiWidth, 40), "Close");
                 if (buttonState)
                 {
-                    showGui = false;
+                    SetGui(false);
                 }
             }
         }
+
+        private void SetGui(bool guiState)
+        {
+            showGui = guiState;
+        }
+
         public void RenameOldFiles(string directoryToCheck, Dictionary<string, string> oldToNew)
         {
             foreach(KeyValuePair<string, string> oldNewName in oldToNew)
@@ -65,7 +72,7 @@ namespace DonnerTech_ECU_Mod
             }
             if(renamedFiles.Count > 0)
             {
-                showGui = true;
+                SetGui(true);
             }
         }
 

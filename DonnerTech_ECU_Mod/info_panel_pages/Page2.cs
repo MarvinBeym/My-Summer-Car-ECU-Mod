@@ -9,12 +9,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
     class Page2 : InfoPanelPage
     {
-        public const int page = 2;
-        private DonnerTech_ECU_Mod mod;
-        private GameObject needle;
-        private Dictionary<string, TextMesh> display_values;
-        private InfoPanel_Logic logic;
-
         private FsmFloat wearAlternator;
         private FsmFloat wearClutch;
         private FsmFloat wearCrankshaft;
@@ -31,13 +25,8 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat wearHeadlightBulbLeft;
         private FsmFloat wearHeadlightBulbRight;
 
-        public Page2(DonnerTech_ECU_Mod mod, InfoPanel_Logic logic, GameObject needle, Dictionary<string, TextMesh> display_values)
+        public Page2(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(pageID, mod, pageName, assetSpriteName, display_values)
         {
-            this.mod = mod;
-            this.needle = needle;
-            this.display_values = display_values;
-            this.logic = logic;
-
             PlayMakerFSM mechanicalWear = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear").GetComponent<PlayMakerFSM>();
 
             wearAlternator = mechanicalWear.FsmVariables.FindFsmFloat("WearAlternator");

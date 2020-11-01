@@ -3,6 +3,7 @@ using System.Collections;
 using DonnerTech_ECU_Mod;
 using ModApi;
 using MSCLoader;
+using System.Linq;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -57,6 +58,38 @@ namespace DonnerTech_ECU_Mod
             this.mod = mod;
             this.parts = parts;
             this.actionToDisplay = actionToDisplay;
+        }
+
+        public void CheckBoxPosReset(bool boughtBox)
+        {
+            if(boughtBox)
+            {
+                if(!parts.Any(part => part.installed || part.activePart.activeSelf))
+                {
+                    this.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
+                }
+            }
+        }
+
+        public void CheckUnpackedOnSave(bool boughtBox)
+        {
+            if(boughtBox)
+            {
+                if (spawnedCounter < parts.Length)
+                {
+                    foreach (SimplePart part in parts)
+                    {
+                        if (!part.installed && !part.activePart.activeSelf)
+                        {
+                            part.activePart.transform.position = this.gameObject.transform.position;
+                            part.activePart.SetActive(true);
+                        }
+                    }
+                }
+                this.gameObject.SetActive(false);
+                this.gameObject.transform.position = new Vector3(0, 0, 0);
+                this.gameObject.transform.localPosition = new Vector3(0, 0, 0);
+            }
         }
 
         private bool useButtonDown

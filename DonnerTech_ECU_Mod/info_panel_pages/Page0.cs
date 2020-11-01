@@ -11,18 +11,21 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
     class Page0 : InfoPanelPage
     {
-        public const int page = 0;
-        private DonnerTech_ECU_Mod mod;
         private GameObject needle;
-        private Dictionary<string, TextMesh> display_values;
-        private InfoPanel_Logic logic;
 
         private FsmInt odometerKM;
         private FsmFloat coolantPressurePSI;
         private FsmFloat coolantTemp;
         private FsmFloat clockHours;
         private FsmFloat voltage;
-        private FsmFloat afRatio;
+
+        private FsmBool carbInstalled;
+        private FsmBool racingCarbInstalled;
+        private FsmBool twinCarbInstalled;
+
+        private FsmFloat afRatioCarb;
+        private FsmFloat afRatioRacingCarb;
+        private FsmFloat afRatioTwinCarb;
 
         private float timerFuel = 0;
         private float fuelConsumption = 0;
@@ -35,14 +38,22 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private Timer odometerUpdateTimer;
         private Timer voltageUpdateTimer;
 
-        public Page0(DonnerTech_ECU_Mod mod, InfoPanel_Logic logic, GameObject needle, Dictionary<string, TextMesh> display_values)
+        public Page0(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, GameObject needle, Dictionary<string, TextMesh> display_values): base(pageID, mod, pageName, assetSpriteName, display_values)
         {
-            this.mod = mod;
             this.needle = needle;
-            this.display_values = display_values;
-            this.logic = logic;
+            needleUsed = true;
 
-            this.afRatio = logic.afRatio;
+            PlayMakerFSM carbFSM = GameObject.Find("Carburator").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM racingCarbFSM = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM twinCarb = GameObject.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
+
+            carbInstalled = carbFSM.FsmVariables.FindFsmBool("Installed");
+            racingCarbInstalled = racingCarbFSM.FsmVariables.FindFsmBool("Installed");
+            twinCarbInstalled = twinCarb.FsmVariables.FindFsmBool("Installed");
+
+            afRatioCarb = carbFSM.FsmVariables.FindFsmFloat("IdleAdjust");
+            afRatioRacingCarb = racingCarbFSM.FsmVariables.FindFsmFloat("AdjustAverage");
+            afRatioTwinCarb = twinCarb.FsmVariables.FindFsmFloat("IdleAdjust");
 
             GameObject dataBaseMechanics = GameObject.Find("Database/DatabaseMechanics");
             PlayMakerFSM[] dataBaseMechanicsFSMs = dataBaseMechanics.GetComponentsInChildren<PlayMakerFSM>();
@@ -90,9 +101,21 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             
             display_values["value_1"].text = Convert.ToInt32(satsumaDriveTrain.rpm).ToString();
             display_values["value_2"].text = Convert.ToInt32(coolantTemp.Value).ToString();
-            if (afRatio != null)
+            if (carbInstalled.Value)
             {
-                display_values["value_3"].text = afRatio.Value.ToString("00.00");
+                display_values["value_3"].text = afRatioCarb.Value.ToString("00.00");
+            }
+            else if (racingCarbInstalled.Value)
+            {
+                display_values["value_3"].text = afRatioRacingCarb.Value.ToString("00.00");
+            }
+            else if (twinCarbInstalled.Value)
+            {
+                display_values["value_3"].text = afRatioTwinCarb.Value.ToString("00.00");
+            }
+            else
+            {
+                display_values["value_3"].text = "00.00";
             }
             
             display_values["value_4"].text = Convert.ToInt32(coolantPressurePSI.Value).ToString();

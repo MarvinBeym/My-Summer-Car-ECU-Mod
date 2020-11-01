@@ -15,7 +15,7 @@ namespace DonnerTech_ECU_Mod
 
         private DonnerTech_ECU_Mod mod;
         private FuelSystem fuel_system;
-
+        private bool startAssistEnabled = false;
 
         public float[,] fuelMap;
 
@@ -25,16 +25,13 @@ namespace DonnerTech_ECU_Mod
         private Transform throttle_body3_valve;
         private Transform throttle_body4_valve;
 
-        private float maxRotation = 90f;
-        private float minRotation = 0f;
-
         // Use this for initialization
         void Start()
         {
-            throttle_body1_valve = mod.throttle_body1_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body2_valve = mod.throttle_body2_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body3_valve = mod.throttle_body3_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body4_valve = mod.throttle_body4_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body1_valve = fuel_system.throttle_body1_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body2_valve = fuel_system.throttle_body2_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body3_valve = fuel_system.throttle_body3_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body4_valve = fuel_system.throttle_body4_part.rigidPart.transform.FindChild("Butterfly-Valve");
             this.satsumaDriveTrain = fuel_system.satsumaDriveTrain;
         }
 
@@ -45,10 +42,10 @@ namespace DonnerTech_ECU_Mod
             {
                 if (
                     (bool)mod.settingThrottleBodieTurning.Value
-                    && mod.throttle_body1_part.InstalledScrewed()
-                    && mod.throttle_body2_part.InstalledScrewed()
-                    && mod.throttle_body3_part.InstalledScrewed()
-                    && mod.throttle_body4_part.InstalledScrewed()
+                    && fuel_system.throttle_body1_part.InstalledScrewed()
+                    && fuel_system.throttle_body2_part.InstalledScrewed()
+                    && fuel_system.throttle_body3_part.InstalledScrewed()
+                    && fuel_system.throttle_body4_part.InstalledScrewed()
                     )
                 {
                     HandleThrottleBodyMovement();
@@ -64,21 +61,33 @@ namespace DonnerTech_ECU_Mod
                         if (part.installed && part.chipSave.chipProgrammed)
                         {
                             fuelMap = part.chipSave.map;
+                            startAssistEnabled = part.chipSave.startAssistEnabled;
+                            fuel_system.distributor_sparkAngle.Value = part.chipSave.sparkAngle;
                             break;
+                        }
+                    }
+
+                    if(startAssistEnabled)
+                    {
+                        if(satsumaDriveTrain.differentialSpeed < 15 && (satsumaDriveTrain.gear == 2 || satsumaDriveTrain.gear == 0))
+                        {
+                            satsumaDriveTrain.canStall = false;
+                        }
+                        else
+                        {
+                            satsumaDriveTrain.canStall = true;
                         }
                     }
 
                     if (fuelMap != null && satsumaDriveTrain.rpm > 0)
                     {
-
                         int mapRpmIndex = GetRPMIndex(Convert.ToInt32(satsumaDriveTrain.rpm));
                         int mapThrottleIndex = GetThrottleIndex((int)(mod.axisCarController.throttle) * 100);
                         fuel_system.racingCarb_adjustAverage.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
                     }
                     else
                     {
-                        //Prevent engine from starting/running
-                        //Maybe show error on info panel
+                        fuel_system.allInstalled_applied = false;
                     }
                 }
             }

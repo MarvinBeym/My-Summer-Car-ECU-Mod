@@ -9,12 +9,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
     class Page3 : InfoPanelPage
     {
-        public const int page = 3;
-        private DonnerTech_ECU_Mod mod;
-        private GameObject needle;
-        private Dictionary<string, TextMesh> display_values;
-        private InfoPanel_Logic logic;
-
         private FsmBool radiator_installed;
         private FsmBool race_radiator_installed;
         private FsmBool oilpan_installed;
@@ -40,13 +34,8 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat wearSpark3;
         private FsmFloat wearSpark4;
 
-        public Page3(DonnerTech_ECU_Mod mod, InfoPanel_Logic logic, GameObject needle, Dictionary<string, TextMesh> display_values)
+        public Page3(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(pageID, mod, pageName, assetSpriteName, display_values)
         {
-            this.mod = mod;
-            this.needle = needle;
-            this.display_values = display_values;
-            this.logic = logic;
-
             PlayMakerFSM race_radiatorFSM = GameObject.Find("Racing Radiator").GetComponent<PlayMakerFSM>();
             PlayMakerFSM radiatorFSM = GameObject.Find("Radiator").GetComponent<PlayMakerFSM>();
             PlayMakerFSM oilpanFSM = GameObject.Find("Oilpan").GetComponent<PlayMakerFSM>();

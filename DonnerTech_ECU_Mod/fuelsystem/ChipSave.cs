@@ -7,7 +7,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 {
     public class ChipSave
     {
+        public float sparkAngle { get; set; } = 20.0f;
+
         public bool chipProgrammed { get; set; } = false;
+        public bool startAssistEnabled { get; set; } = false;
         public float[,] map { get; set; } = null;
     }
 }

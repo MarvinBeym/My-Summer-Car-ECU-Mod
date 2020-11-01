@@ -15,25 +15,6 @@ namespace DonnerTech_ECU_Mod
         {
         }
 
-        public override PartSaveInfo defaultPartSaveInfo => new PartSaveInfo()
-        {
-            installed = false, //Will make part installed
-
-            position = ModsShop.FleetariSpawnLocation.desk,
-            rotation = Quaternion.Euler(0, 0, 0),
-        };
-
-        public override GameObject rigidPart
-        {
-            get;
-            set;
-        }
-        public override GameObject activePart
-        {
-            get;
-            set;
-        }
-
         protected override void assemble(bool startUp = false)
         {
             // do stuff on assemble.
@@ -46,7 +27,7 @@ namespace DonnerTech_ECU_Mod
 
         protected override void disassemble(bool startup = false)
         {
-            if (mod != null && mod.smart_engine_module_logic != null && mod.smart_engine_module_logic.tcsModule_enabled != null && mod.smart_engine_module_logic.tcsModule_enabled.Value)
+            if (mod != null && mod.smart_engine_module_logic != null && mod.tcsModule_enabled != null && mod.tcsModule_enabled.Value)
             {
                 mod.smart_engine_module_logic.ToggleTCS();
             }

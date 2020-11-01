@@ -1,0 +1,51 @@
+# Blender MTL File: 'Blender-Project.blend'
+# Material Count: 5
+
+newmtl Black-Material
+Ns 440.999985
+Ka 0.700000 0.700000 0.700000
+Kd 0.000000 0.000000 0.000000
+Ks 0.400000 0.400000 0.400000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl Bronze-Material
+Ns 575.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.200000 0.050000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl Connector-Material.001
+Ns 81.000006
+Ka 1.000000 1.000000 1.000000
+Kd 0.149960 0.149960 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl None
+Ns 500
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
+illum 2
+
+newmtl Steel-Material
+Ns 323.999994
+Ka 0.800000 0.800000 0.800000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:\\Users\\Marvin Beym\\source\\repos\\DonnerTech_ECU_Mod\\Project Files\\Blender\\images\\Steel-Material.png

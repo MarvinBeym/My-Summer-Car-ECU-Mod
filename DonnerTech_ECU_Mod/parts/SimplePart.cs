@@ -18,7 +18,7 @@ namespace DonnerTech_ECU_Mod
          * returnArray[2] = Loaded save file. or null if not found/not bought
          */
         protected DonnerTech_ECU_Mod mod;
-        protected ScrewablePart screwablePart;
+        public ScrewablePart screwablePart { get; set; } = null;
         public Vector3 installLocation;
         public PartSaveInfo partSaveInfo;
         public bool bought;
@@ -67,22 +67,16 @@ namespace DonnerTech_ECU_Mod
             this.disassembleFunction = action;
         }
 
-        public bool InstalledScrewed()
+        public bool InstalledScrewed(bool ignoreScrewed = false)
         {
-            if (screwablePart != null)
+            if (!ignoreScrewed)
             {
-                return (this.installed && screwablePart.partFixed);
+                if (screwablePart != null)
+                {
+                    return (this.installed && screwablePart.partFixed);
+                }
             }
             return this.installed;
-        }
-
-        public void SetScrewablePart(ScrewablePart screwablePart)
-        {
-            this.screwablePart = screwablePart;
-        }
-        public ScrewablePart GetScrewablePart()
-        {
-            return this.screwablePart;
         }
 
         public override PartSaveInfo defaultPartSaveInfo => new PartSaveInfo()

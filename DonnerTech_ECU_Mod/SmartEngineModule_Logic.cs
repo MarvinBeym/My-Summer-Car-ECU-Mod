@@ -19,10 +19,7 @@ namespace DonnerTech_ECU_Mod
 
         private PlayMakerFSM smart_engine_moduleFSM;
         private FsmBool smart_engine_module_allInstalled;
-        
-        public FsmBool absModule_enabled { get; set; }
-        public FsmBool espModule_enabled { get; set; }
-        public FsmBool tcsModule_enabled { get; set; }
+       
         public FsmBool alsModule_enabled { get; set; }
         public FsmBool step2RevLimiterModule_enabled { get; set; }
        
@@ -59,9 +56,6 @@ namespace DonnerTech_ECU_Mod
             smart_engine_moduleFSM.FsmVariables.BoolVariables = new FsmBool[]
             {
                 smart_engine_module_allInstalled,
-                absModule_enabled,
-                espModule_enabled,
-                tcsModule_enabled,
                 alsModule_enabled,
                 step2RevLimiterModule_enabled
             };
@@ -81,12 +75,12 @@ namespace DonnerTech_ECU_Mod
                 {
                     if (playerCurrentVehicle.Value == "Satsuma")
                     {
-                        if (step2RevLimiterModule_enabled.Value)
+                        if (mod.step2RevLimiterModule_enabled.Value)
                         {
                             HandleStep2RevLimiterModule();
                         }
 
-                        if (alsModule_enabled.Value)
+                        if (mod.alsModule_enabled.Value)
                         {
                             HandleALSModuleLogic();
                         }
@@ -123,12 +117,12 @@ namespace DonnerTech_ECU_Mod
             if (mod.abs_module_part.InstalledScrewed())
             {
                 satsuma.GetComponent<CarController>().ABS = !satsuma.GetComponent<CarController>().ABS;
-                absModule_enabled.Value = satsuma.GetComponent<CarController>().ABS;
+                mod.absModule_enabled.Value = satsuma.GetComponent<CarController>().ABS;
             }
             else
             {
                 satsuma.GetComponent<CarController>().ABS = false;
-                absModule_enabled.Value = false;
+                mod.absModule_enabled.Value = false;
             }
 
 
@@ -138,12 +132,12 @@ namespace DonnerTech_ECU_Mod
             if (mod.esp_module_part.InstalledScrewed())
             {
                 satsuma.GetComponent<CarController>().ESP = !satsuma.GetComponent<CarController>().ESP;
-                espModule_enabled.Value = satsuma.GetComponent<CarController>().ESP;
+                mod.espModule_enabled.Value = satsuma.GetComponent<CarController>().ESP;
             }
             else
             {
                 satsuma.GetComponent<CarController>().ESP = false;
-                espModule_enabled.Value = false;
+                mod.espModule_enabled.Value = false;
             }
 
         }
@@ -152,36 +146,38 @@ namespace DonnerTech_ECU_Mod
             if (mod.tcs_module_part.InstalledScrewed())
             {
                 satsuma.GetComponent<CarController>().TCS = !satsuma.GetComponent<CarController>().TCS;
-                tcsModule_enabled.Value = satsuma.GetComponent<CarController>().TCS;
+                mod.tcsModule_enabled.Value = satsuma.GetComponent<CarController>().TCS;
             }
             else
             {
                 satsuma.GetComponent<CarController>().TCS = false;
-                tcsModule_enabled.Value = false;
+                mod.tcsModule_enabled.Value = false;
             }
 
         }
 
         public void ToggleALS()
         {
+            mod.alsModule_enabled.Value = !mod.alsModule_enabled.Value;
             alsModule_enabled.Value = !alsModule_enabled.Value;
         }
         public void Toggle2StepRevLimiter()
         {
+            mod.step2RevLimiterModule_enabled.Value = !mod.step2RevLimiterModule_enabled.Value;
             step2RevLimiterModule_enabled.Value = !step2RevLimiterModule_enabled.Value;
         }
 
         public void HandleStep2RevLimiterModule()
         {
-            if(step2RevLimiterModule_enabled.Value && satsumaDriveTrain.velo < 3.5f)
+            if(mod.step2RevLimiterModule_enabled.Value && satsumaDriveTrain.velo < 3.5f)
             {
                 satsumaDriveTrain.revLimiterTime = 0;
-                satsumaDriveTrain.maxRPM = mod.GetStep2RevRpm();
+                satsumaDriveTrain.maxRPM = mod.step2_rpm.Value;
             }
             else
             {
                 satsumaDriveTrain.revLimiterTime = 0.2f;
-                if (step2RevLimiterModule_enabled.Value)
+                if (mod.step2RevLimiterModule_enabled.Value)
                 {
                     Toggle2StepRevLimiter();
                 }

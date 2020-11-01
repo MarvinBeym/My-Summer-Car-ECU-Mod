@@ -1,7 +1,9 @@
 ﻿using HutongGames.PlayMaker;
 using ModApi;
+using MSCLoader;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -10,6 +12,15 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
     public abstract class InfoPanelPage
     {
+        protected int pageID;
+        public Sprite pageSprite;
+        protected DonnerTech_ECU_Mod mod;
+        protected InfoPanel_Logic logic;
+        protected Dictionary<string, TextMesh> display_values;
+
+        public bool needleUsed {get; set; } = false;
+        public bool turbineUsed { get; set; } = false;
+
         public GameObject satsuma;
         public Drivetrain satsumaDriveTrain;
         public CarController satsumaCarController;
@@ -19,8 +30,15 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private const float needle_minAngle = 0;
         private const float needle_maxRPM = 9000;
 
-        public InfoPanelPage()
+        public InfoPanelPage(int pageID, DonnerTech_ECU_Mod mod, string pageName, string assetSpriteName, Dictionary<string, TextMesh> display_values)
         {
+            this.pageID = pageID;
+            this.mod = mod;
+            logic = mod.info_panel_logic;
+            this.display_values = display_values;
+
+            pageSprite = logic.assetBundle.LoadAsset<Sprite>(assetSpriteName + ".png");
+            pageSprite = logic.LoadNewSprite(pageSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + pageName + ".png"));
             satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
             satsumaCarController = satsuma.GetComponent<CarController>();

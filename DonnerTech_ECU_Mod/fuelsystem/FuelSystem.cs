@@ -14,8 +14,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
     public class FuelSystem
     {
         public FuelSystemLogic fuel_system_logic { get; set; }
-        public Canvas programmer_ui { get; set; }
-        private GameObject programmer_ui_gameObject { get; set; }
+        public ChipProgrammer chip_programmer { get; set; }
+
         public SimplePart fuel_injector1_part;
         public SimplePart fuel_injector2_part;
         public SimplePart fuel_injector3_part;
@@ -29,7 +29,17 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         public SimplePart fuel_rail_part;
         public SimplePart fuel_pump_cover_part;
         public SimplePart fuel_injection_manifold_part;
+        public SimplePart electric_fuel_pump_part;
         public List<SimplePart> allParts = new List<SimplePart>();
+        public List<OriginalPart> allOriginalParts = new List<OriginalPart>();
+
+        public FsmFloat distributor_sparkAngle;
+
+        public GameObject fuelStrainer_gameObject;
+        public GameObject fuelStrainer_trigger;
+        public FsmBool fuelStrainer_installed;
+        public FsmBool fuelStrainer_bolted;
+        public FsmBool fuelStrainer_detach;
 
         public GameObject carb_trigger;
         public FsmBool carb_installed;
@@ -37,50 +47,20 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         public GameObject twinCarb_trigger;
         public FsmBool twinCarb_installed;
 
-        public GameObject racingCarb_trigger;
-        public FsmBool racingCarb_installed;
-        public FsmBool racingCarb_bolted;
-        public FsmFloat racingCarb_adjust1;
-        public FsmFloat racingCarb_adjust2;
-        public FsmFloat racingCarb_adjust3;
-        public FsmFloat racingCarb_adjust4;
         public FsmFloat racingCarb_adjustAverage;
-        public FsmFloat racingCarb_adjustMax;
-        public FsmFloat racingCarb_adjustMin;
-        public FsmFloat racingCarb_differenceMax;
-        public FsmFloat racingCarb_differenceMin;
-        public FsmFloat racingCarb_idealSetting;
-        public FsmFloat racingCarb_max;
-        public FsmFloat racingCarb_min;
         public FsmFloat racingCarb_tolerance;
-        public FsmBool racingCarb_detach;
-        public GameObject racingCarb_gameObject;
-
-        public GameObject pump_trigger;
-        public FsmBool pump_installed;
-        public FsmBool pump_bolted;
-        public FsmBool pump_detach;
-        public GameObject pump_gameObject;
-
 
         public Drivetrain satsumaDriveTrain;
 
         private const string orignal_parts_saveFile = "original_parts_saveFile.txt";
         private OriginalPartsSave originalPartsSave;
 
-        public InputField[,] inputFieldMap = new InputField[14, 17];
-        
-        public List<string> chip_errors = new List<string>();
         public List<ChipPart> chip_parts = new List<ChipPart>();
 
-        private RaycastHit hit;
-
-        private GameObject chip_programmer_chip;
-        private FsmGameObject itemPivot;
         public bool fuel_injection_manifold_applied = false;
 
-        public Vector3 chip_installLocation = new Vector3(0, 0, 0);
-
+        public Vector3 chip_installLocation = new Vector3(0.008f, 0.001f, -0.058f);
+        public Vector3 chip_installRotation = new Vector3(0, 90, -90);
         public DonnerTech_ECU_Mod mod;
         public bool allInstalled
         {
@@ -93,23 +73,14 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         {
             get
             {
-                return allParts.Any(c => c.installed == true);
+                return allParts.Any(c => c.InstalledScrewed() == true);
             }
         }
-
-        public bool pumpInstalled
+        public bool anyOriginalInstalled
         {
             get
             {
-                return (pump_gameObject.transform.parent != null);
-            }
-        }
-
-        public bool racingCarbInstalled
-        {
-            get
-            {
-                return (racingCarb_gameObject.transform.parent != null);
+                return allOriginalParts.Any(originalPart => originalPart.gameObjectInstalled == true);
             }
         }
 
@@ -117,166 +88,37 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         {
 
             this.mod = mod;
-            itemPivot = PlayMakerGlobals.Instance.Variables.FindFsmGameObject("ItemPivot");
+
             GameObject satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
 
+            chip_programmer = new ChipProgrammer(mod, this);
+
+            PlayMakerFSM distributor = GameObject.Find("Distributor").GetComponent<PlayMakerFSM>();
+
             PlayMakerFSM carb = GameObject.Find("Carburator").GetComponent<PlayMakerFSM>();
             PlayMakerFSM twinCarb = GameObject.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM race_carb = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM pump = GameObject.Find("Fuelpump").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM raceCarb = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
+            //PlayMakerFSM fuelStrainer = GameObject.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
 
-            pump_gameObject = GameObject.Find("fuel pump(Clone)");
-
-            PlayMakerFSM[] comps = pump_gameObject.GetComponents<PlayMakerFSM>();
-            foreach(PlayMakerFSM comp in comps)
+            originalPartsSave = SaveLoad.DeserializeSaveFile<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
+            if (originalPartsSave == null)
             {
-                if(comp.FsmName == "Removal")
-                {
-                    pump_detach = comp.FsmVariables.FindFsmBool("Detach");
-                }
+                originalPartsSave = new OriginalPartsSave();
             }
 
-            racingCarb_gameObject = GameObject.Find("racing carburators(Clone)");
-            comps = racingCarb_gameObject.GetComponents<PlayMakerFSM>();
-            foreach (PlayMakerFSM comp in comps)
-            {
-                if (comp.FsmName == "Removal")
-                {
-                    racingCarb_detach = comp.FsmVariables.FindFsmBool("Detach");
-                }
-            }
+            allOriginalParts.Add(new OriginalPart("Electrics", "pivot_electrics", GameObject.Find("Electrics"), originalPartsSave.electrics_position, originalPartsSave.electrics_rotation, originalPartsSave.electrics_installed));
+            allOriginalParts.Add(new OriginalPart("Distributor", "pivot_distributor", GameObject.Find("Distributor"), originalPartsSave.distributor_position, originalPartsSave.distributor_rotation, originalPartsSave.distributor_installed));
+            allOriginalParts.Add(new OriginalPart("Racing Carburators", "pivot_carburator", GameObject.Find("Racing Carburators"), originalPartsSave.racingCarb_position, originalPartsSave.racingCarb_rotation, originalPartsSave.racingCarb_installed));
+            allOriginalParts.Add(new OriginalPart("Fuelpump", "pivot_fuel pump", GameObject.Find("Fuelpump"), originalPartsSave.fuelPump_position, originalPartsSave.fuelPump_rotation, originalPartsSave.fuelPump_installed));
 
+            //fuelStrainer_gameObject = GameObject.Find("fuel strainer(Clone)");
+            //fuelStrainer_detach = GetDetachFsmBool(fuelStrainer_gameObject);
+            //fuelStrainer_trigger = distributor.FsmVariables.FindFsmGameObject("Trigger").Value;
+            //fuelStrainer_installed = distributor.FsmVariables.FindFsmBool("Installed");
+            //fuelStrainer_bolted = distributor.FsmVariables.FindFsmBool("Bolted");
 
-            programmer_ui_gameObject = GameObject.Instantiate((mod.assetBundle.LoadAsset("ui_interface.prefab") as GameObject));
-            programmer_ui_gameObject.name = "FuelSystem_Programmer_UI_GameObject";
-            programmer_ui = programmer_ui_gameObject.GetComponent<Canvas>();
-            programmer_ui.name = "FuelSystem_Programmer_UI";
-            programmer_ui.enabled = false;
-
-            GameObject[] childs = new GameObject[programmer_ui.transform.childCount];
-
-
-            GameObject btn_test = new GameObject();
-            Button btn_writeChip = programmer_ui.transform.FindChild("btn_writeChip").gameObject.GetComponent<Button>();
-            Button btn_resetMap = programmer_ui.transform.FindChild("btn_resetMap").gameObject.GetComponent<Button>();
-            btn_writeChip.onClick.AddListener(delegate ()
-            {
-                chip_errors.Clear();
-
-                /*
-                float counter = 10f;
-                for (int y = 0; y < 14; y++)
-                {
-                    for (int x = 0; x < 17; x++)
-                    {
-                        counter = (10 + 1 + y) + (0.05f * x);
-                        try
-                        {
-                            
-                            fuelMap[y, x] = Convert.ToSingle(counter);
-                            inputFieldMap[y, x].text = counter.ToString("00.0");
-                        }
-                        catch
-                        {
-                            //Write to logger
-                        }
-                    }
-                }
-                */
-                float[,] fuelMap = new float[14, 17];
-                
-                for (int y = 0; y < 14; y++)
-                {
-                    for (int x = 0; x < 17; x++)
-                    {
-                        try
-                        {
-                            if (inputFieldMap[y, x].text == "")
-                            {
-                                chip_errors.Add(String.Format("Value in column {0}, row {1} is invalid", y, x));
-                                //Add Error message shown to user
-                            }
-                            fuelMap[y, x] = Convert.ToSingle(inputFieldMap[y, x].text);
-                        }
-                        catch
-                        {
-                            mod.logger.New("Error while trying to write chip map");
-                        }
-                    }
-                }
-
-                if (chip_errors.Count == 0)
-                {
-                    for(int index = 0; index < chip_parts.Count; index++)
-                    {
-                        ChipPart part = chip_parts[index];
-                        if (part.chipInstalledOnProgrammer)
-                        {
-                            part.activePart.SetActive(true);
-                            chip_programmer_chip.SetActive(false);
-                            chipInstalledOnProgrammer = false;
-                            chipOnProgrammer = null;
-                            part.chipInstalledOnProgrammer = false;
-                            part.chipSave.map = fuelMap;
-                            part.chipSave.chipProgrammed = true;
-
-                            Vector3 chip_programmer_position = mod.chip_programmer_part.activePart.transform.position;
-                            part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    //Display error message stuff
-                }
-                
-            });
-            btn_resetMap.onClick.AddListener(delegate ()
-            {
-                for (int y = 0; y < 14; y++)
-                {
-                    for (int x = 0; x < 17; x++)
-                    {
-                        try
-                        {
-                            inputFieldMap[y, x].text = "10.0";
-                        }
-                        catch(Exception ex)
-                        {
-                            mod.logger.New("Error while trying to reset programmer input field", $"y - x index: {y} - {x}");
-                        }
-                    }
-                }
-            });
-
-            inputFieldMap = new InputField[14, 17];
-
-            GameObject table = programmer_ui.transform.FindChild("table").gameObject;
-
-            InputField[] inputFields = new InputField[238];
-
-            for (int i = 0; i < inputFields.Length; i++)
-            {
-                inputFields[i] = table.transform.FindChild("input-" + (i + 1)).GetComponent<InputField>();
-            }
-
-            for (int y = 0; y < 14; y++)
-            {
-                for (int x = 0; x < 17; x++)
-                {
-                    int index = ((y * 17) + x);
-                    FloatForce floatForce = inputFields[index].gameObject.AddComponent<FloatForce>();
-                    floatForce.inputField = inputFields[index];
-                    inputFieldMap[y, x] = inputFields[index];
-                }
-            }
-
-
-            pump_trigger = pump.FsmVariables.FindFsmGameObject("Trigger").Value;
-            pump_installed = pump.FsmVariables.FindFsmBool("Installed");
-            pump_bolted = pump.FsmVariables.FindFsmBool("Bolted");
+            distributor_sparkAngle = distributor.FsmVariables.FindFsmFloat("SparkAngle");
 
             carb_trigger = carb.FsmVariables.FindFsmGameObject("Trigger").Value;
             carb_installed = carb.FsmVariables.FindFsmBool("Installed");
@@ -284,37 +126,25 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             twinCarb_trigger = twinCarb.FsmVariables.FindFsmGameObject("Trigger").Value;
             twinCarb_installed = twinCarb.FsmVariables.FindFsmBool("Installed");
 
-            racingCarb_trigger = race_carb.FsmVariables.FindFsmGameObject("Trigger").Value;
-            racingCarb_installed = race_carb.FsmVariables.FindFsmBool("Installed");
-            racingCarb_bolted = race_carb.FsmVariables.FindFsmBool("Bolted");
-            racingCarb_adjust1 = race_carb.FsmVariables.FindFsmFloat("Adjust1");
-            racingCarb_adjust2 = race_carb.FsmVariables.FindFsmFloat("Adjust2");
-            racingCarb_adjust3 = race_carb.FsmVariables.FindFsmFloat("Adjust3");
-            racingCarb_adjust4 = race_carb.FsmVariables.FindFsmFloat("Adjust4");
-            racingCarb_adjustAverage = race_carb.FsmVariables.FindFsmFloat("AdjustAverage");
-            racingCarb_adjustMax = race_carb.FsmVariables.FindFsmFloat("AdjustMax");
-            racingCarb_adjustMin = race_carb.FsmVariables.FindFsmFloat("AdjustMin");
-            racingCarb_differenceMax = race_carb.FsmVariables.FindFsmFloat("DifferenceMax");
-            racingCarb_differenceMin = race_carb.FsmVariables.FindFsmFloat("DifferenceMin");
-            racingCarb_idealSetting = race_carb.FsmVariables.FindFsmFloat("IdealSetting");
-            racingCarb_max = race_carb.FsmVariables.FindFsmFloat("Max");
-            racingCarb_min = race_carb.FsmVariables.FindFsmFloat("Min");
-            racingCarb_tolerance = race_carb.FsmVariables.FindFsmFloat("Tolerance");
+            racingCarb_adjustAverage = raceCarb.FsmVariables.FindFsmFloat("AdjustAverage");
+            racingCarb_tolerance = raceCarb.FsmVariables.FindFsmFloat("Tolerance");
 
 
-            fuel_injector1_part = mod.fuel_injector1_part;
-            fuel_injector2_part = mod.fuel_injector2_part;
-            fuel_injector3_part = mod.fuel_injector3_part;
-            fuel_injector4_part = mod.fuel_injector4_part;
+            fuel_injector1_part = mod.fuel_injectors_box.parts[0];
+            fuel_injector2_part = mod.fuel_injectors_box.parts[1];
+            fuel_injector3_part = mod.fuel_injectors_box.parts[2];
+            fuel_injector4_part = mod.fuel_injectors_box.parts[3];
 
-            throttle_body1_part = mod.throttle_body1_part;
-            throttle_body2_part = mod.throttle_body2_part;
-            throttle_body3_part = mod.throttle_body3_part;
-            throttle_body4_part = mod.throttle_body4_part;
+            throttle_body1_part = mod.throttle_bodies_box.parts[0];
+            throttle_body2_part = mod.throttle_bodies_box.parts[1];
+            throttle_body3_part = mod.throttle_bodies_box.parts[2];
+            throttle_body4_part = mod.throttle_bodies_box.parts[3];
 
             fuel_rail_part = mod.fuel_rail_part;
             fuel_pump_cover_part = mod.fuel_pump_cover_part;
             fuel_injection_manifold_part = mod.fuel_injection_manifold_part;
+
+            electric_fuel_pump_part = mod.electric_fuel_pump_part;
 
             allParts.Add(fuel_injector1_part);
             allParts.Add(fuel_injector2_part);
@@ -329,42 +159,20 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             allParts.Add(fuel_rail_part);
             allParts.Add(fuel_pump_cover_part);
             allParts.Add(fuel_injection_manifold_part);
+            allParts.Add(electric_fuel_pump_part);
 
-            chip_programmer_chip = mod.chip_programmer_part.activePart.transform.FindChild("rigid_chip").gameObject;
-            chip_programmer_chip.SetActive(false);
 
             fuel_system_logic = mod.smart_engine_module_part.rigidPart.AddComponent<FuelSystemLogic>();
             fuel_system_logic.Init(this, mod);
 
-
-            originalPartsSave = SaveLoad.DeserializeSaveFile<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
-            if(originalPartsSave == null)
+            if (anyInstalled)
             {
-                originalPartsSave = new OriginalPartsSave();
-            }
-
-
-
-            if (fuel_injection_manifold_part.installed)
-            {
-                racingCarb_detach.Value = true;
-                if (!Helper.ApproximatelyVector(originalPartsSave.racingCarb_position, Vector3.zero) && !Helper.ApproximatelyQuaternion(originalPartsSave.racingCarb_rotation, Quaternion.identity))
+                foreach (OriginalPart originalPart in allOriginalParts)
                 {
-                    racingCarb_gameObject.transform.position = originalPartsSave.racingCarb_position;
-                    racingCarb_gameObject.transform.rotation = originalPartsSave.racingCarb_rotation;
+                    originalPart.HandleOriginalSave();
                 }
-
             }
-            if (fuel_pump_cover_part.installed)
-            {
-                pump_detach.Value = true;
-                if(!Helper.ApproximatelyVector(originalPartsSave.fuelPump_position, Vector3.zero) && !Helper.ApproximatelyQuaternion(originalPartsSave.fuelPump_rotation, Quaternion.identity))
-                {
-                    pump_gameObject.transform.position = originalPartsSave.fuelPump_position;
-                    pump_gameObject.transform.rotation = originalPartsSave.fuelPump_rotation;
-                }
 
-            }
             LoadChips();
         }
 
@@ -373,203 +181,100 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             fuel_system_logic.fuelMap = null;
         }
 
+        public bool allInstalled_applied = false;
         public void Handle()
         {
-            HandleProgrammer();
+            chip_programmer.Handle();
 
-            if (chip_parts.Any(c => c.InstalledScrewed() == true))
+            if (anyOriginalInstalled && !anyInstalled)
             {
-                for (int i = 0; i < chip_parts.Count; i++)
+                foreach (SimplePart part in allParts)
                 {
-                    if (!chip_parts[i].InstalledScrewed())
-                    {
-                        chip_parts[i].partTrigger.triggerGameObject.SetActive(false);
-                    }
+                    part.removePart();
+                    part.partTrigger.triggerGameObject.SetActive(false);
                 }
-            }
-            else
-            {
-                for (int i = 0; i < chip_parts.Count; i++)
+                foreach (OriginalPart originalPart in allOriginalParts)
                 {
-                    chip_parts[i].partTrigger.triggerGameObject.SetActive(true);
+                    originalPart.trigger.SetActive(true);
                 }
-            }
-
-            if (carb_installed.Value || twinCarb_installed.Value || (racingCarbInstalled && !fuel_injection_manifold_part.installed))
-            {
-                if (fuel_injection_manifold_part.installed)
-                {
-                    fuel_injection_manifold_part.removePart();
-                }
-                fuel_injection_manifold_part.partTrigger.triggerGameObject.SetActive(false);
-            }
-            else
-            {
-                fuel_injection_manifold_part.partTrigger.triggerGameObject.SetActive(true);
-            }
-
-            if (fuel_injection_manifold_part.InstalledScrewed())
-            {
-                carb_trigger.SetActive(false);
-                twinCarb_trigger.SetActive(false);
-                racingCarb_trigger.SetActive(false);
-            }
-            else
-            {
-                carb_trigger.SetActive(true);
-                twinCarb_trigger.SetActive(true);
-                racingCarb_trigger.SetActive(true);
-            }
-
-            fuel_pump_cover_part.partTrigger.triggerGameObject.SetActive(!pumpInstalled);
-
-            pump_trigger.SetActive(!fuel_pump_cover_part.installed);
-
-            if (fuel_pump_cover_part.installed)
-            {
-                pump_bolted.Value = true;
-                pump_installed.Value = true;
             }
             
-
-            if (fuel_injector1_part.InstalledScrewed() && fuel_injector2_part.InstalledScrewed() && fuel_injector3_part.InstalledScrewed() && fuel_injector4_part.InstalledScrewed())
+            if(anyInstalled && !anyOriginalInstalled)
             {
-                fuel_rail_part.partTrigger.triggerGameObject.SetActive(true);
-            }
-            else
-            {
-                if (fuel_rail_part.InstalledScrewed())
+                foreach (SimplePart part in allParts)
                 {
-                    fuel_rail_part.removePart();
+                    part.partTrigger.triggerGameObject.SetActive(true);
                 }
-                fuel_rail_part.partTrigger.triggerGameObject.SetActive(false);
-            }
-
-            if (anyInstalled)
-            {
-                if (allInstalled && fuel_system_logic.fuelMap != null)
+                foreach (OriginalPart originalPart in allOriginalParts)
                 {
-                    if (!fuel_injection_manifold_applied && !racingCarbInstalled)
-                    {
-                        racingCarb_installed.Value = true;
-                        racingCarb_bolted.Value = true;
-                        fuel_injection_manifold_applied = true;
-                    }
-                }
-                else
-                {
-                    if (fuel_injection_manifold_applied || fuel_system_logic.fuelMap == null || !mod.smart_engine_module_part.InstalledScrewed())
-                    {
-                        racingCarb_installed.Value = false;
-                        racingCarb_bolted.Value = false;
-                        fuel_injection_manifold_applied = false;
-                    }
+                    originalPart.trigger.SetActive(false);
                 }
             }
-        }
 
-        private bool chipInstalledOnProgrammer = false;
-        private ChipPart chipOnProgrammer = null;
-        private void HandleProgrammer()
-        {
-            if (!chipInstalledOnProgrammer)
+            if(!anyInstalled && !anyOriginalInstalled)
             {
-                if (itemPivot.Value != null && itemPivot.Value.transform.childCount > 0)
+                foreach (OriginalPart originalPart in allOriginalParts)
                 {
-                    GameObject itemInHand = itemPivot.Value.transform.GetChild(0).gameObject;
-                    if (itemInHand.name.StartsWith("Chip") && itemInHand.name != mod.chip_programmer_part.activePart.name)
+                    originalPart.trigger.SetActive(true);
+                }
+                foreach (SimplePart part in allParts)
+                {
+                    part.partTrigger.triggerGameObject.SetActive(true);
+                }
+            }
+
+            if (mod.smart_engine_module_part.InstalledScrewed())
+            {
+                if (allInstalled && !allInstalled_applied)
+                {
+                    mod.wires_injectors_pumps.enabled = true;
+                    mod.wires_sparkPlugs1.enabled = true;
+                    mod.wires_sparkPlugs2.enabled = true;
+
+                    allInstalled_applied = true;
+                    if (chip_parts.Any(c => c.InstalledScrewed() == true))
                     {
-                        if (Vector3.Distance(mod.chip_programmer_part.activePart.transform.position, itemInHand.transform.position) <= 0.075f)
+                        for (int i = 0; i < chip_parts.Count; i++)
                         {
-                            ModClient.guiInteract("insert chip", GuiInteractSymbolEnum.Assemble);
-                            if (mod.leftMouseDown)
+                            if (!chip_parts[i].InstalledScrewed())
                             {
-                                for(int index = 0; index < chip_parts.Count; index++)
-                                {
-                                    ChipPart part = chip_parts[index];
-                                    if (part.activePart.name == itemInHand.name)
-                                    {
-                                        part.activePart.SetActive(false);
-                                        chip_programmer_chip.SetActive(true);
-                                        chipInstalledOnProgrammer = true;
-                                        part.chipInstalledOnProgrammer = true;
-
-                                        chipOnProgrammer = part;
-                                        break;
-                                    }
-                                }
+                                chip_parts[i].partTrigger.triggerGameObject.SetActive(false);
                             }
                         }
                     }
-
-                }
-            }
-
-            if (chipInstalledOnProgrammer && Camera.main != null && chipOnProgrammer != null)
-            {
-                
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 0.8f, 1 << LayerMask.NameToLayer("Parts")) != false)
-                {
-                    GameObject gameObjectHit;
-                    gameObjectHit = hit.collider?.gameObject;
-                    if (gameObjectHit != null && hit.collider)
+                    else
                     {
-                        if (gameObjectHit.name == mod.chip_programmer_part.activePart.name)
+                        for (int i = 0; i < chip_parts.Count; i++)
                         {
-                            string guiText = String.Format(
-                                "Press [{0}] to {1}\n" +
-                                "Press [RIGHT MOUSE] to {2}",
-                                cInput.GetText("Use"), "open programmer", "remove chip"
-                            );
-                            ModClient.guiInteraction = guiText;
-                            if (mod.rightMouseDown)
-                            {
-                                for (int index = 0; index < chip_parts.Count; index++)
-                                {
-                                    ChipPart part = chip_parts[index];
-                                    if (part.chipInstalledOnProgrammer)
-                                    {
-                                        programmer_ui.enabled = false;
-                                        part.activePart.SetActive(true);
-                                        chip_programmer_chip.SetActive(false);
-                                        chipInstalledOnProgrammer = false;
-                                        part.chipInstalledOnProgrammer = false;
-                                        
-                                        chipOnProgrammer = null;
-                                        Vector3 chip_programmer_position = mod.chip_programmer_part.activePart.transform.position;
-                                        part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
-                                        break;
-                                    }
-                                }
-                            }
-                            else if (mod.useButtonDown)
-                            {
-                                for (int y = 0; y < inputFieldMap.GetLength(0); y++)
-                                {
-                                    for (int x = 0; x < inputFieldMap.GetLength(1); x++)
-                                    {
-                                        try
-                                        {
-                                            if(chipOnProgrammer.chipSave.map == null)
-                                            {
-                                                inputFieldMap[y, x].text = "";
-                                            }
-                                            else
-                                            {
-                                                inputFieldMap[y, x].text = chipOnProgrammer.chipSave.map[y, x].ToString("00.0");
-                                            }
-                                            
-                                        }
-                                        catch
-                                        {
-                                            mod.logger.New("Error while trying to write chip map");
-                                        }
-                                    }
-                                }
-                                programmer_ui.enabled = true;
-                            }
+                            chip_parts[i].partTrigger.triggerGameObject.SetActive(true);
                         }
                     }
+
+
+                    if (fuel_system_logic.fuelMap != null)
+                    {
+                        foreach (OriginalPart originalPart in allOriginalParts)
+                        {
+                            originalPart.SetFakedInstallStatus(true);
+                        }
+
+                    }
+                    else
+                    {
+                        allInstalled_applied = false;
+                        foreach (OriginalPart originalPart in allOriginalParts)
+                        {
+                            originalPart.SetFakedInstallStatus(false);
+                        }
+
+                    }
+                }
+                else if (!allInstalled)
+                {
+                    allInstalled_applied = false;
+                    mod.wires_injectors_pumps.enabled = false;
+                    mod.wires_sparkPlugs1.enabled = false;
+                    mod.wires_sparkPlugs2.enabled = false;
                 }
             }
         }
@@ -578,13 +283,25 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         {
             try
             {
-                originalPartsSave.fuelPump_installed = pumpInstalled;
-                originalPartsSave.fuelPump_position = pump_gameObject.transform.position;
-                originalPartsSave.fuelPump_rotation = pump_gameObject.transform.rotation;
+                OriginalPart fuelPump = allOriginalParts.Find(originalPart => originalPart.partName == "Fuelpump");
+                originalPartsSave.fuelPump_installed = fuelPump.gameObjectInstalled;
+                originalPartsSave.fuelPump_position = fuelPump.gameObject.transform.position;
+                originalPartsSave.fuelPump_rotation = fuelPump.gameObject.transform.rotation;
 
-                originalPartsSave.racingCarb_installed = racingCarbInstalled;
-                originalPartsSave.racingCarb_position = racingCarb_gameObject.transform.position;
-                originalPartsSave.racingCarb_rotation = racingCarb_gameObject.transform.rotation;
+                OriginalPart racingCarb = allOriginalParts.Find(originalPart => originalPart.partName == "Racing Carburators");
+                originalPartsSave.racingCarb_installed = racingCarb.gameObjectInstalled;
+                originalPartsSave.racingCarb_position = racingCarb.gameObject.transform.position;
+                originalPartsSave.racingCarb_rotation = racingCarb.gameObject.transform.rotation;
+
+                OriginalPart distributor = allOriginalParts.Find(originalPart => originalPart.partName == "Distributor");
+                originalPartsSave.distributor_installed = distributor.gameObjectInstalled;
+                originalPartsSave.distributor_position = distributor.gameObject.transform.position;
+                originalPartsSave.distributor_rotation = distributor.gameObject.transform.rotation;
+
+                OriginalPart electrics = allOriginalParts.Find(originalPart => originalPart.partName == "Electrics");
+                originalPartsSave.electrics_installed = electrics.gameObjectInstalled;
+                originalPartsSave.electrics_position = electrics.gameObject.transform.position;
+                originalPartsSave.electrics_rotation = electrics.gameObject.transform.rotation;
 
                 SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
             }
@@ -601,7 +318,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             {
                 SaveChip(part);
             });
-            
+
 
         }
         public void LoadChips()
@@ -610,13 +327,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
             string[] chip_saveFiles = Directory.GetFiles(fuel_system_savePath, "chip*_saveFile.txt", SearchOption.AllDirectories);
             string[] chip_map_saveFiles = Directory.GetFiles(fuel_system_savePath, "chip*.fuelmap", SearchOption.AllDirectories);
-            
-            if(chip_saveFiles.Length != chip_map_saveFiles.Length)
+
+            if (chip_saveFiles.Length != chip_map_saveFiles.Length)
             {
                 mod.logger.New("Chip part save and map save do not match. Atleast one or more files are missing.", $"save files found: {chip_saveFiles.Length} | chip map files found: {chip_map_saveFiles.Length}");
                 return;
             }
-            for(int i = 0; i < chip_saveFiles.Length; i++)
+            for (int i = 0; i < chip_saveFiles.Length; i++)
             {
                 string chip_part_saveFile_fullPath = chip_saveFiles[i];
                 string chip_map_saveFile_fullPath = chip_map_saveFiles[i];
@@ -629,7 +346,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 mod.SetObjectNameTagLayer(chip, "Chip" + i);
 
                 ChipSave chipSave = SaveLoad.DeserializeSaveFile<ChipSave>(mod, chip_map_saveFile);
-                if(chipSave == null)
+                if (chipSave == null)
                 {
                     chipSave = new ChipSave();
                 }
@@ -640,7 +357,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     mod.smart_engine_module_part.rigidPart,
                     new Trigger("chip" + i, mod.smart_engine_module_part.rigidPart, chip_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
                     chip_installLocation,
-                    new Quaternion { eulerAngles = new Vector3(0, 0, 0) }
+                    new Quaternion { eulerAngles = chip_installRotation }
                 );
                 chip_part.SetDisassembleFunction(new Action(DisassembleChip));
 
@@ -662,6 +379,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             {
                 mod.logger.New("Unable to save chips, there was an error while trying to save the chip", $"save file: {part.fuelMap_saveFile}", ex);
             }
+        }
+
+        public void Save()
+        {
+            chip_programmer.Save();
+            SaveChips();
+            SaveOriginals();
         }
     }
 }

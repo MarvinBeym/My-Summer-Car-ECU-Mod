@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="BugReporter">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\References\BugReporter.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="cInput">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\cInput.dll</HintPath>
@@ -46,6 +47,7 @@
     </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="modapi_v0120-alpha">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\modapi_v0120-alpha.dll</HintPath>
@@ -54,6 +56,7 @@
     <Reference Include="ModsShop, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\ModsShop.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MSCLoader">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
@@ -91,11 +94,14 @@
     <Compile Include="CruiseControl_Logic.cs" />
     <Compile Include="BoxLogic.cs" />
     <Compile Include="fuelsystem\ChipPart.cs" />
+    <Compile Include="fuelsystem\ChipProgrammer.cs" />
     <Compile Include="fuelsystem\ChipSave.cs" />
     <Compile Include="fuelsystem\FloatForce.cs" />
     <Compile Include="fuelsystem\FuelSystem.cs" />
     <Compile Include="fuelsystem\FuelSystemLogic.cs" />
+    <Compile Include="fuelsystem\OriginalPart.cs" />
     <Compile Include="fuelsystem\OriginalPartsSave.cs" />
+    <Compile Include="fuelsystem\SparkAngleInputForce.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="info_panel_pages\InfoPanelPage.cs" />
     <Compile Include="info_panel_pages\Page6.cs" />
@@ -110,7 +116,10 @@
     <Compile Include="old_file_checker\OldFileRenamer.cs" />
     <Compile Include="old_file_checker\OverrideFileRenamer.cs" />
     <Compile Include="old_file_checker\SaveFileRenamer.cs" />
+    <Compile Include="parts\Box.cs" />
     <Compile Include="parts\EspPart.cs" />
+    <Compile Include="parts\ReplacedPart.cs" />
+    <Compile Include="parts\ReplacedPartLogic.cs" />
     <Compile Include="ProductBought.cs" />
     <Compile Include="shop\ProductInformation.cs" />
     <Compile Include="shop\Shop.cs" />
