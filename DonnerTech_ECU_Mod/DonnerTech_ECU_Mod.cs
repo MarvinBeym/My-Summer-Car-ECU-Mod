@@ -72,65 +72,7 @@ namespace DonnerTech_ECU_Mod
          */
 
         /*  Changelog (v1.4)
-         *  Code ptimization
-         *  Added missing override for turbo page
-         *  Added missing screw reset for info panel
-         *  Added model for reverse camera
-         *  Added model for rain & light sensorboard
-         *  Added logic for rain sensor
-         *  Added logic for reverse camera
-         *  Added reverse light to camera
-         *  Changed resolution of reverse camera to 720p
-         *  Added settings change prevention for 2step rev limiter rpm value (you can now only change the value if you are on the page for it
-         *  Fixed RPM needle OVERRIDE replacing lowBeam image.
-         *  Fixed carb not beeing adjusted when using racing carb.
-         *  Added product images for reverse camera and rain&light sensorboard
-         *  Full code reworked
-         *  Added logic for light sensor
-         *  Added shift indicator
-         *  Added ability to set shift indicator green line and red line (it's a gradient. so ex. 6500 won't mean it will instantly switch to green at 6500)
-         *  Added logger
-         *  Added bug reporter that compresses all needed files for a complete bug report into a .zip file, password protects it and saves it on the desktop.
-         *  Added ability to upload bug report to my server (files are deleted after 7days), (ip will be logged in a database to prevent spam (only allows a new report for a mod each hour))
-         *  Removed "Reset All" button from settings.
-         *  Remade all product images in blender.
-         *  
-         *  Changed image override file names:
-             *  OVERRIDE_ECU-Mod-Panel-Page0.png				=>          *  OVERRIDE_main_page.png
-             *  OVERRIDE_ECU-Mod-Panel_Modules-Page1.png		=>          *  OVERRIDE_modules_page.png
-             *  OVERRIDE_ECU-Mod-Panel_Faults-Page2.png			=>          *  OVERRIDE_faults_page.png
-             *  OVERRIDE_ECU-Mod-Panel_Faults-Page3.png			=>          *  OVERRIDE_faults2_page.png
-             *  OVERRIDE_ECU-Mod-Panel_Tuner-Page4.png			=>          *  OVERRIDE_tuner_page.png
-             *  OVERRIDE_ECU-Mod-Panel-Turbocharger-Page5.png	=>          *  OVERRIDE_turbocharger_page.png
-             *  OVERRIDE_ECU-Mod-Panel-Assistance-Page6.png		=>          *  OVERRIDE_assistance_page.png
-             *  OVERRIDE_ECU-Mod-Panel-Airride-Page7.png		=>          *  OVERRIDE_airride_page.png
-             *  OVERRIDE_Handbrake-Icon.png						=>          *  OVERRIDE_handbrake_icon.png
-             *  OVERRIDE_Indicator-Left-Icon.png				=>          *  OVERRIDE_blinker_left_icon.png
-             *  OVERRIDE_Indicator-Right-Icon.png				=>          *  OVERRIDE_blinker_right_icon.png
-             *  OVERRIDE_LowBeam-Icon.png						=>          *  OVERRIDE_low_beam_icon.png
-             *  OVERRIDE_HighBeam-Icon.png						=>          *  OVERRIDE_high_beam_icon.png
-             *  OVERRIDE_Rpm-Needle.png							=>          *  OVERRIDE_needle_icon.png
-             *  OVERRIDE_TurbineWheel.png						=>          *  OVERRIDE_turbine_icon.png
-         *  
-         *  Changed names of save files.
-             *  ecu_mod_ABSModule_partSave.txt			=> abs_module_saveFile.txt
-             *  ecu_mod_ESPModule_partSave.txt			=> esp_module_saveFile.txt
-             *  ecu_mod_TCSModule_partSave.txt			=> tcs_module_saveFile.txt
-             *  ecu_mod_CableHarness_partSave.txt		=> cable_harness_saveFile.txt
-             *  ecu_mod_MountingPlate_partSave.txt		=> mounting_plate_saveFile.txt
-             *  ecu_mod_ModShop_SaveFile.txt			=> mod_shop_saveFile.txt
-             *  ecu_mod_SmartEngineModule_partSave.txt	=> smart_engine_module_saveFile.txt
-             *  ecu_mod_CruiseControlPanel_partSave.txt	=> cruise_control_panel_saveFile.txt
-             *  ecu_InfoPanel_partSave.txt				=> info_panel_saveFile.txt
-             *  ecu_reverseCamera_saveFile.txt			=> reverse_camera_saveFile.txt
-             *  ecu_rainLightSensorboard_saveFile.txt	=> rain_light_sensor_board_saveFile.txt
-             *  ecu_mod_screwable_save.txt              => screwable_saveFile.txt
-         *
-         *  Added auto renamer for old file names. The auto renamer will automaticly rename all files to their new name (only if a file with the new name doesnt exist)
-         *  A Message box is also displayed when files have been renamed showing each file that got renamed ex.: old name.xyz => new name.xyz
-         *  Made some values on ecu panel only update after x seconds (clock for example is updated each (realtime) second).
-         *  Fixed Clock on info panel not working "jumping around"
-         *  !!!Screw/Part positions have changed. Recommend deleting the file Mods\Config\Mod Settings\DonnerTech_ECU_Mod\screwable_saveFile.txt
+         *  Renamed info panel images to new names (ex. removing ECU-Mod...)
          */
         /* BUGS/Need to fix
          * Optimize code both turbo and ecu (only update when needed)
@@ -143,9 +85,9 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.2"; //Version
+        public override string Version => "1.4.3"; //Version
         public override bool UseAssetsFolder => true;
-
+        
         SaveFileRenamer saveFileRenamer;
         OverrideFileRenamer overrideFileRenamer;
         public AssetBundle assetBundle;

@@ -1,0 +1,5 @@
+Rename the file and add OVERRIDE_ to the start
+example:
+assistance_page.png => OVERRIDE_assistance_page.png
+
+and place them into the ecu-mods assets folder (where the unity3d file is)
