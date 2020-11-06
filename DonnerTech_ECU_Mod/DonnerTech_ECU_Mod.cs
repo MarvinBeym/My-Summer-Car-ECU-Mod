@@ -10,6 +10,7 @@ using DonnerTech_ECU_Mod.old_file_checker;
 using DonnerTech_ECU_Mod.shop;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.parts;
+using DonnerTech_ECU_Mod.infoPanel;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -71,8 +72,11 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4)
+        /*  Changelog (v1.4.4)
          *  Renamed info panel images to new names (ex. removing ECU-Mod...)
+         *  Removed tuner page from info panel
+         *  Small code improvement
+         *  Added missing text to info panel assistant page
          */
         /* BUGS/Need to fix
          * Optimize code both turbo and ecu (only update when needed)
@@ -85,12 +89,13 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.3"; //Version
+        public override string Version => "1.4.4"; //Version
         public override bool UseAssetsFolder => true;
         
         SaveFileRenamer saveFileRenamer;
         OverrideFileRenamer overrideFileRenamer;
         public AssetBundle assetBundle;
+        public AssetBundle screwableAssetsBundle;
         public Logger logger;
 
 #if DEBUG
@@ -109,16 +114,11 @@ namespace DonnerTech_ECU_Mod
         private const string awd_propshaft_saveFile = "awd_propshaft_saveFile.txt";
         private const string awd_differential_saveFile = "awd_differntial_saveFile.txt";
 #endif
-        private static PartBuySave partBuySave;
+        public PartBuySave partBuySave;
 
-        public Keybind info_panel_arrowUp = new Keybind("info_panel_arrowUp", "Arrow Up", KeyCode.Keypad8);
-        public Keybind info_panel_arrowDown = new Keybind("info_panel_arrowDown", "Arrow Down", KeyCode.Keypad2);
-        public Keybind info_panel_circle = new Keybind("info_panel_circle", "Circle", KeyCode.KeypadEnter);
-        public Keybind info_panel_cross = new Keybind("info_panel_cross", "Cross", KeyCode.KeypadPeriod);
-        public Keybind info_panel_plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
-        public Keybind info_panel_minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
 
-        public Keybind programmer_ui_open = new Keybind("programmer_ui_open", "Open/Close", KeyCode.Keypad0);
+
+        
 
         public PlayMakerFSM modulesFsm;
 
@@ -132,11 +132,12 @@ namespace DonnerTech_ECU_Mod
         //FuelSystem
         public FuelSystem fuel_system;
 
+        //InfoPanel
+        public InfoPanel info_panel;
 
         public FsmString playerCurrentVehicle;
 
         //Part logic
-        public InfoPanel_Logic info_panel_logic { get; set; }
         public CruiseControl_Logic cruise_control_logic { get; set; }
         public SmartEngineModule_Logic smart_engine_module_logic { get; set; }
 
@@ -160,7 +161,7 @@ namespace DonnerTech_ECU_Mod
         public SimplePart mounting_plate_part { get; set; }
         public SimplePart smart_engine_module_part { get; set; }
         public SimplePart cruise_control_panel_part { get; set; }
-        public SimplePart info_panel_part { get; set; }
+        
         public SimplePart reverse_camera_part { get; set; }
         public SimplePart rain_light_sensor_board_part { get; set; }
 
@@ -197,7 +198,7 @@ namespace DonnerTech_ECU_Mod
         public Vector3 fuel_pump_cover_installLocation = new Vector3(-0.0515f, 0.105f, 0.006f);
         public Vector3 fuel_injection_manifold_installLocation = new Vector3(-0.009f, -0.0775f, 0.02f);
         public Vector3 fuel_rail_installLocation = new Vector3(0, 0.03f, 0.012f);
-        public Vector3 info_panel_installLocation = new Vector3(0.25f, -0.088f, -0.01f);
+        
         public Vector3 cruise_control_panel_installLocation = new Vector3(0.5f, -0.095f, 0.08f);
 
         public Vector3 abs_module_installLocation = new Vector3(0.058f, 0.022f, 0.116f);
@@ -225,7 +226,6 @@ namespace DonnerTech_ECU_Mod
         private const string mod_shop_saveFile = "mod_shop_saveFile.txt";
         private const string smart_engine_module_saveFile = "smart_engine_module_saveFile.txt";
         private const string cruise_control_panel_saveFile = "cruise_control_panel_saveFile.txt";
-        private const string info_panel_saveFile = "info_panel_saveFile.txt";
 
         private const string reverse_camera_saveFile = "reverse_camera_saveFile.txt";
         private const string rain_light_sensor_board_saveFile = "rain_light_sensor_board_saveFile.txt";
@@ -260,9 +260,6 @@ namespace DonnerTech_ECU_Mod
             0.8f,   // 5th
             0.65f    // 6th
         };
-
-        //ECU InfoPanel
-        private bool info_panel_workaroundChildDisableDone = false;
 
         private static AudioSource dashButtonAudioSource
         {
@@ -358,14 +355,6 @@ namespace DonnerTech_ECU_Mod
                 ModUI.ShowMessage("Cunt", "CUNT");
                 ModConsole.Print("Cunt detected");
             }
-            Keybind.AddHeader(this, "ECU-Panel Keybinds");
-            Keybind.Add(this, info_panel_arrowUp);
-            Keybind.Add(this, info_panel_arrowDown);
-            Keybind.Add(this, info_panel_circle);
-            Keybind.Add(this, info_panel_cross);
-            Keybind.Add(this, info_panel_plus);
-            Keybind.Add(this, info_panel_minus);
-            Keybind.Add(this, programmer_ui_open);
 
             partsList = new List<SimplePart>();
 
@@ -394,7 +383,7 @@ namespace DonnerTech_ECU_Mod
 
 
             assetBundle = LoadAssets.LoadBundle(this, "ecu-mod.unity3d");
-            AssetBundle screwableAssetsBundle = LoadAssets.LoadBundle(this, "screwableapi.unity3d");
+            screwableAssetsBundle = LoadAssets.LoadBundle(this, "screwableapi.unity3d");
             if (assetBundle == null)
             {
                 ModConsole.Warning("There was an error while trying to load the assets file");
@@ -414,7 +403,7 @@ namespace DonnerTech_ECU_Mod
             GameObject mounting_plate = (assetBundle.LoadAsset("mounting-plate.prefab") as GameObject);
             GameObject smart_engine_module = (assetBundle.LoadAsset("engine-module.prefab") as GameObject);
             GameObject cruise_control_panel = (assetBundle.LoadAsset("cruise-control-panel.prefab") as GameObject);
-            GameObject info_panel = (assetBundle.LoadAsset("info-panel.prefab") as GameObject);
+            
             
             GameObject reverse_camera = (assetBundle.LoadAsset("reverse-camera.prefab") as GameObject);
             GameObject rain_light_sensor_board = (assetBundle.LoadAsset("rain-light-sensorboard.prefab") as GameObject);
@@ -461,7 +450,7 @@ namespace DonnerTech_ECU_Mod
             SetObjectNameTagLayer(mounting_plate, "ECU Mounting Plate");
             SetObjectNameTagLayer(smart_engine_module, "Smart Engine ECU");
             SetObjectNameTagLayer(cruise_control_panel, "Cruise Control Panel");
-            SetObjectNameTagLayer(info_panel, "DonnerTech Info Panel");
+            
             SetObjectNameTagLayer(reverse_camera, "Reverse Camera");
             SetObjectNameTagLayer(rain_light_sensor_board, "Rain & Light Sensorboard");
 
@@ -620,17 +609,9 @@ namespace DonnerTech_ECU_Mod
             );
             cruise_control_logic = cruise_control_panel_part.rigidPart.AddComponent<CruiseControl_Logic>();
 
-            info_panel_part = new SimplePart(
-                SimplePart.LoadData(this, info_panel_saveFile, partBuySave.boughtInfoPanel),
-                info_panel,
-                GameObject.Find("dashboard(Clone)"),
-                new Trigger("info_panel_Trigger", GameObject.Find("dashboard(Clone)"), info_panel_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
-                info_panel_installLocation,
-                new Quaternion { eulerAngles = new Vector3(0, 180, 180) }
-            );
+            info_panel = new InfoPanel(this, screwListSave);
 
-            info_panel_logic = info_panel_part.rigidPart.AddComponent<InfoPanel_Logic>();
-            info_panel_logic.Init(this);
+
 
             rain_light_sensor_board_part = new SimplePart(
                 SimplePart.LoadData(this, rain_light_sensor_board_saveFile, partBuySave.bought_rainLightSensorboard),
@@ -764,7 +745,6 @@ namespace DonnerTech_ECU_Mod
             partsList.Add(mounting_plate_part);
             partsList.Add(smart_engine_module_part);
             partsList.Add(cruise_control_panel_part);
-            partsList.Add(info_panel_part);
 
             partsList.Add(rain_light_sensor_board_part);
             partsList.Add(reverse_camera_part);
@@ -790,24 +770,6 @@ namespace DonnerTech_ECU_Mod
             wires_injectors_pumps.enabled = false;
             wires_sparkPlugs1.enabled = false;
             wires_sparkPlugs2.enabled = false;
-
-            TextMesh[] info_panel_TextMeshes = info_panel_part.activePart.GetComponentsInChildren<TextMesh>();
-            foreach (TextMesh textMesh in info_panel_TextMeshes)
-            {
-                textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
-            }
-
-
-            SpriteRenderer[] info_panel_SpriteRenderer = info_panel_part.activePart.GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer spriteRenderer in info_panel_SpriteRenderer)
-            {
-                spriteRenderer.enabled = false;
-            }
-            if(info_panel_SpriteRenderer.Length > 0 && info_panel_TextMeshes.Length > 0)
-            {
-                info_panel_workaroundChildDisableDone = true;
-            }
-
 
 
             abs_module_part.screwablePart = new ScrewablePart(screwListSave, screwableAssetsBundle, abs_module_part.rigidPart,
@@ -862,11 +824,6 @@ namespace DonnerTech_ECU_Mod
                     new Screw(new Vector3(0f, -0.015f, 0.0055f), new Vector3(0, 0, 0), 0.5f, 5),
                 });
 
-            info_panel_part.screwablePart = new ScrewablePart(screwListSave, screwableAssetsBundle, info_panel_part.rigidPart,
-                new Screw[] {
-                    new Screw(new Vector3(0f, -0.025f, -0.067f), new Vector3(180, 0, 0), 0.8f, 8),
-                });
-
 
             fuel_pump_cover_part.screwablePart = new ScrewablePart(screwListSave, screwableAssetsBundle, fuel_pump_cover_part.rigidPart,
                 new Screw[] {
@@ -901,7 +858,7 @@ namespace DonnerTech_ECU_Mod
                 shopItems.Add(new ProductInformation(mounting_plate_part.activePart, "ECU Mounting Plate", 100, "mounting-plate_productImage.png", mounting_plate_part.bought));
                 shopItems.Add(new ProductInformation(smart_engine_module_part.activePart, "Smart Engine Module ECU", 4600, "smart-engine-module_productImage.png", smart_engine_module_part.bought));
                 shopItems.Add(new ProductInformation(cruise_control_panel_part.activePart, "Cruise Control Panel with Controller", 2000, "cruise-control_productImage.png", cruise_control_panel_part.bought));
-                shopItems.Add(new ProductInformation(info_panel_part.activePart, "ECU Info Panel", 4000, "info-panel_productImage.png", info_panel_part.bought));
+                shopItems.Add(new ProductInformation(info_panel.part.activePart, "ECU Info Panel", 4000, "info-panel_productImage.png", info_panel.part.bought));
                 shopItems.Add(new ProductInformation(rain_light_sensor_board_part.activePart, "Rain & Light Sensorboard", 1000, "rain-light-sensorboard_productImage.png", rain_light_sensor_board_part.bought));
                 shopItems.Add(new ProductInformation(reverse_camera_part.activePart, "Reverse Camera", 1500, "reverse-camera_productImage.png", reverse_camera_part.bought));
 #if DEBUG
@@ -965,7 +922,7 @@ namespace DonnerTech_ECU_Mod
             UnityEngine.Object.Destroy(mounting_plate);
             UnityEngine.Object.Destroy(smart_engine_module);
             UnityEngine.Object.Destroy(cruise_control_panel);
-            UnityEngine.Object.Destroy(info_panel);
+            
             UnityEngine.Object.Destroy(rain_light_sensor_board);
             UnityEngine.Object.Destroy(reverse_camera);
 #if DEBUG
@@ -1116,7 +1073,7 @@ namespace DonnerTech_ECU_Mod
                     tcs_module_part.screwablePart,
                     smart_engine_module_part.screwablePart,
                     mounting_plate_part.screwablePart,
-                    info_panel_part.screwablePart,
+                    info_panel.part.screwablePart,
                     rain_light_sensor_board_part.screwablePart,
                     reverse_camera_part.screwablePart,
                     throttle_bodies_box.parts[0].screwablePart,
@@ -1167,34 +1124,7 @@ namespace DonnerTech_ECU_Mod
         public override void Update()
         {
             fuel_system.Handle();
-
-            //InfoPanel scale workaround
-            if (!info_panel_part.installed)
-            {
-                if (info_panel_part.activePart.transform.localScale.x < 1.5f)
-                {
-                    info_panel_part.activePart.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-                }
-                if (!info_panel_workaroundChildDisableDone)
-                {
-                    TextMesh[] info_panel_TextMeshes = info_panel_part.activePart.GetComponentsInChildren<TextMesh>();
-                    foreach (TextMesh textMesh in info_panel_TextMeshes)
-                    {
-                        textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
-                    }
-
-
-                    SpriteRenderer[] info_panel_SpriteRenderer = info_panel_part.activePart.GetComponentsInChildren<SpriteRenderer>();
-                    foreach (SpriteRenderer spriteRenderer in info_panel_SpriteRenderer)
-                    {
-                        spriteRenderer.enabled = false;
-                    }
-                    if (info_panel_SpriteRenderer.Length > 0 && info_panel_TextMeshes.Length > 0)
-                    {
-                        info_panel_workaroundChildDisableDone = true;
-                    }
-                }
-            }
+            info_panel.Handle();
         }
 
         public GameObject SetObjectNameTagLayer(GameObject gameObject, string name)

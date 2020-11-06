@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2507098327
+CRC: 2983784760
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1b1d4acab29160d38b60a9fb1d7e9ec4
+    Hash: 29465078d8783d86fdbdcc8e91ca490c
   TypeTreeHash:
     serializedVersion: 2
     Hash: 179473d85ce64e2177b8b6000fb49934
@@ -114,6 +114,7 @@ Assets:
 - Assets/Info-Panel/Handbrake-Icon.png
 - Assets/FuelSystem/wires-sparkPlugs-2.prefab
 - Assets/AWD/AWD-Propshaft.prefab
+- Assets/Info-Panel/ECU-Mod-Panel-Assistance-Page6.png
 - Assets/Info-Panel/TurbineWheel.png
 - Assets/Info-Panel/ECU-Mod-Panel-Turbocharger-Page5.png
 - Assets/Info-Panel/HighBeam-Icon.png
@@ -131,7 +132,6 @@ Assets:
 - Assets/ProductImages/fuel-injectors-box_productImage.png
 - Assets/cable-harness.prefab
 - Assets/Info-Panel/Indicator-Right-Icon.png
-- Assets/Info-Panel/ECU-Mod-Panel-Assistance-Page6.png
 - Assets/FuelSystem/ui_interface.prefab
 - Assets/ProductImages/reverse-camera_productImage.png
 - Assets/ProductImages/abs-module_productImage.png

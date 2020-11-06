@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DonnerTech_ECU_Mod
 {
-    class PartBuySave
+    public class PartBuySave
     {
 #if DEBUG
         public bool bought_airrideFL { get; set; } = false;

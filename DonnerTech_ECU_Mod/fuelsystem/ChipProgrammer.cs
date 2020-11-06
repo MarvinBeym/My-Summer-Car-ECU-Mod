@@ -1,5 +1,6 @@
 ﻿using HutongGames.PlayMaker;
 using ModApi;
+using MSCLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 {
     public class ChipProgrammer
     {
+
         public DonnerTech_ECU_Mod mod;
         public FuelSystem fuelSystem;
         public Canvas programmer_ui { get; set; }
@@ -33,9 +35,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         private RaycastHit hit;
 
+        public Keybind programmer_ui_open = new Keybind("programmer_ui_open", "Open/Close", KeyCode.Keypad0);
+
         public ChipProgrammer(DonnerTech_ECU_Mod mod, FuelSystem fuelSystem)
         {
             this.mod = mod;
+            Keybind.Add(mod, programmer_ui_open);
+
             this.fuelSystem = fuelSystem;
             itemPivot = PlayMakerGlobals.Instance.Variables.FindFsmGameObject("ItemPivot");
 

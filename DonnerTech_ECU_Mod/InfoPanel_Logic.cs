@@ -1,4 +1,5 @@
 ﻿using DonnerTech_ECU_Mod.info_panel_pages;
+using DonnerTech_ECU_Mod.infoPanel;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using ModApi;
@@ -16,9 +17,10 @@ namespace DonnerTech_ECU_Mod
     public class InfoPanel_Logic : MonoBehaviour
     {
         private Mod mainMod;
+        private InfoPanel infoPanel;
         private DonnerTech_ECU_Mod mod;
 
-        private GameObject infoPanel;
+        private GameObject panel_gameObject;
         private GameObject turnSignals;
         private GameObject beamShort;
         private GameObject beamLong;
@@ -27,7 +29,7 @@ namespace DonnerTech_ECU_Mod
 
         //Pages
         private InfoPanelPage[] pages;
-        private Page4 page4;
+        
         private int currentPage = 0;
         //Animation
         private const float ecu_InfoPanel_Needle_maxAngle = 270;
@@ -101,16 +103,6 @@ namespace DonnerTech_ECU_Mod
         public bool lightsensor_enabled { get; set; } = false;
         private bool lightsensor_wasEnabled = false;
 
-
-        private Sprite ecu_mod_panel_page0;
-        private Sprite ecu_mod_panel_modules_page1;
-        private Sprite ecu_mod_panel_faults_page2;
-        private Sprite ecu_mod_panel_faults_page3;
-        private Sprite ecu_mod_panel_tuner_page4;
-        private Sprite ecu_mod_panel_turbo_page5;
-        private Sprite ecu_mod_panel_assistance_page6;
-        private Sprite ecu_mod_panel_airride_page7;
-
         private Sprite ecu_mod_panel_needle;
         private Sprite ecu_mod_panel_turbineWheel;
         private Sprite ecu_mod_panel_handbrake;
@@ -130,7 +122,7 @@ namespace DonnerTech_ECU_Mod
         private void Start()
         {
             assetBundle = LoadAssets.LoadBundle(mod, "ecu-mod.unity3d");
-            infoPanel = this.gameObject;
+            panel_gameObject = this.gameObject;
 
             ecu_airride_logic = this.gameObject.AddComponent<Airride_Logic>();
             satsuma = GameObject.Find("SATSUMA(557kg, 248)");
@@ -149,7 +141,7 @@ namespace DonnerTech_ECU_Mod
             shift_indicator_renderer = GameObject.Find("ECU-Shift-Indicator").GetComponent<MeshRenderer>();
             SetupShiftIndicator();
 
-            TextMesh[] ecu_InfoPanel_TextMeshes = infoPanel.GetComponentsInChildren<TextMesh>();
+            TextMesh[] ecu_InfoPanel_TextMeshes = panel_gameObject.GetComponentsInChildren<TextMesh>();
             foreach (TextMesh textMesh in ecu_InfoPanel_TextMeshes)
             {
                 switch (textMesh.name)
@@ -175,7 +167,7 @@ namespace DonnerTech_ECU_Mod
                 textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
             }
 
-            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = infoPanel.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = panel_gameObject.GetComponentsInChildren<SpriteRenderer>();
             foreach (SpriteRenderer spriteRenderer in ecu_InfoPanel_SpriteRenderer)
             {
                 switch (spriteRenderer.name)
@@ -266,8 +258,6 @@ namespace DonnerTech_ECU_Mod
             
             FsmHook.FsmInject(GameObject.Find("StreetLights"), "Day", SwitchToDay);
             FsmHook.FsmInject(GameObject.Find("StreetLights"), "Night", SwitchToNight);
-
-            page4 = new Page4(4, "tuner_page", "ECU-Mod-Panel_Tuner-Page4", this.mod, display_values);
             
             pages = new InfoPanelPage[]
             {
@@ -275,7 +265,6 @@ namespace DonnerTech_ECU_Mod
                  new Page1(1, "modules_page", "ECU-Mod-Panel_Modules-Page1", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
                  new Page2(2, "faults_page", "ECU-Mod-Panel_Faults-Page2", this.mod, display_values),
                  new Page3(3, "faults2_page", "ECU-Mod-Panel_Faults-Page3", this.mod, display_values),
-                 page4,
                  new Page5(5, "turbocharger_page", "ECU-Mod-Panel-Turbocharger-Page5", this.mod, this.ecu_InfoPanel_TurboWheelObject, display_values),
                  new Page6(6, "assistance_page", "ECU-Mod-Panel-Assistance-Page6", this.mod, display_values),
 #if DEBUG 
@@ -296,58 +285,32 @@ namespace DonnerTech_ECU_Mod
         }
         private void LoadECU_PanelImageOverride()
         {
-            ecu_mod_panel_handbrake = LoadNewSprite(ecu_mod_panel_handbrake, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "handbrake_icon.png"));
+            ecu_mod_panel_handbrake = Helper.LoadNewSprite(ecu_mod_panel_handbrake, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "handbrake_icon.png"));
             ecu_InfoPanel_Handbrake.sprite = ecu_mod_panel_handbrake;
 
-            ecu_mod_panel_blinkerLeft = LoadNewSprite(ecu_mod_panel_blinkerLeft, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_left_icon.png"));
+            ecu_mod_panel_blinkerLeft = Helper.LoadNewSprite(ecu_mod_panel_blinkerLeft, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_left_icon.png"));
             ecu_InfoPanel_IndicatorLeft.sprite = ecu_mod_panel_blinkerLeft;
 
-            ecu_mod_panel_blinkerRight = LoadNewSprite(ecu_mod_panel_blinkerRight, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_right_icon.png"));
+            ecu_mod_panel_blinkerRight = Helper.LoadNewSprite(ecu_mod_panel_blinkerRight, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_right_icon.png"));
             ecu_InfoPanel_IndicatorRight.sprite = ecu_mod_panel_blinkerRight;
 
-            ecu_mod_panel_lowBeam = LoadNewSprite(ecu_mod_panel_lowBeam, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "low_beam_icon.png"));
+            ecu_mod_panel_lowBeam = Helper.LoadNewSprite(ecu_mod_panel_lowBeam, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "low_beam_icon.png"));
             ecu_InfoPanel_LowBeam.sprite = ecu_mod_panel_lowBeam;
 
-            ecu_mod_panel_highBeam = LoadNewSprite(ecu_mod_panel_highBeam, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "high_beam_icon.png"));
+            ecu_mod_panel_highBeam = Helper.LoadNewSprite(ecu_mod_panel_highBeam, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "high_beam_icon.png"));
             ecu_InfoPanel_HighBeam.sprite = ecu_mod_panel_highBeam;
 
-            ecu_mod_panel_needle = LoadNewSprite(ecu_mod_panel_needle, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "needle_icon.png"));
+            ecu_mod_panel_needle = Helper.LoadNewSprite(ecu_mod_panel_needle, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "needle_icon.png"));
             ecu_InfoPanel_Needle.sprite = ecu_mod_panel_needle;
 
-            ecu_mod_panel_turbineWheel = LoadNewSprite(ecu_mod_panel_turbineWheel, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "turbine_icon.png"));
+            ecu_mod_panel_turbineWheel = Helper.LoadNewSprite(ecu_mod_panel_turbineWheel, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "turbine_icon.png"));
             ecu_InfoPanel_TurboWheel.sprite = ecu_mod_panel_turbineWheel;
-        }
-        public Sprite LoadNewSprite(Sprite sprite, string FilePath, float pivotX = 0.5f, float pivotY = 0.5f, float PixelsPerUnit = 100.0f)
-        {
-            if (File.Exists(FilePath) && Path.GetExtension(FilePath) == ".png")
-            {
-                Sprite NewSprite = new Sprite();
-                Texture2D SpriteTexture = LoadTexture(FilePath);
-                NewSprite = Sprite.Create(SpriteTexture, new Rect(0, 0, SpriteTexture.width, SpriteTexture.height), new Vector2(pivotX, pivotY), PixelsPerUnit);
-
-                return NewSprite;
-            }
-            return sprite;
-        }
-        public Texture2D LoadTexture(string FilePath)
-        {
-            Texture2D Tex2D;
-            byte[] FileData;
-
-            if (File.Exists(FilePath))
-            {
-                FileData = File.ReadAllBytes(FilePath);
-                Tex2D = new Texture2D(2, 2);
-                if (Tex2D.LoadImage(FileData))
-                    return Tex2D;
-            }
-            return null;
         }
 
         void Update()
         {
 
-            if (mod.hasPower && mod.info_panel_part.InstalledScrewed())
+            if (mod.hasPower && infoPanel.part.InstalledScrewed())
             {
                 if (!isBooted)
                 {
@@ -416,8 +379,6 @@ namespace DonnerTech_ECU_Mod
                         display_value.Value.text = "";
                         display_value.Value.color = Color.white;
                     }
-
-                    page4.ResetAutoTune();
 
                     isBooting = false;
                     isBooted = false;
@@ -594,27 +555,27 @@ namespace DonnerTech_ECU_Mod
         {
             if(playerCurrentVehicle.Value == "Satsuma")
             {
-                if (mod.info_panel_arrowUp.GetKeybindDown())
+                if (infoPanel.arrowUp.GetKeybindDown())
                 {
                     Pressed_Button_ArrowUp();
                 }
-                else if (mod.info_panel_arrowDown.GetKeybindDown())
+                else if (infoPanel.arrowDown.GetKeybindDown())
                 {
                     Pressed_Button_ArrowUp();
                 }
-                else if (mod.info_panel_circle.GetKeybindDown())
+                else if (infoPanel.circle.GetKeybindDown())
                 {
                     Pressed_Button_Circle();
                 }
-                else if (mod.info_panel_cross.GetKeybindDown())
+                else if (infoPanel.cross.GetKeybindDown())
                 {
                     Pressed_Button_Cross();
                 }
-                else if (mod.info_panel_plus.GetKeybindDown())
+                else if (infoPanel.plus.GetKeybindDown())
                 {
                     Pressed_Button_Plus();
                 }
-                else if (mod.info_panel_minus.GetKeybindDown())
+                else if (infoPanel.minus.GetKeybindDown())
                 {
                     Pressed_Button_Minus();
                 }
@@ -926,8 +887,9 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        public void Init(DonnerTech_ECU_Mod mod)
+        public void Init(InfoPanel infoPanel, DonnerTech_ECU_Mod mod)
         {
+            this.infoPanel = infoPanel;
             this.mod = mod;
         }
 
