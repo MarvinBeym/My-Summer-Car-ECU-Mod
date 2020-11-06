@@ -12,7 +12,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
     public abstract class InfoPanelPage
     {
-        protected int pageID;
+        public string pageName;
         public Sprite pageSprite;
         protected DonnerTech_ECU_Mod mod;
         protected InfoPanel_Logic logic;
@@ -30,9 +30,9 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private const float needle_minAngle = 0;
         private const float needle_maxRPM = 9000;
 
-        public InfoPanelPage(int pageID, DonnerTech_ECU_Mod mod, string pageName, string assetSpriteName, Dictionary<string, TextMesh> display_values)
+        public InfoPanelPage(DonnerTech_ECU_Mod mod, string pageName, string assetSpriteName, Dictionary<string, TextMesh> display_values)
         {
-            this.pageID = pageID;
+            this.pageName = pageName;
             this.mod = mod;
             logic = mod.info_panel.logic;
             this.display_values = display_values;

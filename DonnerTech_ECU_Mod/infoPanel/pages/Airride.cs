@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
 {
-    class Page7 : InfoPanelPage
+    class Airride : InfoPanelPage
     {
-        public Page7(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(pageID, mod, pageName, assetSpriteName, display_values)
+        public Airride(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName, assetSpriteName, display_values)
         {
 
         }

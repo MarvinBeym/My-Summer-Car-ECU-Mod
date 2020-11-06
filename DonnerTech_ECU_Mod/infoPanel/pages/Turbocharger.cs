@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
 {
-    class Page5 : InfoPanelPage
+    class Turbocharger : InfoPanelPage
     {
         private GameObject turbine;
         private PlayMakerFSM turbocharger_bigFSM;
@@ -29,7 +29,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat turbocharger_small_intake_temp;
         private FsmBool turbocharger_small_allInstalled;
 
-        public Page5(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, GameObject turbine, Dictionary<string, TextMesh> display_values) : base(pageID, mod, pageName, assetSpriteName, display_values)
+        public Turbocharger(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, GameObject turbine, Dictionary<string, TextMesh> display_values) : base(mod, pageName, assetSpriteName, display_values)
         {
             this.turbine = turbine;
             turbineUsed = true;

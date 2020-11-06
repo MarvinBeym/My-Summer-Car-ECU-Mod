@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
 {
-    class Page0 : InfoPanelPage
+    class Main : InfoPanelPage
     {
         private GameObject needle;
 
@@ -38,7 +38,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private Timer odometerUpdateTimer;
         private Timer voltageUpdateTimer;
 
-        public Page0(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, GameObject needle, Dictionary<string, TextMesh> display_values): base(pageID, mod, pageName, assetSpriteName, display_values)
+        public Main(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, GameObject needle, Dictionary<string, TextMesh> display_values): base(mod, pageName, assetSpriteName, display_values)
         {
             this.needle = needle;
             needleUsed = true;

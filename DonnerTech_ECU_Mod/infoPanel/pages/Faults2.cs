@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
 {
-    class Page3 : InfoPanelPage
+    class Faults2 : InfoPanelPage
     {
         private FsmBool radiator_installed;
         private FsmBool race_radiator_installed;
@@ -34,7 +34,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat wearSpark3;
         private FsmFloat wearSpark4;
 
-        public Page3(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(pageID, mod, pageName, assetSpriteName, display_values)
+        public Faults2(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName, assetSpriteName, display_values)
         {
             PlayMakerFSM race_radiatorFSM = GameObject.Find("Racing Radiator").GetComponent<PlayMakerFSM>();
             PlayMakerFSM radiatorFSM = GameObject.Find("Radiator").GetComponent<PlayMakerFSM>();

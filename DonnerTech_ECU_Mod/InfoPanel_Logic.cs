@@ -261,14 +261,14 @@ namespace DonnerTech_ECU_Mod
             
             pages = new InfoPanelPage[]
             {
-                new Page0(0, "main_page", "ECU-Mod-Panel-Page0", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
-                 new Page1(1, "modules_page", "ECU-Mod-Panel_Modules-Page1", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
-                 new Page2(2, "faults_page", "ECU-Mod-Panel_Faults-Page2", this.mod, display_values),
-                 new Page3(3, "faults2_page", "ECU-Mod-Panel_Faults-Page3", this.mod, display_values),
-                 new Page5(5, "turbocharger_page", "ECU-Mod-Panel-Turbocharger-Page5", this.mod, this.ecu_InfoPanel_TurboWheelObject, display_values),
-                 new Page6(6, "assistance_page", "ECU-Mod-Panel-Assistance-Page6", this.mod, display_values),
+                new Main("main_page", "ECU-Mod-Panel-Page0", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
+                 new Modules("modules_page", "ECU-Mod-Panel_Modules-Page1", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
+                 new Faults("faults_page", "ECU-Mod-Panel_Faults-Page2", this.mod, display_values),
+                 new Faults2("faults2_page", "ECU-Mod-Panel_Faults-Page3", this.mod, display_values),
+                 new Turbocharger("turbocharger_page", "ECU-Mod-Panel-Turbocharger-Page5", this.mod, this.ecu_InfoPanel_TurboWheelObject, display_values),
+                 new Assistance("assistance_page", "ECU-Mod-Panel-Assistance-Page6", this.mod, display_values),
 #if DEBUG 
-                new Page7(7, "airride_page", "ECU-Mod-Panel-Airride-Page7", this.mod, display_values),
+                new Airride("airride_page", "ECU-Mod-Panel-Airride-Page7", this.mod, display_values),
 #endif
             };
 

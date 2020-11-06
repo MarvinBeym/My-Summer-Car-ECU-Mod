@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
 {
-    class Page2 : InfoPanelPage
+    class Faults : InfoPanelPage
     {
         private FsmFloat wearAlternator;
         private FsmFloat wearClutch;
@@ -25,7 +25,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat wearHeadlightBulbLeft;
         private FsmFloat wearHeadlightBulbRight;
 
-        public Page2(int pageID, string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(pageID, mod, pageName, assetSpriteName, display_values)
+        public Faults(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName, assetSpriteName, display_values)
         {
             PlayMakerFSM mechanicalWear = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear").GetComponent<PlayMakerFSM>();
 
