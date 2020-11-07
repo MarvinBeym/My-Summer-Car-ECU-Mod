@@ -78,6 +78,7 @@ namespace DonnerTech_ECU_Mod
          *  Small code improvement
          *  Added missing text to info panel assistant page
          *  Added airride as a beta feature that can be enabled in Mod Settings.
+         *  Fixed missing overrrideSavefile renamer missing from gui
          */
         /* BUGS/Need to fix
          * Optimize code both turbo and ecu (only update when needed)
@@ -1131,7 +1132,7 @@ namespace DonnerTech_ECU_Mod
         public override void OnGUI()
         {
             saveFileRenamer.GuiHandler();
-
+            overrideFileRenamer.GuiHandler();
             if (cruiseControlDebugEnabled)
             {
                 GUI.Label(new Rect(20, 400, 500, 100), "------------------------------------");

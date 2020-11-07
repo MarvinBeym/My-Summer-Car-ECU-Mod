@@ -44,6 +44,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
         public bool airride_playing = false;
         public bool compressor_playing = false;
+        public bool allow_sound = true;
         public Action action = Action.None;
 
         public void AirrideSound(bool playOrStop = true)
@@ -51,11 +52,19 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             if (playOrStop)
             {
                 //Play
-                if (!airride_playing)
+                if (allow_sound)
                 {
-                    airride_playing = true;
-                    airride_sound.Play();
+                    if (!airride_playing)
+                    {
+                        airride_playing = true;
+                        airride_sound.Play();
+                    }
                 }
+                else
+                {
+                    allow_sound = true;
+                }
+
                 return;
             }
             //Stop
@@ -68,11 +77,19 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             if (playOrStop)
             {
                 //Play
-                if (!compressor_playing)
+                if (allow_sound)
                 {
-                    compressor_playing = true;
-                    compressor_sound.Play();
+                    if (!compressor_playing)
+                    {
+                        compressor_playing = true;
+                        compressor_sound.Play();
+                    }
                 }
+                else
+                {
+                    allow_sound = true;
+                }
+
                 return;
             }
             //Stop
@@ -120,7 +137,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             display_values["value_2"].text = "DOWN";
             display_values["value_3"].text = "HIGH";
             display_values["value_4"].text = "LOW";
-            display_values["value_5"].text = mod.engineRunning ? "INFINITE" : "LOW";
+            display_values["value_13"].text = mod.engineRunning ? "INFINITE" : "LOW";
             display_values["value_16"].text = "All";
         }
 
@@ -132,29 +149,28 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
         public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
         {
-            if (mod.engineRunning && action == Action.None)
+            switch (value)
             {
-                switch (value)
-                {
-                    case "Increase Pressure":
-                        action = Action.Increase;
-                        break;
-                    case "Decrease Pressure":
-                        action = Action.Decrease;
-                        break;
-                    case "Highest Pressure":
-                        action = Action.Highest;
-                        break;
-                    case "Lowest Pressure":
-                        action = Action.Lowest;
-                        break;
-                    default:
-                        playSound = false;
-                        break;
-                }
-                playTouchSound(gameObjectHit);
-            }
+                case "Increase Pressure":
+                    action = Action.Increase;
+                    allow_sound = false;
+                    break;
+                case "Decrease Pressure":
+                    action = Action.Decrease;
+                    allow_sound = false;
+                    break;
+                case "Highest Pressure":
+                    action = Action.Highest;
+                    break;
+                case "Lowest Pressure":
+                    action = Action.Lowest;
 
+                    break;
+                default:
+                    playSound = false;
+                    break;
+            }
+            playTouchSound(gameObjectHit);
         }
     }
 }
