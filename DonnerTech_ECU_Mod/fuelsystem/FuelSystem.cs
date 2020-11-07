@@ -186,7 +186,12 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         {
             chip_programmer.Handle();
 
-            if (anyOriginalInstalled && !anyInstalled)
+            bool allInstalled_tmp = allInstalled;
+            bool anyInstalled_tmp = anyInstalled;
+            mod.fuelInjection_allInstalled.Value = allInstalled_tmp;
+            mod.fuelInjection_anyInstalled.Value = anyInstalled_tmp;
+
+            if (anyOriginalInstalled && !anyInstalled_tmp)
             {
                 foreach (SimplePart part in allParts)
                 {
@@ -199,7 +204,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 }
             }
             
-            if(anyInstalled && !anyOriginalInstalled)
+            if(anyInstalled_tmp && !anyOriginalInstalled)
             {
                 foreach (SimplePart part in allParts)
                 {
@@ -211,7 +216,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 }
             }
 
-            if(!anyInstalled && !anyOriginalInstalled)
+            if(!anyInstalled_tmp && !anyOriginalInstalled)
             {
                 foreach (OriginalPart originalPart in allOriginalParts)
                 {
@@ -223,9 +228,11 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 }
             }
 
+            if(anyInstalled_tmp)
+
             if (mod.smart_engine_module_part.InstalledScrewed())
             {
-                if (allInstalled && !allInstalled_applied)
+                if (allInstalled_tmp && !allInstalled_applied)
                 {
                     mod.wires_injectors_pumps.enabled = true;
                     mod.wires_sparkPlugs1.enabled = true;

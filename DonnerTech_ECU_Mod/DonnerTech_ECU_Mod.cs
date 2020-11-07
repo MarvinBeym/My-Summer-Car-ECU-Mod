@@ -72,13 +72,8 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.3)
-         *  Renamed info panel images to new names (ex. removing ECU-Mod...)
-         *  Removed tuner page from info panel
-         *  Small code improvement
-         *  Added missing text to info panel assistant page
-         *  Added airride as a beta feature that can be enabled in Mod Settings.
-         *  Fixed missing overrrideSavefile renamer missing from gui
+        /*  Changelog (v1.4.4)
+         *  Tiny update to get ready mod ready for next turbo mod update.
          */
         /* BUGS/Need to fix
          * Optimize code both turbo and ecu (only update when needed)
@@ -91,9 +86,9 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.3"; //Version
+        public override string Version => "1.4.4"; //Version
         public override bool UseAssetsFolder => true;
-        
+
         SaveFileRenamer saveFileRenamer;
         OverrideFileRenamer overrideFileRenamer;
         public AssetBundle assetBundle;
@@ -132,16 +127,19 @@ namespace DonnerTech_ECU_Mod
 
 
 
-        
 
+        //Installed FSM
+        public FsmBool fuelInjection_allInstalled;
+        public FsmBool fuelInjection_anyInstalled;
+
+        //Modules FSM
         public PlayMakerFSM modulesFsm;
-
-        public FsmFloat step2_rpm { get; set; }
-        public FsmBool absModule_enabled { get; set; }
-        public FsmBool espModule_enabled { get; set; }
-        public FsmBool tcsModule_enabled { get; set; }
-        public FsmBool alsModule_enabled { get; set; }
-        public FsmBool step2RevLimiterModule_enabled { get; set; }
+        public FsmFloat step2_rpm;
+        public FsmBool absModule_enabled;
+        public FsmBool espModule_enabled;
+        public FsmBool tcsModule_enabled;
+        public FsmBool alsModule_enabled;
+        public FsmBool step2RevLimiterModule_enabled;
 
         //FuelSystem
         public FuelSystem fuel_system;
@@ -339,6 +337,18 @@ namespace DonnerTech_ECU_Mod
 
             GameObject ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
             ecu_mod_gameObject.name = this.ID;
+
+            PlayMakerFSM installedFsm = ecu_mod_gameObject.AddComponent<PlayMakerFSM>();
+            installedFsm.FsmName = "Installed";
+
+            fuelInjection_allInstalled = new FsmBool("Fuel Injection All");
+            fuelInjection_anyInstalled = new FsmBool("Fuel Injection Any");
+
+            installedFsm.FsmVariables.BoolVariables = new FsmBool[]
+            {
+                fuelInjection_allInstalled,
+                fuelInjection_anyInstalled,
+            };
 
             modulesFsm = ecu_mod_gameObject.AddComponent<PlayMakerFSM>();
             modulesFsm.FsmName = "Modules";
