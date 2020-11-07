@@ -16,11 +16,10 @@ namespace DonnerTech_ECU_Mod
 {
     public class InfoPanel_Logic : MonoBehaviour
     {
-        private Mod mainMod;
         private InfoPanel infoPanel;
         private DonnerTech_ECU_Mod mod;
 
-        private GameObject panel_gameObject;
+        public GameObject panel_gameObject;
         private GameObject turnSignals;
         private GameObject beamShort;
         private GameObject beamLong;
@@ -28,7 +27,7 @@ namespace DonnerTech_ECU_Mod
         private GameObject blinkerLeft;
 
         //Pages
-        private InfoPanelPage[] pages;
+        private List<InfoPanelPage> pages;
         
         private int currentPage = 0;
         //Animation
@@ -64,18 +63,7 @@ namespace DonnerTech_ECU_Mod
         //Airride stuff
         //camber -> wheelFL, .... 
 
-        private Airride_Logic ecu_airride_logic;
 
-        private string ecu_airride_operation = "";
-        private float ecu_airride_timer = 0f;
-        private FsmFloat travelRally;
-        private FsmFloat rallyFrontRate;
-        private FsmFloat rallyRearRate;
-        private FsmFloat wheelPosRally;
-
-        private float ecu_airride_wheelPosRally_min = -0.06f;
-        private float ecu_airride_wheelPosRally_max = -0.18f;
-        private float ecu_airride_wheelPosRally_default = -0.165f;
 
         //Lightsensor stuff
         private bool isNight = false;
@@ -124,7 +112,7 @@ namespace DonnerTech_ECU_Mod
             assetBundle = LoadAssets.LoadBundle(mod, "ecu-mod.unity3d");
             panel_gameObject = this.gameObject;
 
-            ecu_airride_logic = this.gameObject.AddComponent<Airride_Logic>();
+            
             satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
             satsumaCarController = satsuma.GetComponent<CarController>();
@@ -248,29 +236,22 @@ namespace DonnerTech_ECU_Mod
             }
 
             LoadECU_PanelImageOverride();
-
-            PlayMakerFSM suspension = GameObject.Find("Suspension").GetComponent<PlayMakerFSM>();
-            travelRally = suspension.FsmVariables.FindFsmFloat("TravelRally");
-            wheelPosRally = suspension.FsmVariables.FindFsmFloat("WheelPosRally");
-
-            rallyFrontRate = suspension.FsmVariables.FindFsmFloat("RallyFrontRate");
-            rallyRearRate = suspension.FsmVariables.FindFsmFloat("RallyRearRate");
             
             FsmHook.FsmInject(GameObject.Find("StreetLights"), "Day", SwitchToDay);
             FsmHook.FsmInject(GameObject.Find("StreetLights"), "Night", SwitchToNight);
-            
-            pages = new InfoPanelPage[]
+
+            pages = new List<InfoPanelPage>();
+            pages.Add(new Main("main_page", this.mod, this.ecu_InfoPanel_NeedleObject, display_values));
+            pages.Add(new Modules("modules_page", this.mod, this.ecu_InfoPanel_NeedleObject, display_values));
+            pages.Add(new Faults("faults_page", this.mod, display_values));
+            pages.Add(new Faults2("faults2_page", this.mod, display_values));
+            pages.Add(new Turbocharger("turbocharger_page", this.mod, this.ecu_InfoPanel_TurboWheelObject, display_values));
+            pages.Add(new Assistance("assistance_page", this.mod, display_values));
+
+            if ((bool) mod.enableAirrideInfoPanelPage.Value)
             {
-                new Main("main_page", "ECU-Mod-Panel-Page0", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
-                 new Modules("modules_page", "ECU-Mod-Panel_Modules-Page1", this.mod, this.ecu_InfoPanel_NeedleObject, display_values),
-                 new Faults("faults_page", "ECU-Mod-Panel_Faults-Page2", this.mod, display_values),
-                 new Faults2("faults2_page", "ECU-Mod-Panel_Faults-Page3", this.mod, display_values),
-                 new Turbocharger("turbocharger_page", "ECU-Mod-Panel-Turbocharger-Page5", this.mod, this.ecu_InfoPanel_TurboWheelObject, display_values),
-                 new Assistance("assistance_page", "ECU-Mod-Panel-Assistance-Page6", this.mod, display_values),
-#if DEBUG 
-                new Airride("airride_page", "ECU-Mod-Panel-Airride-Page7", this.mod, display_values),
-#endif
-            };
+                pages.Add(new Airride("airride_page", this.mod, display_values));
+            }
 
             assetBundle.Unload(false);
         }
@@ -321,11 +302,6 @@ namespace DonnerTech_ECU_Mod
                     HandleShiftIndicator();
                     HandleKeybinds();
                     HandleButtonPresses();
-
-                    if (true/*mod.GetAirrideInstalledScrewed()*/)
-                    {
-                        HandleAirride();
-                    } 
 
                     HandleReverseCamera();
                     if (rainsensor_enabled)
@@ -390,10 +366,6 @@ namespace DonnerTech_ECU_Mod
                 }
 
             }
-            
-        }
-        private void HandleAirride()
-        {
             
         }
         private void HandleReverseCamera()
@@ -518,7 +490,7 @@ namespace DonnerTech_ECU_Mod
 
         private void HandleShiftIndicator()
         {
-            if(satsumaDriveTrain.rpm > 0)
+            if(mod.engineRunning)
             {
                 float gradientValue = satsumaDriveTrain.rpm / 10000;
                 
@@ -555,27 +527,27 @@ namespace DonnerTech_ECU_Mod
         {
             if(playerCurrentVehicle.Value == "Satsuma")
             {
-                if (infoPanel.arrowUp.GetKeybindDown())
+                if (mod.arrowUp.GetKeybindDown())
                 {
                     Pressed_Button_ArrowUp();
                 }
-                else if (infoPanel.arrowDown.GetKeybindDown())
+                else if (mod.arrowDown.GetKeybindDown())
                 {
                     Pressed_Button_ArrowUp();
                 }
-                else if (infoPanel.circle.GetKeybindDown())
+                else if (mod.circle.GetKeybindDown())
                 {
                     Pressed_Button_Circle();
                 }
-                else if (infoPanel.cross.GetKeybindDown())
+                else if (mod.cross.GetKeybindDown())
                 {
                     Pressed_Button_Cross();
                 }
-                else if (infoPanel.plus.GetKeybindDown())
+                else if (mod.plus.GetKeybindDown())
                 {
                     Pressed_Button_Plus();
                 }
-                else if (infoPanel.minus.GetKeybindDown())
+                else if (mod.minus.GetKeybindDown())
                 {
                     Pressed_Button_Minus();
                 }
@@ -753,7 +725,7 @@ namespace DonnerTech_ECU_Mod
         private void Pressed_Button_ArrowUp()
         {
             currentPage++;
-            if(currentPage > pages.Length - 1)
+            if(currentPage > pages.Count - 1)
             {
                 currentPage = 0;
             }
@@ -765,7 +737,7 @@ namespace DonnerTech_ECU_Mod
             currentPage--;
             if(currentPage < 0)
             {
-                currentPage = pages.Length - 1;
+                currentPage = pages.Count - 1;
             }
             ChangeInfoPanelPage(currentPage);
         }

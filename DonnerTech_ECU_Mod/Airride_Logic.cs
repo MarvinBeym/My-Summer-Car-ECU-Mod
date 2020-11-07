@@ -1,4 +1,9 @@
-﻿using MSCLoader;
+﻿using DonnerTech_ECU_Mod.info_panel_pages;
+using HutongGames.PlayMaker;
+using HutongGames.PlayMaker.Actions;
+using MSCLoader;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
@@ -7,107 +12,267 @@ namespace DonnerTech_ECU_Mod
     {
         private GameObject wheelFL, wheelFR, wheelRL, wheelRR;
         private PlayMakerFSM suspension;
-        private float originalFrontWheelYPos, originalRearWheelYPos;
-        private float ecu_airride_travelRally_min = 0.09f;
-        private float ecu_airride_travelRally_max = 0.17f;
-        private float ecu_airride_travelRally_default = 0.15f;
+
+        private Airride airride;
+        private DonnerTech_ECU_Mod mod;
+        private FsmFloat travelRally;
+        private FsmFloat rallyFrontRate;
+        private FsmFloat rallyRearRate;
+        private FsmFloat wheelPosRally;
+
+        private FsmFloat steerLimit;
+
+        private List<Transform> wheel_transforms = new List<Transform>();
+        private List<Wheel> wheels = new List<Wheel>();
+        private enum Selection
+        {
+            All,
+            Front,
+            Rear,
+        }
+
+        private GameObject GetChildByName(GameObject gameObject, string name)
+        {
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                GameObject child = gameObject.transform.GetChild(i).gameObject;
+                if(child.name == "name")
+                {
+                    return child;
+                }
+            }
+            return null;
+        }
 
         // Use this for initialization
         void Start()
         {
+            GameObject fl = GameObject.Find("SATSUMA(557kg, 248)/FL");
+            GameObject rl = GameObject.Find("SATSUMA(557kg, 248)/RL");
+            GameObject fr = GameObject.Find("SATSUMA(557kg, 248)/FR");
+            GameObject rr = GameObject.Find("SATSUMA(557kg, 248)/RR");
+
             suspension = suspension = GameObject.Find("Suspension").GetComponent<PlayMakerFSM>();
-            wheelFL = GameObject.Find("");
-            wheelFR = GameObject.Find("");
-            wheelRL = GameObject.Find("");
-            wheelRR = GameObject.Find("");
+            wheel_transforms.Add(fl.transform);
+            wheel_transforms.Add(rl.transform);
+            wheel_transforms.Add(fr.transform);
+            wheel_transforms.Add(rr.transform);
+
+            GameObject wheelFL = GameObject.Find("SATSUMA(557kg, 248)/FL/AckerFL/wheelFL");
+            GameObject wheelRL = GameObject.Find("SATSUMA(557kg, 248)/RL/wheelRL");
+            GameObject wheelFR = GameObject.Find("SATSUMA(557kg, 248)/FR/AckerFR/wheelFR");
+            GameObject wheelRR = GameObject.Find("SATSUMA(557kg, 248)/RR/wheelRR");
+            wheels.Add(wheelFL.GetComponent<Wheel>());
+            wheels.Add(wheelRL.GetComponent<Wheel>());
+            wheels.Add(wheelFR.GetComponent<Wheel>());
+            wheels.Add(wheelRR.GetComponent<Wheel>());
+
+            PlayMakerFSM[] playMakerFSMs = mod.satsuma.GetComponents<PlayMakerFSM>();
+            foreach(PlayMakerFSM fsm in playMakerFSMs)
+            {
+                if(fsm.FsmName == "SteerLimit")
+                {
+                    steerLimit = fsm.FsmVariables.FindFsmFloat("MaxAngle");
+                    break;
+                }
+            }
+
+
+            rallyFrontRate = suspension.FsmVariables.FindFsmFloat("RallyFrontRate");
+            rallyRearRate = suspension.FsmVariables.FindFsmFloat("RallyRearRate");
+
+
         }
 
         // Update is called once per frame
         void Update()
         {
-            /*
-            if (ecu_airride_operation != "")
+            if (mod.engineRunning)
             {
-                if (ecu_airride_operation == "to lowest")
+                if(airride.action == Airride.Action.None)
                 {
-                    float value = Mathf.SmoothStep(25000, 10000, counter);
-                    float value2 = Mathf.SmoothStep(ecu_airride_wheelPosRally_default, ecu_airride_wheelPosRally_min, counter);
-                    rallyFrontRate.Value = 10000;
-                    rallyRearRate.Value = 10000;
-                    wheelPosRally.Value = ecu_airride_wheelPosRally_min;
-                    if (rallyFrontRate.Value == 0)
-                    {
-                        counter = 0;
-                        ecu_airride_operation = "";
-                    }
-                }
-                else if (ecu_airride_operation == "to highest")
-                {
+                    if (mod.highestKeybind.GetKeybindUp()) { airride.action = Airride.Action.Highest; }
+                    if (mod.lowestKeybind.GetKeybindUp()) { airride.action = Airride.Action.Lowest; }
+                    if (mod.increaseKeybind.GetKeybind()) { airride.action = Airride.Action.Increase; }
+                    if (mod.decreaseKeybind.GetKeybind()) { airride.action = Airride.Action.Decrease; }
 
-                    float value = Mathf.SmoothStep(10000, 25000, counter);
-                    float value2 = Mathf.SmoothStep(ecu_airride_wheelPosRally_min, ecu_airride_wheelPosRally_default, counter);
-                    counter += 0.02f;
-                    rallyFrontRate.Value = 25000;
-                    rallyRearRate.Value = 25000;
-                    wheelPosRally.Value = value2;
-                    if (wheelPosRally.Value == ecu_airride_wheelPosRally_default)
-                    {
-                        counter = 0;
-                        ecu_airride_operation = "";
-                    }
+                    if (mod.increaseKeybind.GetKeybindUp()) { airride.CompressorSound(false); }
+                    if (mod.decreaseKeybind.GetKeybindUp()) { airride.AirrideSound(false); }
                 }
-                else if (ecu_airride_operation == "to default")
+
+
+                if (airride.action != Airride.Action.None)
                 {
-                    wheelPosRally.Value = ecu_airride_wheelPosRally_default;
-                }
-                else if (ecu_airride_operation == "increase")
-                {
-                    ModConsole.Print("tt");
-                    if (wheelPosRally.Value < ecu_airride_wheelPosRally_max)
+                    switch (airride.action)
                     {
-                        wheelPosRally.Value -= 0.005f;
-                    }
-                }
-                else if (ecu_airride_operation == "decrease")
-                {
-                    if (wheelPosRally.Value > ecu_airride_wheelPosRally_min)
-                    {
-                        wheelPosRally.Value =
+                        case Airride.Action.Lowest:
+                            ToLowest();
+                            break;
+                        case Airride.Action.Highest:
+                            ToHighest();
+                            break;
+                        case Airride.Action.Increase:
+                            Increase();
+                            break;
+                        case Airride.Action.Decrease:
+                            Decrease();
+                            break;
                     }
                 }
             }
-            */
+
         }
 
-        public void decreaseAirride(bool front, bool back, float amount)
+        private const float maxRate = 25000;
+        private const float minRate = 15000;
+        private const float ratePerSecond = 5000;
+
+        private const float maxPos = 0.12f;
+        private const float minPos = 0f;
+        private const float posPerSecond = 0.05f;
+
+        public float rate = maxRate;
+        public float pos = minPos;
+        public float leftCamber = 0;
+        public float rightCamber = 0;
+        public float camberPerSecond = 5f;
+        public float camberMax = 15;
+
+        private float minSteerLimit = 5;
+        private float maxSteerLimit = 33;
+        private float steerLimitStep = 10;
+
+        private void ToLowest()
         {
-            if(front && back)
+            if (!airride.atMin)
             {
-                
-            }
-            else if(front && !back)
-            {
+                airride.atMax = false;
+                airride.AirrideSound();
+                rate = Mathf.Clamp(rate - ratePerSecond * Time.deltaTime, minRate, maxRate);
+                pos = Mathf.Clamp(pos + posPerSecond * Time.deltaTime, minPos, maxPos);
+                leftCamber = Mathf.Clamp(leftCamber - camberPerSecond * Time.deltaTime, -camberMax, 0);
+                rightCamber = Mathf.Clamp(rightCamber + camberPerSecond * Time.deltaTime, 0, camberMax);
 
-            }
-            else if(!front && back)
-            {
+                steerLimit.Value = Mathf.Clamp(steerLimit.Value - steerLimitStep * Time.deltaTime, minSteerLimit, maxSteerLimit);
+                SetPosition(pos);
+                SetCamber(leftCamber, rightCamber);
+                SetSuspensionRate(rate);
 
+                if (pos == maxPos && rate == minRate && leftCamber == -camberMax && rightCamber == camberMax && steerLimit.Value == minSteerLimit)
+                {
+                    airride.atMin = true;
+                    airride.AirrideSound(false);
+                    airride.action = Airride.Action.None;
+                }
+                return;
             }
+            airride.action = Airride.Action.None;
         }
-        public void increaseAirride(bool front, bool back, float amount)
+
+
+
+        private void ToHighest()
         {
-            if (front && back)
+            if (!airride.atMax)
             {
+                airride.atMin = false;
+                airride.CompressorSound();
+                rate = Mathf.Clamp(rate + ratePerSecond * Time.deltaTime, minRate, maxRate);
+                pos = Mathf.Clamp(pos - posPerSecond * Time.deltaTime, minPos, maxPos);
+                leftCamber = Mathf.Clamp(leftCamber + camberPerSecond * Time.deltaTime, -camberMax, 0);
+                rightCamber = Mathf.Clamp(rightCamber - camberPerSecond * Time.deltaTime, 0, camberMax);
 
+                steerLimit.Value = Mathf.Clamp(steerLimit.Value + steerLimitStep * Time.deltaTime, minSteerLimit, maxSteerLimit);
+                SetPosition(pos);
+                SetCamber(leftCamber, rightCamber);
+                SetSuspensionRate(rate);
+
+                if (pos == minPos && rate == maxRate && leftCamber == 0 && rightCamber == 0 && steerLimit.Value == maxSteerLimit)
+                {
+                    airride.atMax = true;
+                    airride.CompressorSound(false);
+                    airride.action = Airride.Action.None;
+                }
+                return;
             }
-            else if (front && !back)
+            airride.action = Airride.Action.None;
+        }
+
+        private void Increase()
+        {
+            if (!airride.atMax)
             {
+                airride.atMin = false;
+                airride.CompressorSound();
+                rate = Mathf.Clamp(rate + ratePerSecond * Time.deltaTime, minRate, maxRate);
+                pos = Mathf.Clamp(pos - posPerSecond * Time.deltaTime, minPos, maxPos);
+                leftCamber = Mathf.Clamp(leftCamber + camberPerSecond * Time.deltaTime, -camberMax, 0);
+                rightCamber = Mathf.Clamp(rightCamber - camberPerSecond * Time.deltaTime, 0, camberMax);
 
+                steerLimit.Value = Mathf.Clamp(steerLimit.Value + steerLimitStep * Time.deltaTime, minSteerLimit, maxSteerLimit);
+                SetPosition(pos);
+                SetCamber(leftCamber, rightCamber);
+                SetSuspensionRate(rate);
+
+                if (pos == minPos && rate == maxRate && leftCamber == 0 && rightCamber == 0 && steerLimit.Value == maxSteerLimit)
+                {
+                    airride.atMax = true;
+                    airride.CompressorSound(false);
+                }
             }
-            else if (!front && back)
+            airride.action = Airride.Action.None;
+        }
+        private void Decrease()
+        {
+            if (!airride.atMin)
             {
+                airride.atMax = false;
+                airride.AirrideSound();
+                rate = Mathf.Clamp(rate - ratePerSecond * Time.deltaTime, minRate, maxRate);
+                pos = Mathf.Clamp(pos + posPerSecond * Time.deltaTime, minPos, maxPos);
+                leftCamber = Mathf.Clamp(leftCamber - camberPerSecond * Time.deltaTime, -camberMax, 0);
+                rightCamber = Mathf.Clamp(rightCamber + camberPerSecond * Time.deltaTime, 0, camberMax);
 
+                steerLimit.Value = Mathf.Clamp(steerLimit.Value - steerLimitStep * Time.deltaTime, minSteerLimit, maxSteerLimit);
+                SetPosition(pos);
+                SetCamber(leftCamber, rightCamber);
+                SetSuspensionRate(rate);
+
+                if (pos == maxPos && rate == minRate && leftCamber == -camberMax && rightCamber == camberMax && steerLimit.Value == minSteerLimit)
+                {
+                    airride.atMin = true;
+                    airride.AirrideSound(false);
+                }
             }
+            airride.action = Airride.Action.None;
+        }
+
+        private void SetSuspensionRate(float rate)
+        {
+            rallyFrontRate.Value = rate;
+            rallyRearRate.Value = rate;
+        }
+        private void SetPosition(float position)
+        {
+            wheel_transforms.ForEach(delegate (Transform wheel)
+            {
+                wheel.localPosition = new Vector3(wheel.localPosition.x, position, wheel.localPosition.z);
+            });
+        }
+
+        private void SetCamber(float leftCamber, float rightCamber)
+        {
+            wheels[0].camber = leftCamber;
+            wheels[1].camber = leftCamber;
+
+            wheels[2].camber = rightCamber;
+            wheels[3].camber = rightCamber;
+        }
+
+        public void Init(Airride airride, DonnerTech_ECU_Mod mod)
+        {
+            this.airride = airride;
+            this.mod = mod;
         }
     }
 }

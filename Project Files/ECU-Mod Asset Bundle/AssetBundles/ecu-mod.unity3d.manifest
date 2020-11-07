@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2983784760
+CRC: 2498494271
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 29465078d8783d86fdbdcc8e91ca490c
+    Hash: 44e0129fa3144ac98455dde5fd1e2079
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 179473d85ce64e2177b8b6000fb49934
+    Hash: ec7042f60e92c2c80ead0889d05da85b
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -32,6 +32,8 @@ ClassTypes:
 - Class: 64
   Script: {instanceID: 0}
 - Class: 65
+  Script: {instanceID: 0}
+- Class: 83
   Script: {instanceID: 0}
 - Class: 84
   Script: {instanceID: 0}
@@ -99,13 +101,14 @@ Assets:
 - Assets/Info-Panel/Indicator-Left-Icon.png
 - Assets/tcs-module.prefab
 - Assets/ProductImages/smart-engine-module_productImage.png
-- Assets/Info-Panel/ECU-Mod-Panel_Modules-Page1.png
+- Assets/Info-Panel/modules_page.png
 - Assets/esp-module.prefab
 - Assets/ProductImages/electric-fuel-pump_productImage.png
 - Assets/FuelSystem/fuel-injector.prefab
-- Assets/Info-Panel/ECU-Mod-Panel_Tuner-Page4.png
+- Assets/Info-Panel/tuner_page.png
 - Assets/ProductImages/chip-programmer_productImage.png
 - Assets/AWD/AWD-Gearbox.prefab
+- Assets/Info-Panel/airride_page.png
 - Assets/ProductImages/cruise-control_productImage.png
 - Assets/FuelSystem/fuel-injection-manifold.prefab
 - Assets/FuelSystem/fuel-rail.prefab
@@ -114,24 +117,25 @@ Assets:
 - Assets/Info-Panel/Handbrake-Icon.png
 - Assets/FuelSystem/wires-sparkPlugs-2.prefab
 - Assets/AWD/AWD-Propshaft.prefab
-- Assets/Info-Panel/ECU-Mod-Panel-Assistance-Page6.png
+- Assets/Info-Panel/assistance_page.png
 - Assets/Info-Panel/TurbineWheel.png
-- Assets/Info-Panel/ECU-Mod-Panel-Turbocharger-Page5.png
+- Assets/Info-Panel/turbocharger_page.png
 - Assets/Info-Panel/HighBeam-Icon.png
 - Assets/AWD/AWD-Differential.prefab
 - Assets/FuelSystem/wires-sparkPlugs-1.prefab
-- Assets/Info-Panel/ECU-Mod-Panel_Faults-Page2.png
+- Assets/Info-Panel/faults_page.png
 - Assets/Airride/Airride_FL.prefab
 - Assets/FuelSystem/throttle-body.prefab
 - Assets/ProductImages/fuel-pump-cover-plate_productImage.png
 - Assets/ProductImages/fuel-injection-manifold_productImage.png
 - Assets/engine-module.prefab
-- Assets/Info-Panel/ECU-Mod-Panel-Page0.png
+- Assets/Info-Panel/main_page.png
 - Assets/info-panel.prefab
 - Assets/Info-Panel/Rpm-Needle.png
 - Assets/ProductImages/fuel-injectors-box_productImage.png
 - Assets/cable-harness.prefab
 - Assets/Info-Panel/Indicator-Right-Icon.png
+- Assets/Airride/airride_sound1.mp3
 - Assets/FuelSystem/ui_interface.prefab
 - Assets/ProductImages/reverse-camera_productImage.png
 - Assets/ProductImages/abs-module_productImage.png
@@ -145,7 +149,7 @@ Assets:
 - Assets/ProductImages/tcs-module_productImage.png
 - Assets/FuelSystem/chip.prefab
 - Assets/rain-light-sensorboard.prefab
-- Assets/Info-Panel/ECU-Mod-Panel_Faults-Page3.png
+- Assets/Info-Panel/faults2_page.png
 - Assets/mounting-plate.prefab
 - Assets/ProductImages/mounting-plate_productImage.png
 - Assets/abs-module.prefab

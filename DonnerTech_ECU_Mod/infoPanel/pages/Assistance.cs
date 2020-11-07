@@ -8,7 +8,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
     class Assistance : InfoPanelPage
     {
-        public Assistance(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName, assetSpriteName, display_values)
+        public Assistance(string pageName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName,  display_values)
         {
 
         }

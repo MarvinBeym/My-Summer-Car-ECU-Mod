@@ -30,14 +30,14 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private const float needle_minAngle = 0;
         private const float needle_maxRPM = 9000;
 
-        public InfoPanelPage(DonnerTech_ECU_Mod mod, string pageName, string assetSpriteName, Dictionary<string, TextMesh> display_values)
+        public InfoPanelPage(DonnerTech_ECU_Mod mod, string pageName, Dictionary<string, TextMesh> display_values)
         {
             this.pageName = pageName;
             this.mod = mod;
             logic = mod.info_panel.logic;
             this.display_values = display_values;
 
-            pageSprite = logic.assetBundle.LoadAsset<Sprite>(assetSpriteName + ".png");
+            pageSprite = logic.assetBundle.LoadAsset<Sprite>(pageName + ".png");
             pageSprite = Helper.LoadNewSprite(pageSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + pageName + ".png"));
             satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();

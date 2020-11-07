@@ -25,7 +25,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat wearHeadlightBulbLeft;
         private FsmFloat wearHeadlightBulbRight;
 
-        public Faults(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName, assetSpriteName, display_values)
+        public Faults(string pageName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName,  display_values)
         {
             PlayMakerFSM mechanicalWear = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear").GetComponent<PlayMakerFSM>();
 

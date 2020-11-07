@@ -79,7 +79,7 @@ namespace DonnerTech_ECU_Mod
                         }
                     }
 
-                    if (fuelMap != null && satsumaDriveTrain.rpm > 0)
+                    if (fuelMap != null && mod.engineRunning)
                     {
                         int mapRpmIndex = GetRPMIndex(Convert.ToInt32(satsumaDriveTrain.rpm));
                         int mapThrottleIndex = GetThrottleIndex((int)(mod.axisCarController.throttle) * 100);

@@ -13,12 +13,7 @@ namespace DonnerTech_ECU_Mod.infoPanel
     {
         private GameObject gameObject;
         private DonnerTech_ECU_Mod mod;
-        public Keybind arrowUp = new Keybind("info_panel_arrowUp", "Arrow Up", KeyCode.Keypad8);
-        public Keybind arrowDown = new Keybind("info_panel_arrowDown", "Arrow Down", KeyCode.Keypad2);
-        public Keybind circle = new Keybind("info_panel_circle", "Circle", KeyCode.KeypadEnter);
-        public Keybind cross = new Keybind("info_panel_cross", "Cross", KeyCode.KeypadPeriod);
-        public Keybind plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
-        public Keybind minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
+
         private const string saveFile = "info_panel_saveFile.txt";
         public Vector3 installLocation = new Vector3(0.25f, -0.088f, -0.01f);
         private bool workaroundChildDisableDone = false;
@@ -31,14 +26,6 @@ namespace DonnerTech_ECU_Mod.infoPanel
 
             gameObject = (mod.assetBundle.LoadAsset("info-panel.prefab") as GameObject);
             Helper.SetObjectNameTagLayer(gameObject, "DonnerTech Info Panel");
-
-            Keybind.AddHeader(mod, "ECU-Panel Keybinds");
-            Keybind.Add(mod, arrowUp);
-            Keybind.Add(mod, arrowDown);
-            Keybind.Add(mod, circle);
-            Keybind.Add(mod, cross);
-            Keybind.Add(mod, plus);
-            Keybind.Add(mod, minus);
 
             part = new SimplePart(
                 SimplePart.LoadData(mod, saveFile, mod.partBuySave.boughtInfoPanel),

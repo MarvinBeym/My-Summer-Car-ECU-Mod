@@ -15,7 +15,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmInt odometerKM;
 
 
-        public Modules(string pageName, string assetSpriteName, DonnerTech_ECU_Mod mod, GameObject needle, Dictionary<string, TextMesh> display_values) : base(mod, pageName, assetSpriteName, display_values)
+        public Modules(string pageName, DonnerTech_ECU_Mod mod, GameObject needle, Dictionary<string, TextMesh> display_values) : base(mod, pageName,  display_values)
         {
             this.smartEngineLogic = mod.smart_engine_module_logic;
             this.needle = needle;

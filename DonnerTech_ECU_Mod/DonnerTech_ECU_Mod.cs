@@ -72,11 +72,12 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.4)
+        /*  Changelog (v1.4.3)
          *  Renamed info panel images to new names (ex. removing ECU-Mod...)
          *  Removed tuner page from info panel
          *  Small code improvement
          *  Added missing text to info panel assistant page
+         *  Added airride as a beta feature that can be enabled in Mod Settings.
          */
         /* BUGS/Need to fix
          * Optimize code both turbo and ecu (only update when needed)
@@ -89,7 +90,7 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.4"; //Version
+        public override string Version => "1.4.3"; //Version
         public override bool UseAssetsFolder => true;
         
         SaveFileRenamer saveFileRenamer;
@@ -97,6 +98,18 @@ namespace DonnerTech_ECU_Mod
         public AssetBundle assetBundle;
         public AssetBundle screwableAssetsBundle;
         public Logger logger;
+
+        //Keybinds
+        public Keybind highestKeybind = new Keybind("airride_highest", "Airride Highest", KeyCode.LeftArrow);
+        public Keybind lowestKeybind = new Keybind("airride_lowest", "Airride Lowest", KeyCode.RightArrow);
+        public Keybind increaseKeybind = new Keybind("airride_increase", "Airride Increase", KeyCode.UpArrow);
+        public Keybind decreaseKeybind = new Keybind("airride_decrease", "Airride Decrease", KeyCode.DownArrow);
+        public Keybind arrowUp = new Keybind("info_panel_arrowUp", "Arrow Up", KeyCode.Keypad8);
+        public Keybind arrowDown = new Keybind("info_panel_arrowDown", "Arrow Down", KeyCode.Keypad2);
+        public Keybind circle = new Keybind("info_panel_circle", "Circle", KeyCode.KeypadEnter);
+        public Keybind cross = new Keybind("info_panel_cross", "Cross", KeyCode.KeypadPeriod);
+        public Keybind plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
+        public Keybind minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
 
 #if DEBUG
         private static SimplePart airride_fl_part;
@@ -209,11 +222,11 @@ namespace DonnerTech_ECU_Mod
         public Vector3 mounting_plate_installLocation = new Vector3(0.3115f, -0.276f, -0.0393f);
 
 
-        private static GameObject satsuma;
-        private static Drivetrain satsumaDriveTrain;
-        private CarController satsumaCarController;
+        public GameObject satsuma;
+        public Drivetrain satsumaDriveTrain;
+        public CarController satsumaCarController;
         public AxisCarController axisCarController;
-        private Axles satsumaAxles;
+        public Axles satsumaAxles;
         private FsmBool electricsOK;
 
 
@@ -243,6 +256,7 @@ namespace DonnerTech_ECU_Mod
         private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Show/Hide", WorkAroundAction);
         public Settings settingThrottleBodieTurning = new Settings("settingThrottleBodieTurning", "Throttle body valve rotation", true);
         private Settings toggleSixGears = new Settings("toggleSixGears", "SixGears Mod (with gear ratio changes)", false);
+        public Settings enableAirrideInfoPanelPage = new Settings("enableAirrideInfoPanelPage", "Enable airride info panel page & airride logic (Has to be enabled/disabled before load)", false);
         private Settings toggleAWD = new Settings("toggleAWD", "All Wheel Drive (AWD)", false);
         private Settings toggleSmoothInput = new Settings("toggleSmoothInput", "Smooth throttle input", false);
 
@@ -303,6 +317,24 @@ namespace DonnerTech_ECU_Mod
         public override void OnLoad()
         {
             ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " started loading");
+
+            Keybind.AddHeader(this, "ECU-Panel Keybinds");
+            Keybind.Add(this, arrowUp);
+            Keybind.Add(this, arrowDown);
+            Keybind.Add(this, circle);
+            Keybind.Add(this, cross);
+            Keybind.Add(this, plus);
+            Keybind.Add(this, minus);
+
+            if((bool)enableAirrideInfoPanelPage.Value)
+            {
+                Keybind.AddHeader(this, "Airride Keybinds");
+                Keybind.Add(this, highestKeybind);
+                Keybind.Add(this, lowestKeybind);
+                Keybind.Add(this, increaseKeybind);
+                Keybind.Add(this, decreaseKeybind);
+            }
+
 
             GameObject ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
             ecu_mod_gameObject.name = this.ID;
@@ -1007,6 +1039,7 @@ namespace DonnerTech_ECU_Mod
             Settings.AddButton(this, debugCruiseControlSetting, "DEBUG Cruise Control");
             Settings.AddButton(this, resetPosSetting, "Reset uninstalled part location");
             Settings.AddHeader(this, "Settings");
+            Settings.AddCheckBox(this, enableAirrideInfoPanelPage);
             Settings.AddCheckBox(this, toggleSixGears);
             Settings.AddCheckBox(this, toggleAWD);
             Settings.AddCheckBox(this, toggleSmoothInput);
@@ -1134,6 +1167,14 @@ namespace DonnerTech_ECU_Mod
 
             gameObject.layer = LayerMask.NameToLayer("Parts");
             return gameObject;
+        }
+
+        public bool engineRunning
+        {
+            get
+            {
+                return satsumaDriveTrain.rpm > 0;
+            }
         }
 
         public bool hasPower
