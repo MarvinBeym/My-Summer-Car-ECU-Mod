@@ -486,32 +486,32 @@ namespace DonnerTech_ECU_Mod
             SetObjectNameTagLayer(airride_fl, "Airride FL");
             SetObjectNameTagLayer(airride_fr, "Airride FR");
 #endif
-            SetObjectNameTagLayer(abs_module, "ABS Module");
-            SetObjectNameTagLayer(esp_module, "ESP Module");
-            SetObjectNameTagLayer(tcs_module, "TCS Module");
-            SetObjectNameTagLayer(cable_harness, "ECU Cable Harness");
-            SetObjectNameTagLayer(mounting_plate, "ECU Mounting Plate");
-            SetObjectNameTagLayer(smart_engine_module, "Smart Engine ECU");
-            SetObjectNameTagLayer(cruise_control_panel, "Cruise Control Panel");
-            
-            SetObjectNameTagLayer(reverse_camera, "Reverse Camera");
-            SetObjectNameTagLayer(rain_light_sensor_board, "Rain & Light Sensorboard");
+            Helper.SetObjectNameTagLayer(abs_module, "ABS Module");
+            Helper.SetObjectNameTagLayer(esp_module, "ESP Module");
+            Helper.SetObjectNameTagLayer(tcs_module, "TCS Module");
+            Helper.SetObjectNameTagLayer(cable_harness, "ECU Cable Harness");
+            Helper.SetObjectNameTagLayer(mounting_plate, "ECU Mounting Plate");
+            Helper.SetObjectNameTagLayer(smart_engine_module, "Smart Engine ECU");
+            Helper.SetObjectNameTagLayer(cruise_control_panel, "Cruise Control Panel");
 
-            SetObjectNameTagLayer(fuel_injectors_box_gameObject, "Fuel Injectors(Clone)");
+            Helper.SetObjectNameTagLayer(reverse_camera, "Reverse Camera");
+            Helper.SetObjectNameTagLayer(rain_light_sensor_board, "Rain & Light Sensorboard");
 
-            SetObjectNameTagLayer(throttle_bodies_box_gameObject, "Throttle Bodies(Clone)");
+            Helper.SetObjectNameTagLayer(fuel_injectors_box_gameObject, "Fuel Injectors(Clone)");
 
-            SetObjectNameTagLayer(chip, "Chip");
-            SetObjectNameTagLayer(chip_programmer, "Chip Programmer");
+            Helper.SetObjectNameTagLayer(throttle_bodies_box_gameObject, "Throttle Bodies(Clone)");
 
-            SetObjectNameTagLayer(fuel_pump_cover, "Fuel Pump Cover");
-            SetObjectNameTagLayer(fuel_injection_manifold, "Fuel Injection Manifold");
-            SetObjectNameTagLayer(fuel_rail, "Fuel Rail");
+            Helper.SetObjectNameTagLayer(chip, "Chip");
+            Helper.SetObjectNameTagLayer(chip_programmer, "Chip Programmer");
 
-            SetObjectNameTagLayer(electric_fuel_pump, "Electric Fuel Pump");
-            SetObjectNameTagLayer(wires_injectors_pumps_gameObject, "wires_injectors_pumps");
-            SetObjectNameTagLayer(wires_sparkPlugs1_gameObject, "wires_sparkPlugs1");
-            SetObjectNameTagLayer(wires_sparkPlugs2_gameObject, "wires_sparkPlugs2");
+            Helper.SetObjectNameTagLayer(fuel_pump_cover, "Fuel Pump Cover");
+            Helper.SetObjectNameTagLayer(fuel_injection_manifold, "Fuel Injection Manifold");
+            Helper.SetObjectNameTagLayer(fuel_rail, "Fuel Rail");
+
+            Helper.SetObjectNameTagLayer(electric_fuel_pump, "Electric Fuel Pump");
+            Helper.SetObjectNameTagLayer(wires_injectors_pumps_gameObject, "wires_injectors_pumps");
+            Helper.SetObjectNameTagLayer(wires_sparkPlugs1_gameObject, "wires_sparkPlugs1");
+            Helper.SetObjectNameTagLayer(wires_sparkPlugs2_gameObject, "wires_sparkPlugs2");
             
             try
             {
@@ -1169,15 +1169,6 @@ namespace DonnerTech_ECU_Mod
         {
             fuel_system.Handle();
             info_panel.Handle();
-        }
-
-        public GameObject SetObjectNameTagLayer(GameObject gameObject, string name)
-        {
-            gameObject.name = name;
-            gameObject.tag = "PART";
-
-            gameObject.layer = LayerMask.NameToLayer("Parts");
-            return gameObject;
         }
 
         public bool engineRunning

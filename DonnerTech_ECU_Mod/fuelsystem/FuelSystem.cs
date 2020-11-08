@@ -350,7 +350,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
                 GameObject chip = GameObject.Instantiate(mod.chip);
 
-                mod.SetObjectNameTagLayer(chip, "Chip" + i);
+                Helper.SetObjectNameTagLayer(chip, "Chip" + i);
 
                 ChipSave chipSave = SaveLoad.DeserializeSaveFile<ChipSave>(mod, chip_map_saveFile);
                 if (chipSave == null)

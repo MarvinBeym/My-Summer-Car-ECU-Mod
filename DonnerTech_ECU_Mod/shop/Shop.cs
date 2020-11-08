@@ -52,7 +52,7 @@ namespace DonnerTech_ECU_Mod
                 GameObject chip = GameObject.Instantiate(item.gameObject);
 
                 int nextChipId = (chip_count_before) + i;
-                mod.SetObjectNameTagLayer(chip, "Chip" + nextChipId);
+                Helper.SetObjectNameTagLayer(chip, "Chip" + nextChipId);
 
                 string fuel_system_savePath = Helper.CreatePathIfNotExists(Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", "chips" }));
                 string saveFile = Path.Combine(fuel_system_savePath, "chip" + nextChipId + "_saveFile.txt");
