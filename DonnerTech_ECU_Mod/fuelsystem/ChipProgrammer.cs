@@ -125,12 +125,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                             string error = String.Format("Value in column {0}, row {1} is invalid", y, x);
                             chip_errors.Add(error);
                             txtField_error.text += error + "\n";
+                            continue;
                         }
                         fuelMap[y, x] = Convert.ToSingle(inputFieldMap[y, x].text);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        mod.logger.New("Error while trying to write chip map");
+                        mod.logger.New("Error while trying to write chip map", String.Format("fuel map position - Y: {0} X: {1}", y, x), ex);
                     }
                 }
             }
@@ -229,7 +230,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                         if (Vector3.Distance(mod.chip_programmer_part.activePart.transform.position, itemInHand.transform.position) <= 0.075f)
                         {
                             ModClient.guiInteract("insert chip", GuiInteractSymbolEnum.Assemble);
-                            if (mod.leftMouseDown)
+                            if (Helper.LeftMouseDown)
                             {
                                 for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
                                 {
@@ -269,7 +270,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                                 cInput.GetText("Use"), "open programmer", "remove chip"
                             );
                             ModClient.guiInteraction = guiText;
-                            if (mod.rightMouseDown)
+                            if (Helper.RightMouseDown)
                             {
                                 for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
                                 {
@@ -289,7 +290,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                                     }
                                 }
                             }
-                            else if (mod.useButtonDown)
+                            else if (Helper.UseButtonDown)
                             {
                                 for (int y = 0; y < inputFieldMap.GetLength(0); y++)
                                 {
@@ -307,9 +308,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                                             }
 
                                         }
-                                        catch
+                                        catch (Exception ex)
                                         {
-                                            mod.logger.New("Error while trying to write chip map");
+                                            mod.logger.New("Error while trying to write input field", String.Format("input field position - Y: {0} X: {1}", y, x), ex);
                                         }
                                     }
                                 }

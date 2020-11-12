@@ -580,7 +580,7 @@ namespace DonnerTech_ECU_Mod
                         if (foundObject)
                         {
                             ModClient.guiInteract(guiText);
-                            if (mod.useButtonDown || mod.leftMouseDown)
+                            if (Helper.UseButtonDown || Helper.LeftMouseDown)
                             {
                                 page.Pressed_Display_Value(valueToPass, gameObjectHit);
                             }
@@ -595,15 +595,6 @@ namespace DonnerTech_ECU_Mod
             {
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f, 1 << LayerMask.NameToLayer("DontCollide")) != false)
                 {
-                    /*
-                    ECU-Panel-Button-ArrowDown
-                    ECU-Panel-Button-ArrowUp
-
-                    ECU-Panel-Button-Circle
-                    ECU-Panel-Button-Cross
-                    ECU-Panel-Button-Minus
-                    ECU-Panel-Button-Plus
-                    */
                     GameObject gameObjectHit;
                     bool foundObject = false;
                     string guiText = "";
@@ -651,7 +642,7 @@ namespace DonnerTech_ECU_Mod
                         if (foundObject)
                         {
                             ModClient.guiInteract(guiText);
-                            if (mod.useButtonDown || mod.leftMouseDown)
+                            if (Helper.UseButtonDown || Helper.LeftMouseDown)
                             {
                                 actionToPerform.Invoke();
                                 AudioSource audio = dashButtonAudioSource;

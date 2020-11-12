@@ -18,7 +18,6 @@ namespace DonnerTech_ECU_Mod
         private ShopItem modsShopItem;
         private AssetBundle assetBundle;
         private PartBuySave partBuySave;
-        List<ProductBought> products = new List<ProductBought>();
         private List<ProductInformation> shopItems;
 
         public Shop(DonnerTech_ECU_Mod mod, ShopItem modsShopItem, AssetBundle assetBundle, PartBuySave partBuySave, List<ProductInformation> shopItems)

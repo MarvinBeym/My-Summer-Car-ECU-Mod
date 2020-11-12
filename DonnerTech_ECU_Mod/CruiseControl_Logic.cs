@@ -152,7 +152,7 @@ namespace DonnerTech_ECU_Mod
                         if (foundObject)
                         {
                             ModClient.guiInteract(guiText);
-                            if (mod.useButtonDown)
+                            if (Helper.UseButtonDown)
                             {
                                 actionToPerform.Invoke();
                                 AudioSource audio = dashButtonAudioSource;

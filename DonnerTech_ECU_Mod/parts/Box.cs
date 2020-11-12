@@ -25,7 +25,7 @@ namespace DonnerTech_ECU_Mod.parts
             {
                 int iOffset = i + 1;
                 part_gameObjects[i] = GameObject.Instantiate(part_gameObject);
-                SetObjectNameTagLayer(part_gameObjects[i], partName + " " + iOffset + "(Clone)");
+                Helper.SetObjectNameTagLayer(part_gameObjects[i], partName + " " + iOffset + "(Clone)");
                 saveFiles[i] = saveFilePrefix + iOffset + "_saveFile.txt";
 
                 parts[i] = new SimplePart(
@@ -36,6 +36,12 @@ namespace DonnerTech_ECU_Mod.parts
                     installLocations[i],
                     new Quaternion { eulerAngles = rotations[i] }
                 );
+
+                if (!bought_box)
+                {
+                    parts[i].removePart();
+                    parts[i].activePart.SetActive(false);
+                }
             }
             logic = box_gameObject.AddComponent<BoxLogic>();
             logic.Init(mod, parts, "Unpack " + partNameLowerCase);
@@ -43,16 +49,6 @@ namespace DonnerTech_ECU_Mod.parts
             {
                 mod.partsList.Add(part);
             }
-        }
-
-
-        private GameObject SetObjectNameTagLayer(GameObject gameObject, string name)
-        {
-            gameObject.name = name;
-            gameObject.tag = "PART";
-
-            gameObject.layer = LayerMask.NameToLayer("Parts");
-            return gameObject;
         }
 
         public void AddScrewable(SortedList<string, Screws> screwListSave, AssetBundle screwableAssetsBundle, Screw[] screws)

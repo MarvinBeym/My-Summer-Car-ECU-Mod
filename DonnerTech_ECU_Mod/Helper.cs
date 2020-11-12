@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MSCLoader;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,8 +9,50 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
 {
-    static public class Helper
+    public static class Helper
     {
+        public static bool ThrottleButtonDown
+        {
+            get { return cInput.GetKey("Throttle"); }
+        }
+        public static bool LeftMouseDown
+        {
+            get { return Input.GetMouseButtonDown(0); }
+        }
+        public static bool RightMouseDown
+        {
+            get { return Input.GetMouseButtonDown(1); }
+        }
+        public static bool UseButtonDown
+        {
+            get { return cInput.GetKeyDown("Use"); }
+        }
+        public static T LoadSaveOrReturnNew<T>(Mod mod, string savefileName) where T : new()
+        {
+            string path = Path.Combine(ModLoader.GetModConfigFolder(mod), savefileName);
+            if (File.Exists(path))
+            {
+                string serializedData = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<T>(serializedData);
+            }
+            return new T();
+        }
+        public static bool CheckCloseToPosition(Vector3 positionOfPartTocheck, Vector3 position, float minimumDistance)
+        {
+            try
+            {
+                if (Vector3.Distance(positionOfPartTocheck, position) <= minimumDistance)
+                    return true;
+                else
+                    return false;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+        public static void WorkAroundAction() { }
         public static GameObject SetObjectNameTagLayer(GameObject gameObject, string name)
         {
             gameObject.name = name;

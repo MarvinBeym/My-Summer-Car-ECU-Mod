@@ -16,7 +16,7 @@ namespace DonnerTech_ECU_Mod
 {
     public class DonnerTech_ECU_Mod : Mod
     {
-
+#if DEBUG
         /*  ToDo:
          *  Remove Autotune?`-> maybe replace with something else
          *  Maybe remove the faults page -> maybe replace with actual Fault codes that get displayed
@@ -73,7 +73,9 @@ namespace DonnerTech_ECU_Mod
          */
 
         /*  Changelog (v1.4.4)
-         *  Tiny update to get ready mod ready for next turbo mod update.
+         *  Tiny update to get mod ready for next turbo mod update.
+         *  Fixed issue with mod spamming output_log.txt file with missing object
+         *  Fixed issue with mod spamming ecu_mod_logs.txt when pressing the write chip button and the programmer would write the error messages to the screen
          */
         /* BUGS/Need to fix
          * Optimize code both turbo and ecu (only update when needed)
@@ -82,7 +84,7 @@ namespace DonnerTech_ECU_Mod
          * EDU mod: adjust triggers to be at the same location as the part itself and smaller trigger area
          * ECU mod: add ERRor to display if something is wrong
          */
-
+#endif
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
@@ -251,15 +253,13 @@ namespace DonnerTech_ECU_Mod
 
         private const string screwable_saveFile = "screwable_saveFile.txt";
 
-        private Settings resetPosSetting = new Settings("resetPos", "Reset", WorkAroundAction);
-        private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Show/Hide", WorkAroundAction);
+        private Settings resetPosSetting = new Settings("resetPos", "Reset", Helper.WorkAroundAction);
+        private Settings debugCruiseControlSetting = new Settings("debugCruiseControl", "Show/Hide", Helper.WorkAroundAction);
         public Settings settingThrottleBodieTurning = new Settings("settingThrottleBodieTurning", "Throttle body valve rotation", true);
         private Settings toggleSixGears = new Settings("toggleSixGears", "SixGears Mod (with gear ratio changes)", false);
         public Settings enableAirrideInfoPanelPage = new Settings("enableAirrideInfoPanelPage", "Enable airride info panel page & airride logic (Has to be enabled/disabled before load)", false);
         private Settings toggleAWD = new Settings("toggleAWD", "All Wheel Drive (AWD)", false);
         private Settings toggleSmoothInput = new Settings("toggleSmoothInput", "Smooth throttle input", false);
-
-        private static void WorkAroundAction() {}
 
         private static float[] originalGearRatios;
         private static float[] newGearRatio = new float[]
@@ -280,24 +280,6 @@ namespace DonnerTech_ECU_Mod
             {
                 return GameObject.Find("dash_button").GetComponent<AudioSource>();
             }
-        }
-
-        public bool useButtonDown
-        {
-            get { return cInput.GetKeyDown("Use"); }
-        }
-
-        public bool throttleButtonDown
-        {
-            get { return cInput.GetKey("Throttle"); }
-        }
-        public bool leftMouseDown
-        {
-            get { return Input.GetMouseButtonDown(0); }
-        }
-        public bool rightMouseDown
-        {
-            get { return Input.GetMouseButtonDown(1); }
         }
 
         public override void OnNewGame()
@@ -480,11 +462,11 @@ namespace DonnerTech_ECU_Mod
             GameObject awd_propshaft = (assetBundle.LoadAsset("AWD-Propshaft.prefab") as GameObject);
             GameObject airride_fl = (assetBundle.LoadAsset("Airride_FL.prefab") as GameObject);
             GameObject airride_fr = (assetBundle.LoadAsset("Airride_FL.prefab") as GameObject);
-            SetObjectNameTagLayer(awd_gearbox, "AWD Gearbox");
-            SetObjectNameTagLayer(awd_differential, "AWD Differential");
-            SetObjectNameTagLayer(awd_propshaft, "AWD Propshaft");
-            SetObjectNameTagLayer(airride_fl, "Airride FL");
-            SetObjectNameTagLayer(airride_fr, "Airride FR");
+            Helper.SetObjectNameTagLayer(awd_gearbox, "AWD Gearbox");
+            Helper.SetObjectNameTagLayer(awd_differential, "AWD Differential");
+            Helper.SetObjectNameTagLayer(awd_propshaft, "AWD Propshaft");
+            Helper.SetObjectNameTagLayer(airride_fl, "Airride FL");
+            Helper.SetObjectNameTagLayer(airride_fr, "Airride FR");
 #endif
             Helper.SetObjectNameTagLayer(abs_module, "ABS Module");
             Helper.SetObjectNameTagLayer(esp_module, "ESP Module");
@@ -512,19 +494,8 @@ namespace DonnerTech_ECU_Mod
             Helper.SetObjectNameTagLayer(wires_injectors_pumps_gameObject, "wires_injectors_pumps");
             Helper.SetObjectNameTagLayer(wires_sparkPlugs1_gameObject, "wires_sparkPlugs1");
             Helper.SetObjectNameTagLayer(wires_sparkPlugs2_gameObject, "wires_sparkPlugs2");
-            
-            try
-            {
-                partBuySave = SaveLoad.DeserializeSaveFile<PartBuySave>(this, mod_shop_saveFile);
-            }
-            catch
-            {
-            }
-            if (partBuySave == null)
-            {
 
-                partBuySave = new PartBuySave();
-            }
+            partBuySave = Helper.LoadSaveOrReturnNew<PartBuySave>(this, mod_shop_saveFile);
 
             saveFileRenamer = new SaveFileRenamer(this);
             overrideFileRenamer = new OverrideFileRenamer(this);
@@ -890,7 +861,7 @@ namespace DonnerTech_ECU_Mod
 
             if (GameObject.Find("Shop for mods") != null)
             {
-                ModsShop.ShopItem modsShopItem = GameObject.Find("Shop for mods").GetComponent<ModsShop.ShopItem>();
+                ModsShop.ShopItem modsShop = GameObject.Find("Shop for mods").GetComponent<ModsShop.ShopItem>();
 
                 List<ProductInformation> shopItems = new List<ProductInformation>();
            
@@ -920,28 +891,8 @@ namespace DonnerTech_ECU_Mod
                 shopItems.Add(new ProductInformation(chip_programmer_part.activePart, "Chip Programmer", 3799, "chip-programmer_productImage.png", partBuySave.bought_chip_programmer));
                 shopItems.Add(new ProductInformation(electric_fuel_pump_part.activePart, "Electric Fuel Pump", 500, "electric-fuel-pump_productImage.png", partBuySave.bought_electric_fuel_pump));
 
-                //Add a way of buying the throttle bodies
-
-                if (!partBuySave.bought_fuel_injectors_box)
-                {
-                    foreach(SimplePart part in fuel_injectors_box.parts)
-                    {
-                        part.removePart();
-                        part.activePart.SetActive(false);
-                    }
-                }
-                if (!partBuySave.bought_throttle_bodies_box)
-                {
-                    foreach (SimplePart part in throttle_bodies_box.parts)
-                    {
-                        part.removePart();
-                        part.activePart.SetActive(false);
-                    }
-                }
-
-
                 //Shop shop = new Shop(this, modsShopItem, assetBundle, partBuySave, shopItems);
-                Shop shop = new Shop(this, modsShopItem, assetBundle, partBuySave, shopItems);
+                Shop shop = new Shop(this, modsShop, assetBundle, partBuySave, shopItems);
                 shop.SetupShopItems();
 
             }

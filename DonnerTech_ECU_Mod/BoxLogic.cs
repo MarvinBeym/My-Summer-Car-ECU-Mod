@@ -34,7 +34,7 @@ namespace DonnerTech_ECU_Mod
                         if (gameObjectHit.name == this.gameObject.name)
                         {
                             ModClient.guiInteraction = string.Format("Press [{0}] to {1}", cInput.GetText("Use"), actionToDisplay);
-                            if (useButtonDown)
+                            if (Helper.UseButtonDown)
                             {
                                 SimplePart part = parts[spawnedCounter];
 
@@ -90,11 +90,6 @@ namespace DonnerTech_ECU_Mod
                 this.gameObject.transform.position = new Vector3(0, 0, 0);
                 this.gameObject.transform.localPosition = new Vector3(0, 0, 0);
             }
-        }
-
-        private bool useButtonDown
-        {
-            get { return cInput.GetKeyDown("Use"); }
         }
     }
 }

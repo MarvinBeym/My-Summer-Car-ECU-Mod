@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2498494271
+CRC: 891845944
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 44e0129fa3144ac98455dde5fd1e2079
+    Hash: d7dd2162e3698ce44024de1ca9663061
   TypeTreeHash:
     serializedVersion: 2
-    Hash: ec7042f60e92c2c80ead0889d05da85b
+    Hash: 389209fce78cc7ac6121dcbd1144b3ea
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -32,8 +32,6 @@ ClassTypes:
 - Class: 64
   Script: {instanceID: 0}
 - Class: 65
-  Script: {instanceID: 0}
-- Class: 83
   Script: {instanceID: 0}
 - Class: 84
   Script: {instanceID: 0}
@@ -69,8 +67,6 @@ ClassTypes:
   Script: {fileID: 1997211142, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 77dee5e3eedbf44429953f526853b47a, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 42c456882fd3ae4478832c536ae24c14, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -135,7 +131,6 @@ Assets:
 - Assets/ProductImages/fuel-injectors-box_productImage.png
 - Assets/cable-harness.prefab
 - Assets/Info-Panel/Indicator-Right-Icon.png
-- Assets/Airride/airride_sound1.mp3
 - Assets/FuelSystem/ui_interface.prefab
 - Assets/ProductImages/reverse-camera_productImage.png
 - Assets/ProductImages/abs-module_productImage.png

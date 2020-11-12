@@ -101,11 +101,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             PlayMakerFSM raceCarb = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
             //PlayMakerFSM fuelStrainer = GameObject.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
 
-            originalPartsSave = SaveLoad.DeserializeSaveFile<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
-            if (originalPartsSave == null)
-            {
-                originalPartsSave = new OriginalPartsSave();
-            }
+            originalPartsSave = Helper.LoadSaveOrReturnNew<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
 
             allOriginalParts.Add(new OriginalPart("Electrics", "pivot_electrics", GameObject.Find("Electrics"), originalPartsSave.electrics_position, originalPartsSave.electrics_rotation, originalPartsSave.electrics_installed));
             allOriginalParts.Add(new OriginalPart("Distributor", "pivot_distributor", GameObject.Find("Distributor"), originalPartsSave.distributor_position, originalPartsSave.distributor_rotation, originalPartsSave.distributor_installed));
@@ -352,11 +348,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
                 Helper.SetObjectNameTagLayer(chip, "Chip" + i);
 
-                ChipSave chipSave = SaveLoad.DeserializeSaveFile<ChipSave>(mod, chip_map_saveFile);
-                if (chipSave == null)
-                {
-                    chipSave = new ChipSave();
-                }
+                ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, chip_map_saveFile);
 
                 ChipPart chip_part = new ChipPart(
                     SimplePart.LoadData(mod, chip_part_saveFile, true),
