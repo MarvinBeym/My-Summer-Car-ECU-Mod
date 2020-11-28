@@ -253,72 +253,63 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 }
             }
 
-            if (chipInstalledOnProgrammer && Camera.main != null && chipOnProgrammer != null)
+            if (chipInstalledOnProgrammer && chipOnProgrammer != null)
             {
-
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 0.8f, 1 << LayerMask.NameToLayer("Parts")) != false)
+                if (Helper.DetectRaycastHitObject(mod.chip_programmer_part.activePart))
                 {
-                    GameObject gameObjectHit;
-                    gameObjectHit = hit.collider?.gameObject;
-                    if (gameObjectHit != null && hit.collider)
-                    {
-                        if (gameObjectHit.name == mod.chip_programmer_part.activePart.name)
-                        {
-                            string guiText = String.Format(
+                    string guiText = String.Format(
                                 "Press [{0}] to {1}\n" +
                                 "Press [RIGHT MOUSE] to {2}",
                                 cInput.GetText("Use"), "open programmer", "remove chip"
                             );
-                            ModClient.guiInteraction = guiText;
-                            if (Helper.RightMouseDown)
+                    ModClient.guiInteraction = guiText;
+                    if (Helper.RightMouseDown)
+                    {
+                        for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
+                        {
+                            ChipPart part = fuelSystem.chip_parts[index];
+                            if (part.chipInstalledOnProgrammer)
                             {
-                                for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
-                                {
-                                    ChipPart part = fuelSystem.chip_parts[index];
-                                    if (part.chipInstalledOnProgrammer)
-                                    {
-                                        SetProgrammerUIStatus(false);
-                                        part.activePart.SetActive(true);
-                                        chip_programmer_chip.SetActive(false);
-                                        chipInstalledOnProgrammer = false;
-                                        part.chipInstalledOnProgrammer = false;
+                                SetProgrammerUIStatus(false);
+                                part.activePart.SetActive(true);
+                                chip_programmer_chip.SetActive(false);
+                                chipInstalledOnProgrammer = false;
+                                part.chipInstalledOnProgrammer = false;
 
-                                        chipOnProgrammer = null;
-                                        Vector3 chip_programmer_position = mod.chip_programmer_part.activePart.transform.position;
-                                        part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
-                                        break;
-                                    }
-                                }
-                            }
-                            else if (Helper.UseButtonDown)
-                            {
-                                for (int y = 0; y < inputFieldMap.GetLength(0); y++)
-                                {
-                                    for (int x = 0; x < inputFieldMap.GetLength(1); x++)
-                                    {
-                                        try
-                                        {
-                                            if (chipOnProgrammer.chipSave.map == null)
-                                            {
-                                                inputFieldMap[y, x].text = "";
-                                            }
-                                            else
-                                            {
-                                                inputFieldMap[y, x].text = chipOnProgrammer.chipSave.map[y, x].ToString("00.0");
-                                            }
-
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            mod.logger.New("Error while trying to write input field", String.Format("input field position - Y: {0} X: {1}", y, x), ex);
-                                        }
-                                    }
-                                }
-                                input_sparkAngle.text = chipOnProgrammer.chipSave.sparkAngle.ToString("00.0");
-                                SetProgrammerUIStatus(true);
-                                cb_startAssistEnabled.isOn = chipOnProgrammer.chipSave.startAssistEnabled;
+                                chipOnProgrammer = null;
+                                Vector3 chip_programmer_position = mod.chip_programmer_part.activePart.transform.position;
+                                part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
+                                break;
                             }
                         }
+                    }
+                    else if (Helper.UseButtonDown)
+                    {
+                        for (int y = 0; y < inputFieldMap.GetLength(0); y++)
+                        {
+                            for (int x = 0; x < inputFieldMap.GetLength(1); x++)
+                            {
+                                try
+                                {
+                                    if (chipOnProgrammer.chipSave.map == null)
+                                    {
+                                        inputFieldMap[y, x].text = "";
+                                    }
+                                    else
+                                    {
+                                        inputFieldMap[y, x].text = chipOnProgrammer.chipSave.map[y, x].ToString("00.0");
+                                    }
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    mod.logger.New("Error while trying to write input field", String.Format("input field position - Y: {0} X: {1}", y, x), ex);
+                                }
+                            }
+                        }
+                        input_sparkAngle.text = chipOnProgrammer.chipSave.sparkAngle.ToString("00.0");
+                        SetProgrammerUIStatus(true);
+                        cb_startAssistEnabled.isOn = chipOnProgrammer.chipSave.startAssistEnabled;
                     }
                 }
             }

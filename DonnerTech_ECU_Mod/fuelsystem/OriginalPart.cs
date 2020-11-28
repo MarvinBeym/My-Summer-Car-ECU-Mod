@@ -13,9 +13,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         public string parentInstalledName;
         public GameObject gameObject;
         private PlayMakerFSM fsm;
+        private PlayMakerFSM removalFsm;
         private FsmBool installed;
         private FsmBool bolted;
-        private FsmBool detach;
         public GameObject trigger;
 
         private bool originalInstalled;
@@ -36,7 +36,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             trigger = fsm.FsmVariables.FindFsmGameObject("Trigger").Value;
             installed = fsm.FsmVariables.FindFsmBool("Installed");
             bolted = fsm.FsmVariables.FindFsmBool("Bolted");
-            detach = GetDetachFsmBool(gameObject);
+
+            removalFsm = GetRemovalFsm(gameObject);
         }
 
         public bool gameObjectInstalled
@@ -53,14 +54,14 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         }
 
 
-        private FsmBool GetDetachFsmBool(GameObject gameObject)
+        private PlayMakerFSM GetRemovalFsm(GameObject gameObject)
         {
             PlayMakerFSM[] playMakerFSMs = gameObject.GetComponents<PlayMakerFSM>();
             foreach (PlayMakerFSM comp in playMakerFSMs)
             {
                 if (comp.FsmName == "Removal")
                 {
-                    return comp.FsmVariables.FindFsmBool("Detach");
+                    return comp;
                 }
             }
             return null;
@@ -68,7 +69,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         internal void HandleOriginalSave()
         {
-            detach.Value = true;
+            removalFsm.SendEvent("REMOVE");
             if (!Helper.ApproximatelyVector(originalPosition, Vector3.zero) && !Helper.ApproximatelyQuaternion(originalRotation, Quaternion.identity))
             {
                 gameObject.transform.position = originalPosition;

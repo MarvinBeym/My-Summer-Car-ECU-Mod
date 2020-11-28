@@ -6,11 +6,67 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using ScrewablePartAPI;
+using HutongGames.PlayMaker;
 
 namespace DonnerTech_ECU_Mod
 {
     public static class Helper
     {
+        public static AssetBundle LoadAssetBundle(Mod mod,string fileName, Logger logger)
+        {
+            try
+            {
+                return LoadAssets.LoadBundle(mod, fileName);
+            }
+            catch (Exception ex)
+            {
+                string message = String.Format("AssetBundle file '{0}' could not be loaded", fileName);
+                logger.New(
+                    message,
+                    String.Format("Check: {0}", Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName)),
+                    ex);
+                ModConsole.Error(message);
+                ModUI.ShowYesNoMessage(message + "\n\nClose Game? - RECOMMENDED", delegate ()
+                {
+                    Application.Quit();
+                });
+            }
+            return null;
+        }
+        public static bool DetectRaycastHitObject(GameObject gameObjectToDetect, string layermask = "Parts", float distance = 0.8f)
+        {
+            RaycastHit hit;
+            if (Camera.main != null && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, distance, 1 << LayerMask.NameToLayer(layermask)) != false)
+            {
+                GameObject gameObjectHit;
+                gameObjectHit = hit.collider?.gameObject;
+                return (gameObjectHit != null && hit.collider && gameObjectHit == gameObjectToDetect);
+            }
+            return false;
+        }
+        public static bool PlayerInCar()
+        {
+            return FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle").Value == "Satsuma";
+        }
+        public static ScrewablePart[] GetScrewablePartsArrayFromPartsList(List<SimplePart> partsList)
+        {
+            List<ScrewablePart> screwableParts = new List<ScrewablePart>();
+
+            partsList.ForEach(delegate (SimplePart part)
+            {
+                if (part.screwablePart != null)
+                {
+                    screwableParts.Add(part.screwablePart);
+                }
+            });
+            return screwableParts.ToArray();
+        }
+        public static GameObject LoadPartAndSetName(AssetBundle assetsBundle, string prefabName, string name)
+        {
+            GameObject gameObject = assetsBundle.LoadAsset(prefabName) as GameObject;
+            return SetObjectNameTagLayer(gameObject, name);
+        }
         public static bool ThrottleButtonDown
         {
             get { return cInput.GetKey("Throttle"); }

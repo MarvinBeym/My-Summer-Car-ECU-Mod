@@ -92,7 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CruiseControl_Logic.cs" />
-    <Compile Include="BoxLogic.cs" />
+    <Compile Include="shop\BoxLogic.cs" />
     <Compile Include="fuelsystem\ChipPart.cs" />
     <Compile Include="fuelsystem\ChipProgrammer.cs" />
     <Compile Include="fuelsystem\ChipSave.cs" />
@@ -102,6 +102,9 @@
     <Compile Include="fuelsystem\OriginalPart.cs" />
     <Compile Include="fuelsystem\OriginalPartsSave.cs" />
     <Compile Include="fuelsystem\SparkAngleInputForce.cs" />
+    <Compile Include="gui\GuiButtonElement.cs" />
+    <Compile Include="gui\GuiDebug.cs" />
+    <Compile Include="gui\GuiInfo.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="infoPanel\InfoPanel.cs" />
     <Compile Include="infoPanel\InfoPanelPage.cs" />
@@ -117,15 +120,14 @@
     <Compile Include="old_file_checker\OldFileRenamer.cs" />
     <Compile Include="old_file_checker\OverrideFileRenamer.cs" />
     <Compile Include="old_file_checker\SaveFileRenamer.cs" />
-    <Compile Include="parts\Box.cs" />
-    <Compile Include="parts\EspPart.cs" />
+    <Compile Include="shop\Box.cs" />
     <Compile Include="parts\ReplacedPart.cs" />
     <Compile Include="parts\ReplacedPartLogic.cs" />
     <Compile Include="ProductBought.cs" />
+    <Compile Include="shop\Kit.cs" />
+    <Compile Include="shop\KitLogic.cs" />
     <Compile Include="shop\ProductInformation.cs" />
     <Compile Include="shop\Shop.cs" />
-    <Compile Include="parts\TcsPart.cs" />
-    <Compile Include="parts\AbsPart.cs" />
     <Compile Include="Airride_Logic.cs" />
     <Compile Include="InfoPanel_Logic.cs" />
     <Compile Include="ReverseCamera_Logic.cs" />

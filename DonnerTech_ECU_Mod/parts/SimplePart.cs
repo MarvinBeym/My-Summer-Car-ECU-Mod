@@ -17,30 +17,73 @@ namespace DonnerTech_ECU_Mod
          * returnArray[1] = save file string
          * returnArray[2] = Loaded save file. or null if not found/not bought
          */
+        //protected DonnerTech_ECU_Mod mod;
+        //public ScrewablePart screwablePart { get; set; } = null;
+        //public Vector3 installLocation;
+        //public PartSaveInfo partSaveInfo;
+        //public bool bought;
+        //private Action disassembleFunction;
+        //could be because of static at partSaveInfo
+        //public string saveFile { get; set; }
+
+
+
+        //New
         protected DonnerTech_ECU_Mod mod;
         public ScrewablePart screwablePart { get; set; } = null;
         public Vector3 installLocation;
         public PartSaveInfo partSaveInfo;
         public bool bought;
         private Action disassembleFunction;
-        //could be because of static at partSaveInfo
+        public string id;
         public string saveFile { get; set; }
+        public string boughtId;
+        private const float triggerSize = 0.08f;
 
-        public SimplePart(Object[] loadedData, GameObject part, GameObject partParent, Trigger trigger, Vector3 installLocation, Quaternion installRotation) : base((PartSaveInfo)loadedData[2], part, partParent, trigger, installLocation, installRotation)
+        public SimplePart(List<Object> loadedData, GameObject part, GameObject partParent, Vector3 installLocation, Quaternion installRotation) : base((PartSaveInfo)loadedData[2], part, partParent, new Trigger(part.name + "_trigger", partParent, installLocation, new Quaternion(0, 0, 0, 0), new Vector3(triggerSize, triggerSize, triggerSize), false), installLocation, installRotation)
         {
-            mod = (DonnerTech_ECU_Mod) loadedData[0];
-            saveFile = (string) loadedData[1];
+            mod = (DonnerTech_ECU_Mod)loadedData[0];
+            saveFile = (string)loadedData[1];
             partSaveInfo = (PartSaveInfo)loadedData[2];
-            
+            bought = (bool)loadedData[3];
+            boughtId = (string)loadedData[4];
+            id = (string)loadedData[5];
             this.installLocation = installLocation;
-            this.bought = (bool)loadedData[3];
 
             fixRigidPartNaming();
+            //UnityEngine.Object.Destroy(part);
         }
 
-        public static Object[] LoadData(DonnerTech_ECU_Mod mod, string saveFile, bool bought)
+        public static List<Object> LoadData(DonnerTech_ECU_Mod mod, string id, Dictionary<string, bool> partsBuySave = null, string boughtId = "")
         {
-            Object[] loadedData = new Object[4];
+            if(partsBuySave == null)
+            {
+
+            }
+            string saveFile = id + "_saveFile.json";
+
+            if (boughtId == "")
+            {
+                boughtId = id;
+            }
+
+            bool bought;
+            if(partsBuySave == null)
+            {
+                bought = true;
+            }
+            else
+            {
+                try
+                {
+                    bought = partsBuySave[boughtId];
+                }
+                catch
+                {
+                    bought = false;
+                }
+            }
+
 
             PartSaveInfo partSaveInfo = null;
             if (bought)
@@ -49,18 +92,24 @@ namespace DonnerTech_ECU_Mod
                 {
                     partSaveInfo = SaveLoad.DeserializeSaveFile<PartSaveInfo>(mod, saveFile);
                 }
-                catch (Exception ex)
+                catch
                 {
                     partSaveInfo = null;
                 }
-                
+
             }
-            loadedData[0] = mod;
-            loadedData[1] = saveFile;
-            loadedData[2] = partSaveInfo;
-            loadedData[3] = bought;
-            return loadedData;
+
+            return new List<Object>
+            {
+                mod,
+                saveFile,
+                partSaveInfo,
+                bought,
+                boughtId,
+                id,
+            };
         }
+
 
         public void SetDisassembleFunction(Action action)
         {
@@ -132,6 +181,17 @@ namespace DonnerTech_ECU_Mod
             {
                 disassemble(false);
             }
+        }
+
+        public Dictionary<string, bool> GetBought(Dictionary<string, bool> partsBuySave)
+        {
+            if (boughtId == null || boughtId == "")
+            {
+                return partsBuySave;
+            }
+
+            partsBuySave[boughtId] = bought;
+            return partsBuySave;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         public Drivetrain satsumaDriveTrain;
 
-        private const string orignal_parts_saveFile = "original_parts_saveFile.txt";
+        private const string orignal_parts_saveFile = "original_parts_saveFile.json";
         private OriginalPartsSave originalPartsSave;
 
         public List<ChipPart> chip_parts = new List<ChipPart>();
@@ -328,7 +328,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         {
             string fuel_system_savePath = Helper.CreatePathIfNotExists(Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", "chips" }));
 
-            string[] chip_saveFiles = Directory.GetFiles(fuel_system_savePath, "chip*_saveFile.txt", SearchOption.AllDirectories);
+            string[] chip_saveFiles = Directory.GetFiles(fuel_system_savePath, "chip*_saveFile.json", SearchOption.AllDirectories);
             string[] chip_map_saveFiles = Directory.GetFiles(fuel_system_savePath, "chip*.fuelmap", SearchOption.AllDirectories);
 
             if (chip_saveFiles.Length != chip_map_saveFiles.Length)
@@ -351,10 +351,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, chip_map_saveFile);
 
                 ChipPart chip_part = new ChipPart(
-                    SimplePart.LoadData(mod, chip_part_saveFile, true),
+                    SimplePart.LoadData(mod, "chip" + i, null),
                     chip,
                     mod.smart_engine_module_part.rigidPart,
-                    new Trigger("chip" + i, mod.smart_engine_module_part.rigidPart, chip_installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
                     chip_installLocation,
                     new Quaternion { eulerAngles = chip_installRotation }
                 );

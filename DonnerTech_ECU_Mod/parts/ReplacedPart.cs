@@ -24,7 +24,7 @@ namespace DonnerTech_ECU_Mod.parts
         public GameObject logicGameObject; //The logic (where install bolted and such is set
         public GameObject gameObject; //The movable 3d object
 
-        public ReplacedPart(Object[] loadedData, GameObject part, GameObject partParent, Trigger trigger, Vector3 installLocation, Quaternion installRotation, GameObject logicGameObject) : base(loadedData, part, partParent, trigger, installLocation, installRotation)
+        public ReplacedPart(List<Object> loadedData, GameObject part, GameObject partParent, Vector3 installLocation, Quaternion installRotation, GameObject logicGameObject) : base(loadedData, part, partParent, installLocation, installRotation)
         {
             this.logicGameObject = logicGameObject;
             PlayMakerFSM playMakerFSM = logicGameObject.GetComponent<PlayMakerFSM>();

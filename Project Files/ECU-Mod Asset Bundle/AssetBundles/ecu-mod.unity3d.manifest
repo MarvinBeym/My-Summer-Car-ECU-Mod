@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 891845944
+CRC: 3313684095
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d7dd2162e3698ce44024de1ca9663061
+    Hash: cf1fceeeb341a3651553f0595a872eec
   TypeTreeHash:
     serializedVersion: 2
     Hash: 389209fce78cc7ac6121dcbd1144b3ea
@@ -86,67 +86,67 @@ ClassTypes:
 - Class: 224
   Script: {instanceID: 0}
 Assets:
-- Assets/FuelSystem/wires-injectors-pumps.prefab
+- Assets/FuelSystem/wires_injectors_pumps.prefab
 - Assets/ProductImages/product-background.jpg
 - Assets/ProductImages/chip_productImage.png
 - Assets/Info-Panel/LowBeam-Icon.png
-- Assets/FuelSystem/throttle-bodies-box.prefab
+- Assets/FuelSystem/throttle_bodies_box.prefab
 - Assets/ProductImages/throttle-bodies-box_productImage.png
 - Assets/ProductImages/info-panel_productImage.png
 - Assets/Others/ReverseCamera-Texture.renderTexture
 - Assets/Info-Panel/Indicator-Left-Icon.png
-- Assets/tcs-module.prefab
+- Assets/tcs_module.prefab
 - Assets/ProductImages/smart-engine-module_productImage.png
 - Assets/Info-Panel/modules_page.png
-- Assets/esp-module.prefab
+- Assets/esp_module.prefab
 - Assets/ProductImages/electric-fuel-pump_productImage.png
-- Assets/FuelSystem/fuel-injector.prefab
+- Assets/FuelSystem/fuel_injector.prefab
 - Assets/Info-Panel/tuner_page.png
 - Assets/ProductImages/chip-programmer_productImage.png
-- Assets/AWD/AWD-Gearbox.prefab
+- Assets/AWD/awd_gearbox.prefab
 - Assets/Info-Panel/airride_page.png
 - Assets/ProductImages/cruise-control_productImage.png
-- Assets/FuelSystem/fuel-injection-manifold.prefab
-- Assets/FuelSystem/fuel-rail.prefab
+- Assets/FuelSystem/fuel_injection_manifold.prefab
+- Assets/FuelSystem/fuel_rail.prefab
 - Assets/ProductImages/rain-light-sensorboard_productImage.png
-- Assets/FuelSystem/electric-fuel-pump.prefab
+- Assets/FuelSystem/electric_fuel_pump.prefab
 - Assets/Info-Panel/Handbrake-Icon.png
-- Assets/FuelSystem/wires-sparkPlugs-2.prefab
-- Assets/AWD/AWD-Propshaft.prefab
+- Assets/FuelSystem/wires_sparkPlugs_2.prefab
+- Assets/AWD/awd_propshaft.prefab
 - Assets/Info-Panel/assistance_page.png
 - Assets/Info-Panel/TurbineWheel.png
 - Assets/Info-Panel/turbocharger_page.png
 - Assets/Info-Panel/HighBeam-Icon.png
-- Assets/AWD/AWD-Differential.prefab
-- Assets/FuelSystem/wires-sparkPlugs-1.prefab
+- Assets/AWD/awd_differential.prefab
+- Assets/FuelSystem/wires_sparkPlugs_1.prefab
 - Assets/Info-Panel/faults_page.png
 - Assets/Airride/Airride_FL.prefab
-- Assets/FuelSystem/throttle-body.prefab
+- Assets/FuelSystem/throttle_body.prefab
 - Assets/ProductImages/fuel-pump-cover-plate_productImage.png
 - Assets/ProductImages/fuel-injection-manifold_productImage.png
-- Assets/engine-module.prefab
+- Assets/smart_engine_module.prefab
 - Assets/Info-Panel/main_page.png
-- Assets/info-panel.prefab
+- Assets/info_panel.prefab
 - Assets/Info-Panel/Rpm-Needle.png
 - Assets/ProductImages/fuel-injectors-box_productImage.png
-- Assets/cable-harness.prefab
+- Assets/cable_harness.prefab
 - Assets/Info-Panel/Indicator-Right-Icon.png
 - Assets/FuelSystem/ui_interface.prefab
 - Assets/ProductImages/reverse-camera_productImage.png
 - Assets/ProductImages/abs-module_productImage.png
 - Assets/ProductImages/cable-harness_productImage.png
-- Assets/FuelSystem/fuel-pump-cover.prefab
+- Assets/FuelSystem/fuel_pump_cover.prefab
 - Assets/ProductImages/fuel-rail_productImage.png
-- Assets/reverse-camera.prefab
+- Assets/reverse_camera.prefab
 - Assets/ProductImages/esp-module_productImage.png
-- Assets/cruise-control-panel.prefab
-- Assets/FuelSystem/chip-programmer.prefab
+- Assets/cruise_control_panel.prefab
+- Assets/FuelSystem/chip_programmer.prefab
 - Assets/ProductImages/tcs-module_productImage.png
 - Assets/FuelSystem/chip.prefab
-- Assets/rain-light-sensorboard.prefab
+- Assets/rain_light_sensorboard.prefab
 - Assets/Info-Panel/faults2_page.png
-- Assets/mounting-plate.prefab
+- Assets/mounting_plate.prefab
 - Assets/ProductImages/mounting-plate_productImage.png
-- Assets/abs-module.prefab
-- Assets/FuelSystem/fuel-injectors-box.prefab
+- Assets/abs_module.prefab
+- Assets/FuelSystem/fuel_injectors_box.prefab
 Dependencies: []

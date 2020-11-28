@@ -13,34 +13,15 @@ namespace DonnerTech_ECU_Mod.infoPanel
     {
         private GameObject gameObject;
         private DonnerTech_ECU_Mod mod;
-
-        private const string saveFile = "info_panel_saveFile.txt";
-        public Vector3 installLocation = new Vector3(0.25f, -0.088f, -0.01f);
+        
         private bool workaroundChildDisableDone = false;
         public SimplePart part { get; set; }
         public InfoPanel_Logic logic { get; set; }
 
-        public InfoPanel(DonnerTech_ECU_Mod mod, SortedList<String, Screws> screwListSave)
+        public InfoPanel(DonnerTech_ECU_Mod mod, SimplePart part)
         {
             this.mod = mod;
-
-            gameObject = (mod.assetBundle.LoadAsset("info-panel.prefab") as GameObject);
-            Helper.SetObjectNameTagLayer(gameObject, "DonnerTech Info Panel");
-
-            part = new SimplePart(
-                SimplePart.LoadData(mod, saveFile, mod.partBuySave.boughtInfoPanel),
-                gameObject,
-                GameObject.Find("dashboard(Clone)"),
-                new Trigger("info_panel_trigger", GameObject.Find("dashboard(Clone)"), installLocation, new Quaternion(0, 0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f), false),
-                installLocation,
-                new Quaternion { eulerAngles = new Vector3(0, 180, 180) }
-            );
-            mod.partsList.Add(part);
-
-            part.screwablePart = new ScrewablePart(screwListSave, mod.screwableAssetsBundle, part.rigidPart,
-            new Screw[] {
-                new Screw(new Vector3(0f, -0.025f, -0.067f), new Vector3(180, 0, 0), 0.8f, 8),
-            });
+            this.part = part;
 
             TextMesh[] textMeshes = part.activePart.GetComponentsInChildren<TextMesh>();
             foreach (TextMesh textMesh in textMeshes)
