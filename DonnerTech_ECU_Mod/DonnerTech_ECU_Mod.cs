@@ -72,14 +72,8 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.5)
-         *  Code improvement.
-         *  Optimized Code.
-         *  Added clear error message when mod can't load the AssetBundle.
-         *  Added new debug gui.
-         *  Changed save files extension to .json
-         *  Improved saving/loading
-         *  Fixed issue where original parts like the distributor would stay in mid air where it was installed and would stay at that position even when the car was moved. 
+        /*  Changelog (v1.4.6)
+         *  Fixed logger only generating base information when file does not yet exist.
          */
         /* BUGS/Need to fix
          * WARNING: both twincarb and fuel injection manifold can be installed (twincarb und carb trigger shold be disabled when anyInstalled

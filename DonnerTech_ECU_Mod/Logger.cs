@@ -13,22 +13,19 @@ namespace DonnerTech_ECU_Mod
     {
         private string logging_filePath = "";
         private string file_name = "";
-        private DonnerTech_ECU_Mod mod;
+        private Mod mod;
         private int maxErrorsToLog = 0;
         private int errorsLogged = 0;
-        public Logger(DonnerTech_ECU_Mod mod, string file_name, int maxErrorsToLog)
+        public Logger(Mod mod, string file_name, int maxErrorsToLog)
         {
             this.mod = mod;
             this.file_name = file_name;
             this.maxErrorsToLog = maxErrorsToLog;
             logging_filePath = Path.Combine(ModLoader.GetModConfigFolder(mod), file_name);
-            if (!File.Exists(logging_filePath)){
-                WriteBaseInformationToFile();
-            }
-
+            InitLoggerFile();
         }
 
-        private void WriteBaseInformationToFile()
+        private void InitLoggerFile()
         {
             string os = SystemInfo.operatingSystem;
             int build = int.Parse(os.Split('(')[1].Split(')')[0].Split('.')[2]);
@@ -126,11 +123,6 @@ $@"╔{GenerateHeader(" Environment ", maxLineLength)}
                 return "Steam detected";
             }
             return "NO Steam detected";
-        }
-
-        public void WriteToFile(string message)
-        {
-
         }
     }
 }
