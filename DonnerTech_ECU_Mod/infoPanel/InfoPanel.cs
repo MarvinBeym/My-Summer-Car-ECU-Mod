@@ -41,7 +41,7 @@ namespace DonnerTech_ECU_Mod.infoPanel
 
 
             logic = part.rigidPart.AddComponent<InfoPanel_Logic>();
-            logic.Init(this, mod);
+            logic.Init(this, mod, part.rigidPart);
 
             UnityEngine.Object.Destroy(gameObject);
         }

@@ -74,6 +74,8 @@ namespace DonnerTech_ECU_Mod
 
         /*  Changelog (v1.4.6)
          *  Fixed logger only generating base information when file does not yet exist.
+         *  Improved Logger
+         *  Changed how info panel sets itself up on loading in hopes of fixing the issues with it not working
          */
         /* BUGS/Need to fix
          * WARNING: both twincarb and fuel injection manifold can be installed (twincarb und carb trigger shold be disabled when anyInstalled
@@ -92,7 +94,6 @@ namespace DonnerTech_ECU_Mod
         OverrideFileRenamer overrideFileRenamer;
         public AssetBundle assetBundle;
         public AssetBundle screwableassetBundle;
-        public Logger logger;
         public GuiDebug guiDebug;
         public bool turboModInstalled = false;
 
@@ -278,6 +279,12 @@ namespace DonnerTech_ECU_Mod
         public override void OnLoad()
         {
             ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " started loading");
+            Logger.InitLogger(this, logger_saveFile, 100);
+            Logger.New("Test error only error");
+            Logger.New("Test error with additional", "Testttt");
+            Logger.New("Test error with additional and ex", "Testttt", new Exception("Test"));
+            Logger.New("Test error with only ex", new Exception("Test2"));
+
             turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
             guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 260 - 260 : Screen.width - 260, 50, 250, "ECU MOD DEBUG", new List<GuiButtonElement>()
             {
@@ -285,7 +292,6 @@ namespace DonnerTech_ECU_Mod
                 new GuiButtonElement("Cruise control"),
             });
 
-            logger = new Logger(this, logger_saveFile, 100);
             if (!ModLoader.CheckSteam())
             {
                 ModUI.ShowMessage("Cunt", "CUNT");
@@ -297,8 +303,8 @@ namespace DonnerTech_ECU_Mod
             toggleSmoothInput.DoAction = ToggleSmoothInput;
             toggleSixGears.DoAction = ToggleSixGears;
 
-            assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d", logger);
-            screwableassetBundle = Helper.LoadAssetBundle(this, "screwableapi.unity3d", logger);
+            assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
+            screwableassetBundle = Helper.LoadAssetBundle(this, "screwableapi.unity3d");
 
 
             List<BugReporter.Report> reports = new List<BugReporter.Report>();
@@ -394,7 +400,7 @@ namespace DonnerTech_ECU_Mod
             }
             catch (Exception ex)
             {
-                logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
+                Logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
             }
 
             GameObject fuel_injector = (assetBundle.LoadAsset("fuel_injector.prefab") as GameObject);
@@ -923,7 +929,7 @@ namespace DonnerTech_ECU_Mod
             }
             catch(Exception ex)
             {
-                logger.New("Error while trying to save part", "", ex);
+                Logger.New("Error while trying to save part", ex);
             }
 
             try
@@ -937,7 +943,7 @@ namespace DonnerTech_ECU_Mod
             }
             catch (Exception ex)
             {
-                logger.New("Error while trying to save chip part", "", ex);
+                Logger.New("Error while trying to save chip part", ex);
             }
 
             try
@@ -950,7 +956,7 @@ namespace DonnerTech_ECU_Mod
             }
             catch (Exception ex)
             {
-                logger.New("Error while trying to save mod shop bought parts file", "", ex);
+                Logger.New("Error while trying to save mod shop bought parts file", ex);
             }
 
             try
@@ -959,7 +965,7 @@ namespace DonnerTech_ECU_Mod
             }
             catch (Exception ex)
             {
-                logger.New("Error while trying to save screws ", $"save file: {screwable_saveFile}", ex);
+                Logger.New("Error while trying to save screws ", $"save file: {screwable_saveFile}", ex);
             }
             fuel_system.Save();
         }

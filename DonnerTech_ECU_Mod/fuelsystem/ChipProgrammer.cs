@@ -131,7 +131,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     }
                     catch (Exception ex)
                     {
-                        mod.logger.New("Error while trying to write chip map", String.Format("fuel map position - Y: {0} X: {1}", y, x), ex);
+                        Logger.New("Error while trying to write chip map", String.Format("fuel map position - Y: {0} X: {1}", y, x), ex);
                     }
                 }
             }
@@ -157,7 +157,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                         }
                         catch (Exception e)
                         {
-                            mod.logger.New("Error while trying to save spark timing after chip programming", "input field value: " + input_sparkAngle.text, e);
+                            Logger.New("Error while trying to save spark timing after chip programming", "input field value: " + input_sparkAngle.text, e);
                             part.chipSave.sparkAngle = 14.5f;
                         }
 
@@ -212,7 +212,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     }
                     catch (Exception ex)
                     {
-                        mod.logger.New("Error while trying to reset programmer input field", $"y - x index: {y} - {x}");
+                        Logger.New("Error while trying to reset programmer input field", $"y - x index: {y} - {x}");
                     }
                 }
             }
@@ -303,7 +303,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                                 }
                                 catch (Exception ex)
                                 {
-                                    mod.logger.New("Error while trying to write input field", String.Format("input field position - Y: {0} X: {1}", y, x), ex);
+                                    Logger.New("Error while trying to write input field", String.Format("input field position - Y: {0} X: {1}", y, x), ex);
                                 }
                             }
                         }

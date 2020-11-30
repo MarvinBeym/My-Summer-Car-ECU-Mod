@@ -16,10 +16,10 @@ namespace DonnerTech_ECU_Mod
 {
     public class InfoPanel_Logic : MonoBehaviour
     {
+        public GameObject panel;
         private InfoPanel infoPanel;
         private DonnerTech_ECU_Mod mod;
 
-        public GameObject panel_gameObject;
         private GameObject turnSignals;
         private GameObject beamShort;
         private GameObject beamLong;
@@ -74,8 +74,6 @@ namespace DonnerTech_ECU_Mod
         private GameObject satsuma;
         private Drivetrain satsumaDriveTrain;
         private CarController satsumaCarController;
-        private Axles satsumaAxles;
-        private FsmString playerCurrentVehicle;
 
         private RaycastHit hit;
         public AssetBundle assetBundle;
@@ -110,43 +108,58 @@ namespace DonnerTech_ECU_Mod
         private void Start()
         {
             assetBundle = LoadAssets.LoadBundle(mod, "ecu-mod.unity3d");
-            panel_gameObject = this.gameObject;
 
-            
-            satsuma = GameObject.Find("SATSUMA(557kg, 248)");
-            satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-            satsumaCarController = satsuma.GetComponent<CarController>();
-            satsumaAxles = satsuma.GetComponent<Axles>();
+            try
+            {
+                satsuma = GameObject.Find("SATSUMA(557kg, 248)");
+            }
+            catch(Exception ex)
+            {
+                Logger.New("Satsuma gameobject could not be found", "SATSUMA(557kg, 248)", ex);
+            }
+            try
+            {
+                satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
+            }
+            catch (Exception ex)
+            {
+                Logger.New("Drivetrain could not be found on satsuma", ex);
+            }
+            try
+            {
+                satsumaCarController = satsuma.GetComponent<CarController>();
+            } catch(Exception ex)
+            {
+                Logger.New("CarController could not be found on satsuma", ex);
+            }
 
-            playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
-
-            ecu_InfoPanel_NeedleObject = GameObject.Find("ECU-Panel-Needle");
-            ecu_InfoPanel_TurboWheelObject = GameObject.Find("ECU-Panel-TurboWheel");
-            ecu_InfoPanel_Display_Reverse_Camera = GameObject.Find("ECU-Panel-Display-Reverse-Camera").GetComponent<MeshRenderer>();
+            ecu_InfoPanel_NeedleObject = panel.transform.FindChild("needle").gameObject;
+            ecu_InfoPanel_TurboWheelObject = panel.transform.FindChild("turbine").gameObject;
+            ecu_InfoPanel_Display_Reverse_Camera = panel.transform.FindChild("reverseCamera").GetComponent<MeshRenderer>();
             ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
 
             
-            shift_indicator_renderer = GameObject.Find("ECU-Shift-Indicator").GetComponent<MeshRenderer>();
+            shift_indicator_renderer = panel.transform.FindChild("shiftIndicator").GetComponent<MeshRenderer>();
             SetupShiftIndicator();
 
-            TextMesh[] ecu_InfoPanel_TextMeshes = panel_gameObject.GetComponentsInChildren<TextMesh>();
+            TextMesh[] ecu_InfoPanel_TextMeshes = panel.GetComponentsInChildren<TextMesh>();
             foreach (TextMesh textMesh in ecu_InfoPanel_TextMeshes)
             {
                 switch (textMesh.name)
                 {
-                    case "ECU-Panel-Display-Gear":
+                    case "displayGear":
                         display_values.Add("value_gear", textMesh);
                         break;
-                    case "ECU-Panel-Display-km/h":
+                    case "displayKmH":
                         display_values.Add("value_kmh", textMesh);
                         break;
-                    case "ECU-Panel-Display-km":
+                    case "displayKm":
                         display_values.Add("value_km", textMesh);
                         break;
                 }
                 for (int i = 1; i <= 16; i++)
                 {
-                    if(textMesh.name == ("ECU-Panel-Display-Value-" + i.ToString().PadLeft(2, '0')))
+                    if(textMesh.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
                     {
                         display_values.Add("value_" + i, textMesh);
                         continue;
@@ -155,64 +168,80 @@ namespace DonnerTech_ECU_Mod
                 textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
             }
 
-            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = panel_gameObject.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = panel.GetComponentsInChildren<SpriteRenderer>();
             foreach (SpriteRenderer spriteRenderer in ecu_InfoPanel_SpriteRenderer)
             {
                 switch (spriteRenderer.name)
                 {
-                    case "ECU-Panel-Needle":
+                    case "needle":
                         ecu_InfoPanel_Needle = spriteRenderer;
                         break;
-                    case "ECU-Panel-TurboWheel":
+                    case "turbine":
                         ecu_InfoPanel_TurboWheel = spriteRenderer;
                         break;
-                    case "ECU-Panel-Background":
+                    case "background":
                         ecu_InfoPanel_Background = spriteRenderer;
                         break;
-                    case "ECU-Panel-Indicator-Left":
+                    case "indicatorLeft":
                         ecu_InfoPanel_IndicatorLeft = spriteRenderer;
                         break;
-                    case "ECU-Panel-Indicator-Right":
+                    case "indicatorRight":
                         ecu_InfoPanel_IndicatorRight = spriteRenderer;
                         break;
-                    case "ECU-Panel-Handbrake":
+                    case "handbrake":
                         ecu_InfoPanel_Handbrake = spriteRenderer;
                         break;
-                    case "ECU-Panel-LowBeam":
+                    case "lowBeam":
                         ecu_InfoPanel_LowBeam = spriteRenderer;
                         break;
-                    case "ECU-Panel-HighBeam":
+                    case "highBeam":
                         ecu_InfoPanel_HighBeam = spriteRenderer;
                         break;
                 }
                 spriteRenderer.enabled = false;
             }
 
-            turnSignals = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
-            PlayMakerFSM blinkers = null;
-            PlayMakerFSM[] turnSignalComps = turnSignals.GetComponents<PlayMakerFSM>();
-            foreach (PlayMakerFSM turnSignalComp in turnSignalComps)
+            try
             {
-                if (turnSignalComp.FsmName == "Blinkers")
+                turnSignals = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
+                PlayMakerFSM blinkers = null;
+                PlayMakerFSM[] turnSignalComps = turnSignals.GetComponents<PlayMakerFSM>();
+                foreach (PlayMakerFSM turnSignalComp in turnSignalComps)
                 {
-                    blinkers = turnSignalComp;
-                    break;
+                    if (turnSignalComp.FsmName == "Blinkers")
+                    {
+                        blinkers = turnSignalComp;
+                        break;
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Logger.New("Unable to find turn signal gameobject or Blinkers fsm", "SATSUMA(557kg, 248)/Dashboard/TurnSignals", ex);
             }
 
-            GameObject powerON = GameObject.Find("SATSUMA(557kg, 248)/Electricity/PowerON");
-            for (int i = 0; i < powerON.transform.childCount; i++)
+
+            try
             {
-                GameObject tmp = powerON.transform.GetChild(i).gameObject;
-                if (tmp.name == "BeamsShort")
+                GameObject powerON = GameObject.Find("SATSUMA(557kg, 248)/Electricity/PowerON");
+                for (int i = 0; i < powerON.transform.childCount; i++)
                 {
-                    beamShort = tmp;
-                }
-                else if (tmp.name == "BeamsLong")
-                {
-                    beamLong = tmp;
+                    GameObject tmp = powerON.transform.GetChild(i).gameObject;
+                    if (tmp.name == "BeamsShort")
+                    {
+                        beamShort = tmp;
+                    }
+                    else if (tmp.name == "BeamsLong")
+                    {
+                        beamLong = tmp;
+                    }
                 }
             }
+            catch(Exception ex)
+            {
+                Logger.New("Unable to find powerOn objecct of BeamsShort/BeamsLong", "SATSUMA(557kg, 248)/Electricity/PowerON", ex);
+            }
+
 
             ecu_mod_panel_needle = assetBundle.LoadAsset<Sprite>("Rpm-Needle.png");
             ecu_mod_panel_turbineWheel = assetBundle.LoadAsset<Sprite>("TurbineWheel.png");
@@ -525,7 +554,7 @@ namespace DonnerTech_ECU_Mod
 
         private void HandleKeybinds()
         {
-            if(playerCurrentVehicle.Value == "Satsuma")
+            if(Helper.PlayerInCar())
             {
                 if (mod.arrowUp.GetKeybindDown())
                 {
@@ -569,7 +598,7 @@ namespace DonnerTech_ECU_Mod
                         string valueToPass = null;
                         for (int i = 1; i <= guiTexts.Length; i++)
                         {
-                            if (gameObjectHit.name == ("ECU-Panel-Display-Value-" + i.ToString().PadLeft(2, '0')))
+                            if (gameObjectHit.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
                             {
                                 foundObject = true;
                                 valueToPass = guiTexts[i - 1];
@@ -602,37 +631,37 @@ namespace DonnerTech_ECU_Mod
                     if (gameObjectHit != null)
                     {
                         Action actionToPerform = null;
-                        if (gameObjectHit.name == "ECU-Panel-Button-ArrowDown")
+                        if (gameObjectHit.name == "buttonArrowDown")
                         {
                             foundObject = true;
                             actionToPerform = Pressed_Button_ArrowDown;
                             guiText = "Arrow down";
                         }
-                        else if (gameObjectHit.name == "ECU-Panel-Button-ArrowUp")
+                        else if (gameObjectHit.name == "buttonArrowUp")
                         {
                             foundObject = true;
                             actionToPerform = Pressed_Button_ArrowUp;
                             guiText = "Arrow up";
                         }
-                        else if (gameObjectHit.name == "ECU-Panel-Button-Circle")
+                        else if (gameObjectHit.name == "buttonCircle")
                         {
                             foundObject = true;
                             actionToPerform = Pressed_Button_Circle;
                             guiText = "Circle";
                         }
-                        else if (gameObjectHit.name == "ECU-Panel-Button-Cross")
+                        else if (gameObjectHit.name == "buttonCross")
                         {
                             foundObject = true;
                             actionToPerform = Pressed_Button_Cross;
                             guiText = "Cross";
                         }
-                        else if (gameObjectHit.name == "ECU-Panel-Button-Minus")
+                        else if (gameObjectHit.name == "buttonMinus")
                         {
                             foundObject = true;
                             actionToPerform = Pressed_Button_Minus;
                             guiText = "Minus";
                         }
-                        else if (gameObjectHit.name == "ECU-Panel-Button-Plus")
+                        else if (gameObjectHit.name == "buttonPlus")
                         {
                             foundObject = true;
                             actionToPerform = Pressed_Button_Plus;
@@ -850,8 +879,9 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        public void Init(InfoPanel infoPanel, DonnerTech_ECU_Mod mod)
+        public void Init(InfoPanel infoPanel, DonnerTech_ECU_Mod mod, GameObject panel)
         {
+            this.panel = panel;
             this.infoPanel = infoPanel;
             this.mod = mod;
         }

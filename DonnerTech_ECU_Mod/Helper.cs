@@ -13,7 +13,7 @@ namespace DonnerTech_ECU_Mod
 {
     public static class Helper
     {
-        public static AssetBundle LoadAssetBundle(Mod mod,string fileName, Logger logger)
+        public static AssetBundle LoadAssetBundle(Mod mod,string fileName)
         {
             try
             {
@@ -22,7 +22,7 @@ namespace DonnerTech_ECU_Mod
             catch (Exception ex)
             {
                 string message = String.Format("AssetBundle file '{0}' could not be loaded", fileName);
-                logger.New(
+                Logger.New(
                     message,
                     String.Format("Check: {0}", Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName)),
                     ex);

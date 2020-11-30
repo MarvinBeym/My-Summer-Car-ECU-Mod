@@ -310,7 +310,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             }
             catch (Exception ex)
             {
-                mod.logger.New("Error while trying to save original parts replaced by fuel injection system", $"path of save file: {Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile })}", ex);
+                Logger.New("Error while trying to save original parts replaced by fuel injection system", $"path of save file: {Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile })}", ex);
             }
 
         }
@@ -333,7 +333,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
             if (chip_saveFiles.Length != chip_map_saveFiles.Length)
             {
-                mod.logger.New("Chip part save and map save do not match. Atleast one or more files are missing.", $"save files found: {chip_saveFiles.Length} | chip map files found: {chip_map_saveFiles.Length}");
+                Logger.New("Chip part save and map save do not match. Atleast one or more files are missing.", $"save files found: {chip_saveFiles.Length} | chip map files found: {chip_map_saveFiles.Length}");
                 return;
             }
             for (int i = 0; i < chip_saveFiles.Length; i++)
@@ -375,7 +375,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             }
             catch (Exception ex)
             {
-                mod.logger.New("Unable to save chips, there was an error while trying to save the chip", $"save file: {part.fuelMap_saveFile}", ex);
+                Logger.New("Unable to save chips, there was an error while trying to save the chip", $"save file: {part.fuelMap_saveFile}", ex);
             }
         }
 

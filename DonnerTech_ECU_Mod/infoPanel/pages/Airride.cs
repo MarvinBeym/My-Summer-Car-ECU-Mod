@@ -99,7 +99,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         }
         public Airride(string pageName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName, display_values)
         {
-            airrideLogic = logic.panel_gameObject.AddComponent<Airride_Logic>();
+            airrideLogic = logic.panel.AddComponent<Airride_Logic>();
             airrideLogic.Init(this, mod);
 
             airride_audioSource = mod.info_panel.part.rigidPart.AddComponent<AudioSource>();
