@@ -97,15 +97,15 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             compressor_playing = false;
             return;
         }
-        public Airride(string pageName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName, display_values)
+        public Airride(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
         {
             airrideLogic = logic.panel.AddComponent<Airride_Logic>();
             airrideLogic.Init(this, mod);
 
-            airride_audioSource = mod.info_panel.part.rigidPart.AddComponent<AudioSource>();
+            airride_audioSource = mod.satsuma.AddComponent<AudioSource>();
             airride_sound.audioSource = airride_audioSource;
 
-            compressor_audioSource = mod.info_panel.part.rigidPart.AddComponent<AudioSource>();
+            compressor_audioSource = mod.satsuma.AddComponent<AudioSource>();
             compressor_sound.audioSource = compressor_audioSource;
 
             airride_sound.LoadAudioFromFile(Path.Combine(ModLoader.GetModAssetsFolder(mod), "airride_sound.wav"), true, false);

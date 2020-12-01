@@ -72,10 +72,11 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.6)
-         *  Fixed logger only generating base information when file does not yet exist.
-         *  Improved Logger
-         *  Changed how info panel sets itself up on loading in hopes of fixing the issues with it not working
+        /*  Changelog (v1.4.7)
+         *  Removed leftover testing code for Logger
+         *  Improved loading
+         *  Fixed small issues & stuff that could cause errors sometimes. 
+
          */
         /* BUGS/Need to fix
          * WARNING: both twincarb and fuel injection manifold can be installed (twincarb und carb trigger shold be disabled when anyInstalled
@@ -280,10 +281,6 @@ namespace DonnerTech_ECU_Mod
         {
             ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " started loading");
             Logger.InitLogger(this, logger_saveFile, 100);
-            Logger.New("Test error only error");
-            Logger.New("Test error with additional", "Testttt");
-            Logger.New("Test error with additional and ex", "Testttt", new Exception("Test"));
-            Logger.New("Test error with only ex", new Exception("Test2"));
 
             turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
             guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 260 - 260 : Screen.width - 260, 50, 250, "ECU MOD DEBUG", new List<GuiButtonElement>()
@@ -556,7 +553,7 @@ namespace DonnerTech_ECU_Mod
                 info_panel_installLocation,
                 new Quaternion { eulerAngles = new Vector3(0, 180, 180) }
             );
-            info_panel = new InfoPanel(this, info_panel_part);
+            info_panel = new InfoPanel(this, info_panel_part, assetBundle);
 
             rain_light_sensorboard_part = new SimplePart(
                 SimplePart.LoadData(this, "rain_light_sensorboard", partsBuySave),

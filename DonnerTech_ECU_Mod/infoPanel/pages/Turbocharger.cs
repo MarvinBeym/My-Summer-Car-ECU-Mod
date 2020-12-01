@@ -29,7 +29,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmFloat turbocharger_small_intake_temp;
         private FsmBool turbocharger_small_allInstalled;
 
-        public Turbocharger(string pageName, DonnerTech_ECU_Mod mod, GameObject turbine, Dictionary<string, TextMesh> display_values) : base(mod, pageName,  display_values)
+        public Turbocharger(string pageName, GameObject turbine, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
         {
             this.turbine = turbine;
             turbineUsed = true;

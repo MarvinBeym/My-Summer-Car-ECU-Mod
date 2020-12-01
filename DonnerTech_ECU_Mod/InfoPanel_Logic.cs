@@ -76,7 +76,6 @@ namespace DonnerTech_ECU_Mod
         private CarController satsumaCarController;
 
         private RaycastHit hit;
-        public AssetBundle assetBundle;
 
         private string selectedSetting = "";
 
@@ -89,13 +88,13 @@ namespace DonnerTech_ECU_Mod
         public bool lightsensor_enabled { get; set; } = false;
         private bool lightsensor_wasEnabled = false;
 
-        private Sprite ecu_mod_panel_needle;
-        private Sprite ecu_mod_panel_turbineWheel;
-        private Sprite ecu_mod_panel_handbrake;
-        private Sprite ecu_mod_panel_blinkerLeft;
-        private Sprite ecu_mod_panel_blinkerRight;
-        private Sprite ecu_mod_panel_highBeam;
-        private Sprite ecu_mod_panel_lowBeam;
+        private Sprite needleSprite;
+        private Sprite turbineWheelSprite;
+        private Sprite handbrakeSprite;
+        private Sprite blinkerLeftSprite;
+        private Sprite blinkerRightSprite;
+        private Sprite highBeamSprite;
+        private Sprite lowBeamSprite;
 
         private MeshRenderer shift_indicator_renderer;
         private Gradient shift_indicator_gradient;
@@ -107,8 +106,6 @@ namespace DonnerTech_ECU_Mod
 
         private void Start()
         {
-            assetBundle = LoadAssets.LoadBundle(mod, "ecu-mod.unity3d");
-
             try
             {
                 satsuma = GameObject.Find("SATSUMA(557kg, 248)");
@@ -141,66 +138,6 @@ namespace DonnerTech_ECU_Mod
             
             shift_indicator_renderer = panel.transform.FindChild("shiftIndicator").GetComponent<MeshRenderer>();
             SetupShiftIndicator();
-
-            TextMesh[] ecu_InfoPanel_TextMeshes = panel.GetComponentsInChildren<TextMesh>();
-            foreach (TextMesh textMesh in ecu_InfoPanel_TextMeshes)
-            {
-                switch (textMesh.name)
-                {
-                    case "displayGear":
-                        display_values.Add("value_gear", textMesh);
-                        break;
-                    case "displayKmH":
-                        display_values.Add("value_kmh", textMesh);
-                        break;
-                    case "displayKm":
-                        display_values.Add("value_km", textMesh);
-                        break;
-                }
-                for (int i = 1; i <= 16; i++)
-                {
-                    if(textMesh.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
-                    {
-                        display_values.Add("value_" + i, textMesh);
-                        continue;
-                    }
-                }
-                textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
-            }
-
-            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = panel.GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer spriteRenderer in ecu_InfoPanel_SpriteRenderer)
-            {
-                switch (spriteRenderer.name)
-                {
-                    case "needle":
-                        ecu_InfoPanel_Needle = spriteRenderer;
-                        break;
-                    case "turbine":
-                        ecu_InfoPanel_TurboWheel = spriteRenderer;
-                        break;
-                    case "background":
-                        ecu_InfoPanel_Background = spriteRenderer;
-                        break;
-                    case "indicatorLeft":
-                        ecu_InfoPanel_IndicatorLeft = spriteRenderer;
-                        break;
-                    case "indicatorRight":
-                        ecu_InfoPanel_IndicatorRight = spriteRenderer;
-                        break;
-                    case "handbrake":
-                        ecu_InfoPanel_Handbrake = spriteRenderer;
-                        break;
-                    case "lowBeam":
-                        ecu_InfoPanel_LowBeam = spriteRenderer;
-                        break;
-                    case "highBeam":
-                        ecu_InfoPanel_HighBeam = spriteRenderer;
-                        break;
-                }
-                spriteRenderer.enabled = false;
-            }
-
             try
             {
                 turnSignals = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
@@ -239,18 +176,8 @@ namespace DonnerTech_ECU_Mod
             }
             catch(Exception ex)
             {
-                Logger.New("Unable to find powerOn objecct of BeamsShort/BeamsLong", "SATSUMA(557kg, 248)/Electricity/PowerON", ex);
+                Logger.New("Unable to find powerOn object of BeamsShort/BeamsLong", "SATSUMA(557kg, 248)/Electricity/PowerON", ex);
             }
-
-
-            ecu_mod_panel_needle = assetBundle.LoadAsset<Sprite>("Rpm-Needle.png");
-            ecu_mod_panel_turbineWheel = assetBundle.LoadAsset<Sprite>("TurbineWheel.png");
-
-            ecu_mod_panel_handbrake = assetBundle.LoadAsset<Sprite>("Handbrake-Icon.png");
-            ecu_mod_panel_blinkerLeft = assetBundle.LoadAsset<Sprite>("Indicator-Left-Icon.png");
-            ecu_mod_panel_blinkerRight = assetBundle.LoadAsset<Sprite>("Indicator-Right-Icon.png");
-            ecu_mod_panel_highBeam = assetBundle.LoadAsset<Sprite>("HighBeam-Icon.png");
-            ecu_mod_panel_lowBeam = assetBundle.LoadAsset<Sprite>("LowBeam-Icon.png");
 
             rainIntensity = PlayMakerGlobals.Instance.Variables.FindFsmFloat("RainIntensity");
             GameObject buttonWipers = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/pivot_dashboard/dashboard(Clone)/pivot_meters/dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers");
@@ -263,58 +190,33 @@ namespace DonnerTech_ECU_Mod
                     break;
                 }
             }
-
-            LoadECU_PanelImageOverride();
             
-            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Day", SwitchToDay);
-            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Night", SwitchToNight);
-
-            pages = new List<InfoPanelPage>();
-            pages.Add(new Main("main_page", this.mod, this.ecu_InfoPanel_NeedleObject, display_values));
-            pages.Add(new Modules("modules_page", this.mod, this.ecu_InfoPanel_NeedleObject, display_values));
-            pages.Add(new Faults("faults_page", this.mod, display_values));
-            pages.Add(new Faults2("faults2_page", this.mod, display_values));
-            pages.Add(new Turbocharger("turbocharger_page", this.mod, this.ecu_InfoPanel_TurboWheelObject, display_values));
-            pages.Add(new Assistance("assistance_page", this.mod, display_values));
-
-            if ((bool) mod.enableAirrideInfoPanelPage.Value)
-            {
-                pages.Add(new Airride("airride_page", this.mod, display_values));
-            }
-
-            assetBundle.Unload(false);
+            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Day", new Action(delegate() { isNight = false; }));
+            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Night", new Action(delegate () { isNight = true; }));
         }
 
-        private void SwitchToDay()
-        {
-            isNight = false;
-        }
-        private void SwitchToNight()
-        {
-            isNight = true;
-        }
         private void LoadECU_PanelImageOverride()
         {
-            ecu_mod_panel_handbrake = Helper.LoadNewSprite(ecu_mod_panel_handbrake, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "handbrake_icon.png"));
-            ecu_InfoPanel_Handbrake.sprite = ecu_mod_panel_handbrake;
+            handbrakeSprite = Helper.LoadNewSprite(handbrakeSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "handbrake_icon.png"));
+            ecu_InfoPanel_Handbrake.sprite = handbrakeSprite;
 
-            ecu_mod_panel_blinkerLeft = Helper.LoadNewSprite(ecu_mod_panel_blinkerLeft, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_left_icon.png"));
-            ecu_InfoPanel_IndicatorLeft.sprite = ecu_mod_panel_blinkerLeft;
+            blinkerLeftSprite = Helper.LoadNewSprite(blinkerLeftSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_left_icon.png"));
+            ecu_InfoPanel_IndicatorLeft.sprite = blinkerLeftSprite;
 
-            ecu_mod_panel_blinkerRight = Helper.LoadNewSprite(ecu_mod_panel_blinkerRight, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_right_icon.png"));
-            ecu_InfoPanel_IndicatorRight.sprite = ecu_mod_panel_blinkerRight;
+            blinkerRightSprite = Helper.LoadNewSprite(blinkerRightSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_right_icon.png"));
+            ecu_InfoPanel_IndicatorRight.sprite = blinkerRightSprite;
 
-            ecu_mod_panel_lowBeam = Helper.LoadNewSprite(ecu_mod_panel_lowBeam, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "low_beam_icon.png"));
-            ecu_InfoPanel_LowBeam.sprite = ecu_mod_panel_lowBeam;
+            lowBeamSprite = Helper.LoadNewSprite(lowBeamSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "low_beam_icon.png"));
+            ecu_InfoPanel_LowBeam.sprite = lowBeamSprite;
 
-            ecu_mod_panel_highBeam = Helper.LoadNewSprite(ecu_mod_panel_highBeam, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "high_beam_icon.png"));
-            ecu_InfoPanel_HighBeam.sprite = ecu_mod_panel_highBeam;
+            highBeamSprite = Helper.LoadNewSprite(highBeamSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "high_beam_icon.png"));
+            ecu_InfoPanel_HighBeam.sprite = highBeamSprite;
 
-            ecu_mod_panel_needle = Helper.LoadNewSprite(ecu_mod_panel_needle, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "needle_icon.png"));
-            ecu_InfoPanel_Needle.sprite = ecu_mod_panel_needle;
+            needleSprite = Helper.LoadNewSprite(needleSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "needle_icon.png"));
+            ecu_InfoPanel_Needle.sprite = needleSprite;
 
-            ecu_mod_panel_turbineWheel = Helper.LoadNewSprite(ecu_mod_panel_turbineWheel, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "turbine_icon.png"));
-            ecu_InfoPanel_TurboWheel.sprite = ecu_mod_panel_turbineWheel;
+            turbineWheelSprite = Helper.LoadNewSprite(turbineWheelSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "turbine_icon.png"));
+            ecu_InfoPanel_TurboWheel.sprite = turbineWheelSprite;
         }
 
         void Update()
@@ -503,7 +405,6 @@ namespace DonnerTech_ECU_Mod
             colorKey[2].color = Color.red;
             colorKey[2].time = (float)shift_indicator_redLine / 10000;
 
-            // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
             GradientAlphaKey[] alphaKey = new GradientAlphaKey[3];
             alphaKey[0].alpha = 1f - (float)shift_indicator_baseLine / 10000;
             alphaKey[0].time = (float)shift_indicator_baseLine / 10000;
@@ -725,11 +626,6 @@ namespace DonnerTech_ECU_Mod
                     SetupShiftIndicator();
                     break;
             }
-            /*else if (currentPage == 7)
-            {
-                ecu_airride_logic.increaseAirride(true, true, -0.05f);
-            }
-            */
         }
 
         private void Pressed_Button_Cross()
@@ -879,11 +775,98 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        public void Init(InfoPanel infoPanel, DonnerTech_ECU_Mod mod, GameObject panel)
+        public void Init(InfoPanel infoPanel, DonnerTech_ECU_Mod mod, GameObject panel, AssetBundle assetBundle)
         {
             this.panel = panel;
             this.infoPanel = infoPanel;
             this.mod = mod;
+
+            TextMesh[] ecu_InfoPanel_TextMeshes = panel.GetComponentsInChildren<TextMesh>();
+            foreach (TextMesh textMesh in ecu_InfoPanel_TextMeshes)
+            {
+                switch (textMesh.name)
+                {
+                    case "displayGear":
+                        display_values.Add("value_gear", textMesh);
+                        break;
+                    case "displayKmH":
+                        display_values.Add("value_kmh", textMesh);
+                        break;
+                    case "displayKm":
+                        display_values.Add("value_km", textMesh);
+                        break;
+                }
+                for (int i = 1; i <= 16; i++)
+                {
+                    if (textMesh.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
+                    {
+                        display_values.Add("value_" + i, textMesh);
+                        continue;
+                    }
+                }
+                textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            }
+
+            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = panel.GetComponentsInChildren<SpriteRenderer>();
+            foreach (SpriteRenderer spriteRenderer in ecu_InfoPanel_SpriteRenderer)
+            {
+                switch (spriteRenderer.name)
+                {
+                    case "needle":
+                        ecu_InfoPanel_Needle = spriteRenderer;
+                        break;
+                    case "turbine":
+                        ecu_InfoPanel_TurboWheel = spriteRenderer;
+                        break;
+                    case "background":
+                        ecu_InfoPanel_Background = spriteRenderer;
+                        break;
+                    case "indicatorLeft":
+                        ecu_InfoPanel_IndicatorLeft = spriteRenderer;
+                        break;
+                    case "indicatorRight":
+                        ecu_InfoPanel_IndicatorRight = spriteRenderer;
+                        break;
+                    case "handbrake":
+                        ecu_InfoPanel_Handbrake = spriteRenderer;
+                        break;
+                    case "lowBeam":
+                        ecu_InfoPanel_LowBeam = spriteRenderer;
+                        break;
+                    case "highBeam":
+                        ecu_InfoPanel_HighBeam = spriteRenderer;
+                        break;
+                }
+                spriteRenderer.enabled = false;
+            }
+
+
+            needleSprite = assetBundle.LoadAsset<Sprite>("Rpm-Needle.png");
+            turbineWheelSprite = assetBundle.LoadAsset<Sprite>("TurbineWheel.png");
+
+            handbrakeSprite = assetBundle.LoadAsset<Sprite>("Handbrake-Icon.png");
+            blinkerLeftSprite = assetBundle.LoadAsset<Sprite>("Indicator-Left-Icon.png");
+            blinkerRightSprite = assetBundle.LoadAsset<Sprite>("Indicator-Right-Icon.png");
+            highBeamSprite = assetBundle.LoadAsset<Sprite>("HighBeam-Icon.png");
+            lowBeamSprite = assetBundle.LoadAsset<Sprite>("LowBeam-Icon.png");
+
+            LoadECU_PanelImageOverride();
+            InfoPanelBaseInfo infoPanelBaseInfo = new InfoPanelBaseInfo(mod, assetBundle, display_values, this);
+            pages = new List<InfoPanelPage>
+            {
+                new Main("main_page", ecu_InfoPanel_NeedleObject, infoPanelBaseInfo),
+                new Modules("modules_page", ecu_InfoPanel_NeedleObject, infoPanelBaseInfo),
+                new Faults("faults_page", infoPanelBaseInfo),
+                new Faults2("faults2_page", infoPanelBaseInfo),
+                new Turbocharger("turbocharger_page", ecu_InfoPanel_TurboWheelObject, infoPanelBaseInfo),
+                new Assistance("assistance_page", infoPanelBaseInfo),
+            };
+
+
+            if ((bool)mod.enableAirrideInfoPanelPage.Value)
+            {
+                pages.Add(new Airride("airride_page", infoPanelBaseInfo));
+            }
         }
 
         private AudioSource dashButtonAudioSource

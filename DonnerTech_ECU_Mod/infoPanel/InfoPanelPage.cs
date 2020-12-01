@@ -10,6 +10,20 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
 {
+    public class InfoPanelBaseInfo
+    {
+        public DonnerTech_ECU_Mod mod;
+        public AssetBundle assetBundle;
+        public Dictionary<string, TextMesh> display_values;
+        public InfoPanel_Logic logic;
+        public InfoPanelBaseInfo(DonnerTech_ECU_Mod mod, AssetBundle assetBundle, Dictionary<string, TextMesh> display_values, InfoPanel_Logic logic)
+        {
+            this.mod = mod;
+            this.assetBundle = assetBundle;
+            this.display_values = display_values;
+            this.logic = logic;
+        }
+    }
     public abstract class InfoPanelPage
     {
         public string pageName;
@@ -30,14 +44,15 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private const float needle_minAngle = 0;
         private const float needle_maxRPM = 9000;
 
-        public InfoPanelPage(DonnerTech_ECU_Mod mod, string pageName, Dictionary<string, TextMesh> display_values)
+        public InfoPanelPage(string pageName, InfoPanelBaseInfo infoPanelBaseInfo)
         {
             this.pageName = pageName;
-            this.mod = mod;
-            logic = mod.info_panel.logic;
-            this.display_values = display_values;
+            this.mod = infoPanelBaseInfo.mod;
+            this.display_values = infoPanelBaseInfo.display_values;
+            this.logic = infoPanelBaseInfo.logic;
+            AssetBundle assetBundle = infoPanelBaseInfo.assetBundle;
 
-            pageSprite = logic.assetBundle.LoadAsset<Sprite>(pageName + ".png");
+            pageSprite = assetBundle.LoadAsset<Sprite>(pageName + ".png");
             pageSprite = Helper.LoadNewSprite(pageSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + pageName + ".png"));
             satsuma = GameObject.Find("SATSUMA(557kg, 248)");
             satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
@@ -116,6 +131,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
                     return "DANGER";
             }
         }
+        //Change name to Percentage
         protected string ConvertFloatToPercantage(float min, float max, float value)
         {
             float calculatedPercentage = ((value - min) * 100) / (max - min);

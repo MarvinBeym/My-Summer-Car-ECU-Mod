@@ -39,7 +39,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private FsmBool carb_installed;
         private FsmFloat carbAdjust;
 
-        public Page4(string pageName, DonnerTech_ECU_Mod mod, Dictionary<string, TextMesh> display_values) : base(mod, pageName,  display_values)
+        public Page4(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,  infoPanelBaseInfo)
         {
 
             PlayMakerFSM rockershaftFSM = GameObject.Find("RockerShaft").GetComponent<PlayMakerFSM>();

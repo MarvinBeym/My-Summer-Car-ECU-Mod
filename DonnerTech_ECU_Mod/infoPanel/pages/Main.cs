@@ -38,7 +38,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         private Timer odometerUpdateTimer;
         private Timer voltageUpdateTimer;
 
-        public Main(string pageName, DonnerTech_ECU_Mod mod, GameObject needle, Dictionary<string, TextMesh> display_values): base(mod, pageName, display_values)
+        public Main(string pageName, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
         {
             this.needle = needle;
             needleUsed = true;
