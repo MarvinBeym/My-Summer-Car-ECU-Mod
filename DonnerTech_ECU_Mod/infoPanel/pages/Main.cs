@@ -56,7 +56,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             afRatioTwinCarb = twinCarb.FsmVariables.FindFsmFloat("IdleAdjust");
 
             GameObject dataBaseMechanics = GameObject.Find("Database/DatabaseMechanics");
-            PlayMakerFSM[] dataBaseMechanicsFSMs = dataBaseMechanics.GetComponentsInChildren<PlayMakerFSM>();
+            PlayMakerFSM[] dataBaseMechanicsFSMs = dataBaseMechanics.GetComponentsInChildren<PlayMakerFSM>(true);
 
             GameObject odometer = GameObject.Find("dashboard meters(Clone)/Gauges/Odometer");
             PlayMakerFSM odometerFSM = odometer.GetComponentInChildren<PlayMakerFSM>();

@@ -72,8 +72,8 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.8)
-         *  Fixed mod crashing caused by old file renamer tool
+        /*  Changelog (v1.4.9)
+         *  Fixed a big issue introduced in an older update that should have improved the loading of the info panel
          *  
          */
         /* BUGS/Need to fix
@@ -86,7 +86,7 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.8"; //Version
+        public override string Version => "1.4.9"; //Version
         public override bool UseAssetsFolder => true;
 
         SaveFileRenamer saveFileRenamer;

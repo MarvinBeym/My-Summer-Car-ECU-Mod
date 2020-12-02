@@ -45,7 +45,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             PlayMakerFSM sparkPlug2FSM = GameObject.Find("Sparkplug2").GetComponent<PlayMakerFSM>();
             PlayMakerFSM sparkPlug3FSM = GameObject.Find("Sparkplug3").GetComponent<PlayMakerFSM>();
             PlayMakerFSM sparkPlug4FSM = GameObject.Find("Sparkplug4").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM[] dataBaseMechanicsFSMs = GameObject.Find("Database/DatabaseMechanics").GetComponentsInChildren<PlayMakerFSM>();
+            PlayMakerFSM[] dataBaseMechanicsFSMs = GameObject.Find("Database/DatabaseMechanics").GetComponentsInChildren<PlayMakerFSM>(true);
             foreach (PlayMakerFSM fsm in dataBaseMechanicsFSMs)
             {
                 if (fsm.name == "FuelTank")

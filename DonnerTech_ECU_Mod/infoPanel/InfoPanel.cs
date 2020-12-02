@@ -23,13 +23,13 @@ namespace DonnerTech_ECU_Mod.infoPanel
             this.mod = mod;
             this.part = part;
 
-            TextMesh[] textMeshes = part.activePart.GetComponentsInChildren<TextMesh>();
+            TextMesh[] textMeshes = part.activePart.GetComponentsInChildren<TextMesh>(true);
             foreach (TextMesh textMesh in textMeshes)
             {
                 textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
             }
 
-            SpriteRenderer[] spriteRenderers = part.activePart.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] spriteRenderers = part.activePart.GetComponentsInChildren<SpriteRenderer>(true);
             foreach (SpriteRenderer spriteRenderer in spriteRenderers)
             {
                 spriteRenderer.enabled = false;
@@ -56,14 +56,14 @@ namespace DonnerTech_ECU_Mod.infoPanel
                 }
                 if (!workaroundChildDisableDone)
                 {
-                    TextMesh[] textMeshes = part.activePart.GetComponentsInChildren<TextMesh>();
+                    TextMesh[] textMeshes = part.activePart.GetComponentsInChildren<TextMesh>(true);
                     foreach (TextMesh textMesh in textMeshes)
                     {
                         textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
                     }
 
 
-                    SpriteRenderer[] spriteRenderers = part.activePart.GetComponentsInChildren<SpriteRenderer>();
+                    SpriteRenderer[] spriteRenderers = part.activePart.GetComponentsInChildren<SpriteRenderer>(true);
                     foreach (SpriteRenderer spriteRenderer in spriteRenderers)
                     {
                         spriteRenderer.enabled = false;

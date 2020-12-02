@@ -781,7 +781,7 @@ namespace DonnerTech_ECU_Mod
             this.infoPanel = infoPanel;
             this.mod = mod;
 
-            TextMesh[] ecu_InfoPanel_TextMeshes = panel.GetComponentsInChildren<TextMesh>();
+            TextMesh[] ecu_InfoPanel_TextMeshes = panel.GetComponentsInChildren<TextMesh>(true);
             foreach (TextMesh textMesh in ecu_InfoPanel_TextMeshes)
             {
                 switch (textMesh.name)
@@ -807,7 +807,7 @@ namespace DonnerTech_ECU_Mod
                 textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
             }
 
-            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = panel.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] ecu_InfoPanel_SpriteRenderer = panel.GetComponentsInChildren<SpriteRenderer>(true);
             foreach (SpriteRenderer spriteRenderer in ecu_InfoPanel_SpriteRenderer)
             {
                 switch (spriteRenderer.name)
