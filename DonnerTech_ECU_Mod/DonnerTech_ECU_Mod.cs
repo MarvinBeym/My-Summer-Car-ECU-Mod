@@ -72,14 +72,9 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.7)
-         *  Removed leftover testing code for Logger
-         *  Improved loading
-         *  Fixed small issues & stuff that could cause errors sometimes. 
-         *  Fixed issue with chips resetting to their spawn position
-         *  Added save files for fuel system to the old file renamer tool. => .txt save files will now also be renamed to .json
-         *  Improved old file renamer tool with incrementing file extension with number if the file already exists in the backup folder
-
+        /*  Changelog (v1.4.8)
+         *  Fixed mod crashing caused by old file renamer tool
+         *  
          */
         /* BUGS/Need to fix
          * WARNING: both twincarb and fuel injection manifold can be installed (twincarb und carb trigger shold be disabled when anyInstalled
@@ -91,7 +86,7 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.7"; //Version
+        public override string Version => "1.4.8"; //Version
         public override bool UseAssetsFolder => true;
 
         SaveFileRenamer saveFileRenamer;
