@@ -9,11 +9,8 @@ namespace DonnerTech_ECU_Mod.old_file_checker
 {
     public class OverrideFileRenamer : OldFileRenamer
     {
-        DonnerTech_ECU_Mod mod;
-        public OverrideFileRenamer(DonnerTech_ECU_Mod mod) : base(mod)
+        public OverrideFileRenamer(Mod mod, int guiWidth) : base(mod, guiWidth)
         {
-            this.mod = mod;
-
             oldToNew.Add("OVERRIDE_ECU-Mod-Panel-Page0.png", "OVERRIDE_main_page.png");
             oldToNew.Add("OVERRIDE_ECU-Mod-Panel_Modules-Page1.png", "OVERRIDE_modules_page.png");
             oldToNew.Add("OVERRIDE_ECU-Mod-Panel_Faults-Page2.png", "OVERRIDE_faults_page.png");

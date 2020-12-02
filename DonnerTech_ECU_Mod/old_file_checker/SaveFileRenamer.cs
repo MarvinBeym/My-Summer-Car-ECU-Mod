@@ -1,6 +1,8 @@
-﻿using MSCLoader;
+﻿using DonnerTech_ECU_Mod.fuelsystem;
+using MSCLoader;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -9,10 +11,8 @@ namespace DonnerTech_ECU_Mod.old_file_checker
 {
     public class SaveFileRenamer: OldFileRenamer
     {
-        private DonnerTech_ECU_Mod mod;
-        public SaveFileRenamer(DonnerTech_ECU_Mod mod) : base(mod)
+        public SaveFileRenamer(Mod mod, int guiWidth) : base(mod, guiWidth)
         {
-            this.mod = mod;
             oldToNew.Add("ecu_mod_ABSModule_partSave.txt", "abs_module_saveFile.json");
             oldToNew.Add("ecu_mod_ESPModule_partSave.txt", "esp_module_saveFile.json");
             oldToNew.Add("ecu_mod_TCSModule_partSave.txt", "tcs_module_saveFile.json");
@@ -38,6 +38,16 @@ namespace DonnerTech_ECU_Mod.old_file_checker
             oldToNew.Add("reverse_camera_saveFile.txt", "reverse_camera_saveFile.json");
             oldToNew.Add("rain_light_sensor_board_saveFile.txt", "rain_light_sensor_board_saveFile.json");
             oldToNew.Add("screwable_saveFile.txt", "screwable_saveFile.json");
+
+            oldToNew.Add("fuelSystem\\original_parts_saveFile.txt", "fuelSystem\\original_parts_saveFile.json");
+            string fuel_system_savePath = Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", "chips" });
+            string[] fuelSystemChipSaveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*_saveFile.txt");
+            foreach(string saveFilePathFull in fuelSystemChipSaveFiles)
+            {
+                string saveFilePath = Helper.CombinePaths(new string[] { "fuelSystem", "chips", Path.GetFileName(saveFilePathFull) });
+                oldToNew.Add(saveFilePath, saveFilePath.Replace(".txt", ".json"));
+            }
+
             RenameOldFiles(ModLoader.GetModConfigFolder(mod), oldToNew);
         }
     }

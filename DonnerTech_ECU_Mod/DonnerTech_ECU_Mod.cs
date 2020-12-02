@@ -77,6 +77,8 @@ namespace DonnerTech_ECU_Mod
          *  Improved loading
          *  Fixed small issues & stuff that could cause errors sometimes. 
          *  Fixed issue with chips resetting to their spawn position
+         *  Added save files for fuel system to the old file renamer tool. => .txt save files will now also be renamed to .json
+         *  Improved old file renamer tool with incrementing file extension with number if the file already exists in the backup folder
 
          */
         /* BUGS/Need to fix
@@ -420,8 +422,8 @@ namespace DonnerTech_ECU_Mod
             Helper.SetObjectNameTagLayer(wires_sparkPlugs1_gameObject, "wires_sparkPlugs1");
             Helper.SetObjectNameTagLayer(wires_sparkPlugs2_gameObject, "wires_sparkPlugs2");
 
-            saveFileRenamer = new SaveFileRenamer(this);
-            overrideFileRenamer = new OverrideFileRenamer(this);
+            saveFileRenamer = new SaveFileRenamer(this, 900);
+            overrideFileRenamer = new OverrideFileRenamer(this, 900);
 
             SortedList<String, Screws> screwListSave = ScrewablePart.LoadScrews(this, screwable_saveFile);
 
