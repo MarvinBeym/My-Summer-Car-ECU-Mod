@@ -76,6 +76,7 @@ namespace DonnerTech_ECU_Mod
          *  Removed leftover testing code for Logger
          *  Improved loading
          *  Fixed small issues & stuff that could cause errors sometimes. 
+         *  Fixed issue with chips resetting to their spawn position
 
          */
         /* BUGS/Need to fix
@@ -272,14 +273,14 @@ namespace DonnerTech_ECU_Mod
             });
             fuel_system.chip_parts.ForEach(delegate (ChipPart chip)
             {
-                SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.fuelMap_saveFile);
+                SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.mapSaveFile);
                 SaveLoad.SerializeSaveFile<PartSaveInfo>(this, null, chip.saveFile);
             });
             SaveLoad.SerializeSaveFile<Dictionary<string, bool>>(this, null, modsShop_saveFile);
         }
         public override void OnLoad()
         {
-            ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " started loading");
+            ModConsole.Print(this.Name + $" [v{this.Version} | Screwable v{ScrewablePart.apiVersion}] started loading");
             Logger.InitLogger(this, logger_saveFile, 100);
 
             turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
@@ -288,12 +289,6 @@ namespace DonnerTech_ECU_Mod
                 //new GuiButtonElement("DEBUG"),
                 new GuiButtonElement("Cruise control"),
             });
-
-            if (!ModLoader.CheckSteam())
-            {
-                ModUI.ShowMessage("Cunt", "CUNT");
-                ModConsole.Print("Cunt detected");
-            }
 
             resetPosSetting.DoAction = PosReset;
             toggleAWD.DoAction = ToggleAWD;
@@ -828,8 +823,8 @@ namespace DonnerTech_ECU_Mod
             UnityEngine.Object.Destroy(throttle_body);
 
             playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
-            
-            ModConsole.Print("DonnerTechRacing ECUs Mod [ v" + this.Version + "]" + " finished loading");
+
+            ModConsole.Print(this.Name + $" [v{this.Version} | Screwable v{ScrewablePart.apiVersion}] finished loading");
         }
 
         public void SetReverseCameraEnabled(bool enabled)
@@ -934,7 +929,7 @@ namespace DonnerTech_ECU_Mod
                 fuel_system.chip_parts.ForEach(delegate (ChipPart chip)
                 {
 
-                    SaveLoad.SerializeSaveFile<ChipSave>(this, chip.chipSave, chip.fuelMap_saveFile);
+                    SaveLoad.SerializeSaveFile<ChipSave>(this, chip.chipSave, chip.mapSaveFile);
                     SaveLoad.SerializeSaveFile<PartSaveInfo>(this, chip.getSaveInfo(), chip.saveFile);
                 });
             }

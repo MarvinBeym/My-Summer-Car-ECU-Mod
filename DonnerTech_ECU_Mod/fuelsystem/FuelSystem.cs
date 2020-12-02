@@ -328,30 +328,30 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         {
             string fuel_system_savePath = Helper.CreatePathIfNotExists(Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", "chips" }));
 
-            string[] chip_saveFiles = Directory.GetFiles(fuel_system_savePath, "chip*_saveFile.json", SearchOption.AllDirectories);
-            string[] chip_map_saveFiles = Directory.GetFiles(fuel_system_savePath, "chip*.fuelmap", SearchOption.AllDirectories);
+            string[] saveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*_saveFile.json");
+            string[] mapSaveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*.fuelmap");
 
-            if (chip_saveFiles.Length != chip_map_saveFiles.Length)
+            if (saveFiles.Length != mapSaveFiles.Length)
             {
-                Logger.New("Chip part save and map save do not match. Atleast one or more files are missing.", $"save files found: {chip_saveFiles.Length} | chip map files found: {chip_map_saveFiles.Length}");
+                Logger.New("Chip part save and map save do not match. Atleast one or more files are missing.", $"save files found: {saveFiles.Length} | chip map files found: {mapSaveFiles.Length}");
                 return;
             }
-            for (int i = 0; i < chip_saveFiles.Length; i++)
+            for (int i = 0; i < saveFiles.Length; i++)
             {
-                string chip_part_saveFile_fullPath = chip_saveFiles[i];
-                string chip_map_saveFile_fullPath = chip_map_saveFiles[i];
+                string saveFullPath = saveFiles[i];
+                string mapFullPath = mapSaveFiles[i];
 
-                string chip_part_saveFile = Helper.CombinePaths(new string[] { "fuelSystem", "chips", Path.GetFileName(chip_part_saveFile_fullPath) });
-                string chip_map_saveFile = Helper.CombinePaths(new string[] { "fuelSystem", "chips", Path.GetFileName(chip_map_saveFile_fullPath) });
+                string saveFile = Helper.CombinePaths(new string[] { "fuelSystem", "chips", Path.GetFileName(saveFullPath) });
+                string mapSaveFile = Helper.CombinePaths(new string[] { "fuelSystem", "chips", Path.GetFileName(mapFullPath) });
 
                 GameObject chip = GameObject.Instantiate(mod.chip);
 
                 Helper.SetObjectNameTagLayer(chip, "Chip" + i);
 
-                ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, chip_map_saveFile);
+                ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, mapSaveFile);
 
                 ChipPart chip_part = new ChipPart(
-                    SimplePart.LoadData(mod, "chip" + i, null),
+                    SimplePart.LoadData(mod, fuel_system_savePath + "\\chip" + i, null),
                     chip,
                     mod.smart_engine_module_part.rigidPart,
                     chip_installLocation,
@@ -361,8 +361,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
                 chip_part.chipSave = chipSave;
 
-                chip_part.fuelMap_saveFile = chip_map_saveFile;
-                chip_part.saveFile = chip_part_saveFile;
+                chip_part.mapSaveFile = mapSaveFile;
+                chip_part.saveFile = saveFile;
                 chip_parts.Add(chip_part);
             }
         }
@@ -371,11 +371,11 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         {
             try
             {
-                SaveLoad.SerializeSaveFile<ChipSave>(mod, part.chipSave, part.fuelMap_saveFile);
+                SaveLoad.SerializeSaveFile<ChipSave>(mod, part.chipSave, part.mapSaveFile);
             }
             catch (Exception ex)
             {
-                Logger.New("Unable to save chips, there was an error while trying to save the chip", $"save file: {part.fuelMap_saveFile}", ex);
+                Logger.New("Unable to save chips, there was an error while trying to save the chip", $"save file: {part.mapSaveFile}", ex);
             }
         }
 

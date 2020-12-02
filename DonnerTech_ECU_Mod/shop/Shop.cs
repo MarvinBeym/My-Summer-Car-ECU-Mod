@@ -75,7 +75,7 @@ namespace DonnerTech_ECU_Mod
                     new Quaternion { eulerAngles = mod.fuel_system.chip_installRotation }
                 );
                 chip_part.SetDisassembleFunction(new Action(mod.fuel_system.DisassembleChip));
-                chip_part.fuelMap_saveFile = fuelMap_saveFile;
+                chip_part.mapSaveFile = fuelMap_saveFile;
                 chip_part.chipSave = new ChipSave();
                 chip_part.saveFile = saveFile;
                 mod.fuel_system.chip_parts.Add(chip_part);

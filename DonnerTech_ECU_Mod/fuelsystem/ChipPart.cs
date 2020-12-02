@@ -12,7 +12,7 @@ namespace DonnerTech_ECU_Mod
 {
     public class ChipPart : SimplePart
     {
-        public string fuelMap_saveFile { get; set; }
+        public string mapSaveFile { get; set; }
         public ChipSave chipSave { get; set; }
         public bool chipInstalledOnProgrammer { get; set; }
         public ChipPart(List<Object> loadedData, GameObject part, GameObject partParent, Vector3 installLocation, Quaternion installRotation) : base(loadedData, part, partParent, installLocation, installRotation)
