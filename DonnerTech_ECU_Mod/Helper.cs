@@ -109,12 +109,12 @@ namespace DonnerTech_ECU_Mod
 
         }
         public static void WorkAroundAction() { }
-        public static GameObject SetObjectNameTagLayer(GameObject gameObject, string name)
+        public static GameObject SetObjectNameTagLayer(GameObject gameObject, string name, string layer = "Parts", string tag = "PART")
         {
             gameObject.name = name;
-            gameObject.tag = "PART";
+            gameObject.tag = tag;
 
-            gameObject.layer = LayerMask.NameToLayer("Parts");
+            gameObject.layer = LayerMask.NameToLayer(layer);
             return gameObject;
         }
         public static string CombinePaths(params string[] paths)

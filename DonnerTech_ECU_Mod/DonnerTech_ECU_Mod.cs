@@ -72,8 +72,9 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.9)
-         *  Fixed a big issue introduced in an older update that should have improved the loading of the info panel
+        /*  Changelog (v1.4.10)
+         *  Improved BugReporter tool
+
          *  
          */
         /* BUGS/Need to fix
@@ -86,7 +87,7 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.9"; //Version
+        public override string Version => "1.4.10"; //Version
         public override bool UseAssetsFolder => true;
 
         SaveFileRenamer saveFileRenamer;
@@ -95,6 +96,8 @@ namespace DonnerTech_ECU_Mod
         public AssetBundle screwableassetBundle;
         public GuiDebug guiDebug;
         public bool turboModInstalled = false;
+
+        public BugReporter.BugReporter bugReporter;
 
         //Keybinds
         public Keybind highestKeybind = new Keybind("airride_highest", "Airride Highest", KeyCode.LeftArrow);
@@ -301,11 +304,17 @@ namespace DonnerTech_ECU_Mod
             reports.Add(new BugReporter.Report("Mod Settings", new string[] { ModLoader.GetModConfigFolder(this) }, true));
             reports.Add(new BugReporter.Report("ModLoader Output", new string[] { Helper.CombinePaths(new string[] { Path.GetFullPath("."), "mysummercar_Data", "output_log.txt" }) }));
 
-            BugReporter.Report gameSave_report = new BugReporter.Report("MSC Savegame");
-            gameSave_report.files = Directory.GetFiles(Path.GetFullPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"..\LocalLow\Amistech\My Summer Car\")));
+            BugReporter.Report gameSave_report = new BugReporter.Report("MSC Savegame", 
+                Directory.GetFiles(
+                    Path.GetFullPath(
+                        Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+                            @"..\LocalLow\Amistech\My Summer Car\")
+                        )
+                    ));
 
             reports.Add(gameSave_report);
-            BugReporter.BugReporter bugReporter = new BugReporter.BugReporter(this, reports);
+            bugReporter = new BugReporter.BugReporter(this, reports, true);
 
             Keybind.AddHeader(this, "ECU-Panel Keybinds");
             Keybind.Add(this, arrowUp);
@@ -963,6 +972,7 @@ namespace DonnerTech_ECU_Mod
         
         public override void OnGUI()
         {
+            bugReporter.HandleDescriptionGui();
             saveFileRenamer.GuiHandler();
             overrideFileRenamer.GuiHandler();
 
