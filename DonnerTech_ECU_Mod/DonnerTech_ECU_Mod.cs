@@ -72,9 +72,8 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.10)
-         *  Improved BugReporter tool
-
+        /*  Changelog (v1.4.11)
+         *  Fixed rpm needle and turbine wheel not working/moving
          *  
          */
         /* BUGS/Need to fix
@@ -87,7 +86,7 @@ namespace DonnerTech_ECU_Mod
         public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
         public override string Name => "DonnerTechRacing ECUs"; //You mod name
         public override string Author => "DonnerPlays"; //Your Username
-        public override string Version => "1.4.10"; //Version
+        public override string Version => "1.4.11"; //Version
         public override bool UseAssetsFolder => true;
 
         SaveFileRenamer saveFileRenamer;

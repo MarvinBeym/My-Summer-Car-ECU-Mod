@@ -129,15 +129,7 @@ namespace DonnerTech_ECU_Mod
             {
                 Logger.New("CarController could not be found on satsuma", ex);
             }
-
-            ecu_InfoPanel_NeedleObject = panel.transform.FindChild("needle").gameObject;
-            ecu_InfoPanel_TurboWheelObject = panel.transform.FindChild("turbine").gameObject;
-            ecu_InfoPanel_Display_Reverse_Camera = panel.transform.FindChild("reverseCamera").GetComponent<MeshRenderer>();
-            ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
-
             
-            shift_indicator_renderer = panel.transform.FindChild("shiftIndicator").GetComponent<MeshRenderer>();
-            SetupShiftIndicator();
             try
             {
                 turnSignals = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
@@ -775,9 +767,9 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        public void Init(InfoPanel infoPanel, DonnerTech_ECU_Mod mod, GameObject panel, AssetBundle assetBundle)
+        public void Init(InfoPanel infoPanel, DonnerTech_ECU_Mod mod, AssetBundle assetBundle)
         {
-            this.panel = panel;
+            panel = this.gameObject;
             this.infoPanel = infoPanel;
             this.mod = mod;
 
@@ -840,6 +832,14 @@ namespace DonnerTech_ECU_Mod
                 spriteRenderer.enabled = false;
             }
 
+            ecu_InfoPanel_NeedleObject = panel.transform.FindChild("needle").gameObject;
+            ecu_InfoPanel_TurboWheelObject = panel.transform.FindChild("turbine").gameObject;
+            ecu_InfoPanel_Display_Reverse_Camera = panel.transform.FindChild("reverseCamera").GetComponent<MeshRenderer>();
+            ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
+            
+
+            shift_indicator_renderer = panel.transform.FindChild("shiftIndicator").GetComponent<MeshRenderer>();
+            SetupShiftIndicator();
 
             needleSprite = assetBundle.LoadAsset<Sprite>("Rpm-Needle.png");
             turbineWheelSprite = assetBundle.LoadAsset<Sprite>("TurbineWheel.png");
