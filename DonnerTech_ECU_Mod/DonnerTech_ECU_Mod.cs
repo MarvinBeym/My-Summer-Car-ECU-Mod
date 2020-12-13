@@ -72,8 +72,8 @@ namespace DonnerTech_ECU_Mod
          *  Save all information in single file/object
          */
 
-        /*  Changelog (v1.4.11)
-         *  Fixed rpm needle and turbine wheel not working/moving
+        /*  Changelog (v1.4.12)
+         *  Improved debug gui
          *  
          */
         /* BUGS/Need to fix
@@ -94,6 +94,7 @@ namespace DonnerTech_ECU_Mod
         public AssetBundle assetBundle;
         public AssetBundle screwableassetBundle;
         public GuiDebug guiDebug;
+        public GuiDebug2 guiDebug2;
         public bool turboModInstalled = false;
 
         public BugReporter.BugReporter bugReporter;
@@ -287,6 +288,13 @@ namespace DonnerTech_ECU_Mod
             {
                 //new GuiButtonElement("DEBUG"),
                 new GuiButtonElement("Cruise control"),
+            });
+            guiDebug2 = new GuiDebug2(20, 20, 250, "ECU MOD DEBUG", new GuiDebug2Window[] {
+                new GuiDebug2Window("Cruise control"),
+                new GuiDebug2Window("Test 2"),
+                new GuiDebug2Window("Test 2"),
+                new GuiDebug2Window("Test 3"),
+                new GuiDebug2Window("Test 4"),
             });
 
             resetPosSetting.DoAction = PosReset;
@@ -977,22 +985,23 @@ namespace DonnerTech_ECU_Mod
 
             if ((bool)debugGuiSetting.Value)
             {
-                guiDebug.Handle(new List<GuiInfo> {
-                    new GuiInfo("Cruise control", "true = correct value for cruise control to work", ""),
-                    new GuiInfo("Cruise control", "false = conition needed to have cruise control working", ""),
-                    new GuiInfo("Cruise control", "Gear not R", (satsumaDriveTrain.gear != 0).ToString()),
-                    new GuiInfo("Cruise control", "cruise panel installed", cruise_control_panel_part.installed.ToString()),
-                    new GuiInfo("Cruise control", "cruise control enabled", cruiseControlModuleEnabled.ToString()),
-                    new GuiInfo("Cruise control", "mounting plate installed", mounting_plate_part.InstalledScrewed().ToString()),
-                    new GuiInfo("Cruise control", "smart engine module installed", smart_engine_module_part.InstalledScrewed().ToString()),
-                    new GuiInfo("Cruise control", "not on throttle", (satsumaCarController.throttleInput <= 0f).ToString()),
-                    new GuiInfo("Cruise control", "speed above 20km/h", (satsumaDriveTrain.differentialSpeed >= 20f).ToString()),
-                    new GuiInfo("Cruise control", "brake not pressed", (!satsumaCarController.brakeKey).ToString()),
-                    new GuiInfo("Cruise control", "clutch not pressed", (!cInput.GetKey("Clutch")).ToString()),
-                    new GuiInfo("Cruise control", "handbrake not pressed", (satsumaCarController.handbrakeInput <= 0f).ToString()),
-                    new GuiInfo("Cruise control", "set cruise control speed", setCruiseControlSpeed.ToString()),
-                    new GuiInfo("Cruise control", "car electricity on", hasPower.ToString()),
-                    new GuiInfo("Cruise control", "current speed", satsumaDriveTrain.differentialSpeed.ToString()),
+                guiDebug2.Handle(new GuiDebugInfo[]
+                {
+                    new GuiDebugInfo("Cruise control", "true = correct value for cruise control to work"),
+                    new GuiDebugInfo("Cruise control", "false = conition needed to have cruise control working", ""),
+                    new GuiDebugInfo("Cruise control", "Gear not R", (satsumaDriveTrain.gear != 0).ToString()),
+                    new GuiDebugInfo("Cruise control", "cruise panel installed", cruise_control_panel_part.installed.ToString()),
+                    new GuiDebugInfo("Cruise control", "cruise control enabled", cruiseControlModuleEnabled.ToString()),
+                    new GuiDebugInfo("Cruise control", "mounting plate installed", mounting_plate_part.InstalledScrewed().ToString()),
+                    new GuiDebugInfo("Cruise control", "smart engine module installed", smart_engine_module_part.InstalledScrewed().ToString()),
+                    new GuiDebugInfo("Cruise control", "not on throttle", (satsumaCarController.throttleInput <= 0f).ToString()),
+                    new GuiDebugInfo("Cruise control", "speed above 20km/h", (satsumaDriveTrain.differentialSpeed >= 20f).ToString()),
+                    new GuiDebugInfo("Cruise control", "brake not pressed", (!satsumaCarController.brakeKey).ToString()),
+                    new GuiDebugInfo("Cruise control", "clutch not pressed", (!cInput.GetKey("Clutch")).ToString()),
+                    new GuiDebugInfo("Cruise control", "handbrake not pressed", (satsumaCarController.handbrakeInput <= 0f).ToString()),
+                    new GuiDebugInfo("Cruise control", "set cruise control speed", setCruiseControlSpeed.ToString()),
+                    new GuiDebugInfo("Cruise control", "car electricity on", hasPower.ToString()),
+                    new GuiDebugInfo("Cruise control", "current speed", satsumaDriveTrain.differentialSpeed.ToString()),
                 });
             }
         }

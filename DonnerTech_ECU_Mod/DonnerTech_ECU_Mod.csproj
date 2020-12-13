@@ -92,6 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CruiseControl_Logic.cs" />
+    <Compile Include="gui\GuiDebug2.cs" />
+    <Compile Include="gui\GuiDebug2Window.cs" />
+    <Compile Include="gui\GuiDebugInfo.cs" />
     <Compile Include="shop\BoxLogic.cs" />
     <Compile Include="fuelsystem\ChipPart.cs" />
     <Compile Include="fuelsystem\ChipProgrammer.cs" />
