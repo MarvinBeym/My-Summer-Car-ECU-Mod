@@ -8,19 +8,24 @@ namespace DonnerTech_ECU_Mod.gui
 {
     public class GuiDebugInfo
     {
-        internal string debugWindowName;
+        internal string elementName;
         private string description;
         private string value;
         private bool isLabel = false;
-        public GuiDebugInfo(string debugWindowName, string description, string value)
+        private GUIStyle valueStyle;
+        public GuiDebugInfo(string elementName, string description, string value)
         {
-            this.debugWindowName = debugWindowName;
+            this.elementName = elementName;
             this.description = description;
             this.value = value;
+            valueStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleRight,
+            };
         }
-        public GuiDebugInfo(string debugWindowName, string description)
+        public GuiDebugInfo(string elementName, string description)
         {
-            this.debugWindowName = debugWindowName;
+            this.elementName = elementName;
             this.description = description;
             isLabel = true;
         }
@@ -32,7 +37,13 @@ namespace DonnerTech_ECU_Mod.gui
                 GUILayout.Label(description);
                 return;
             }
-            GUILayout.Label($"{description}: {value}");
+            GUILayout.BeginHorizontal();
+
+            GUILayout.Label(description);
+            GUILayout.BeginVertical("box");
+            GUILayout.Label(value, valueStyle);
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
         }
     }
 }

@@ -94,7 +94,7 @@ namespace DonnerTech_ECU_Mod
         public AssetBundle assetBundle;
         public AssetBundle screwableassetBundle;
         public GuiDebug guiDebug;
-        public GuiDebug2 guiDebug2;
+        public GuiDebug guiDebug2;
         public bool turboModInstalled = false;
 
         public BugReporter.BugReporter bugReporter;
@@ -284,17 +284,8 @@ namespace DonnerTech_ECU_Mod
             Logger.InitLogger(this, logger_saveFile, 100);
 
             turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
-            guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 260 - 260 : Screen.width - 260, 50, 250, "ECU MOD DEBUG", new List<GuiButtonElement>()
-            {
-                //new GuiButtonElement("DEBUG"),
-                new GuiButtonElement("Cruise control"),
-            });
-            guiDebug2 = new GuiDebug2(20, 20, 250, "ECU MOD DEBUG", new GuiDebug2Window[] {
-                new GuiDebug2Window("Cruise control"),
-                new GuiDebug2Window("Test 2"),
-                new GuiDebug2Window("Test 2"),
-                new GuiDebug2Window("Test 3"),
-                new GuiDebug2Window("Test 4"),
+            guiDebug2 = new GuiDebug(turboModInstalled ? Screen.width - 260 - 260 : Screen.width - 260, 50, 300, "ECU MOD DEBUG", new GuiDebugElement[] {
+                new GuiDebugElement("Cruise control"),
             });
 
             resetPosSetting.DoAction = PosReset;
@@ -987,8 +978,8 @@ namespace DonnerTech_ECU_Mod
             {
                 guiDebug2.Handle(new GuiDebugInfo[]
                 {
-                    new GuiDebugInfo("Cruise control", "true = correct value for cruise control to work"),
-                    new GuiDebugInfo("Cruise control", "false = conition needed to have cruise control working", ""),
+                    new GuiDebugInfo("Cruise control", "true = Good"),
+                    new GuiDebugInfo("Cruise control", "false = Bad (cruise control won't work)"),
                     new GuiDebugInfo("Cruise control", "Gear not R", (satsumaDriveTrain.gear != 0).ToString()),
                     new GuiDebugInfo("Cruise control", "cruise panel installed", cruise_control_panel_part.installed.ToString()),
                     new GuiDebugInfo("Cruise control", "cruise control enabled", cruiseControlModuleEnabled.ToString()),

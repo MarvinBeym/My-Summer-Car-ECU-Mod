@@ -6,28 +6,28 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.gui
 {
-    public class GuiDebug2Window
+    public class GuiDebugElement
     {
-        private string buttonText;
-        private bool windowEnabled = false;
-        public GuiDebug2Window(string buttonText)
+        private string elementName;
+        private bool elementEnabled = false;
+        public GuiDebugElement(string elementName)
         {
-            this.buttonText = buttonText;
+            this.elementName = elementName;
         }
 
         public void Handle(GuiDebugInfo[] debugInfos)
         {
-            if (GUILayout.Button(buttonText))
+            if (GUILayout.Button(elementName))
             {
-                windowEnabled = !windowEnabled;
+                elementEnabled = !elementEnabled;
             }
 
-            if (windowEnabled)
+            if (elementEnabled)
             {
                 GUILayout.BeginVertical("", "box", GUILayout.ExpandHeight(false));
                 foreach(GuiDebugInfo debugInfo in debugInfos)
                 {
-                    if(debugInfo.debugWindowName == buttonText)
+                    if(debugInfo.elementName == elementName)
                     {
                         debugInfo.Handle();
                     }

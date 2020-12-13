@@ -92,8 +92,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CruiseControl_Logic.cs" />
-    <Compile Include="gui\GuiDebug2.cs" />
-    <Compile Include="gui\GuiDebug2Window.cs" />
+    <Compile Include="gui\GuiDebug.cs" />
+    <Compile Include="gui\GuiDebugElement.cs" />
     <Compile Include="gui\GuiDebugInfo.cs" />
     <Compile Include="shop\BoxLogic.cs" />
     <Compile Include="fuelsystem\ChipPart.cs" />
@@ -105,9 +105,6 @@
     <Compile Include="fuelsystem\OriginalPart.cs" />
     <Compile Include="fuelsystem\OriginalPartsSave.cs" />
     <Compile Include="fuelsystem\SparkAngleInputForce.cs" />
-    <Compile Include="gui\GuiButtonElement.cs" />
-    <Compile Include="gui\GuiDebug.cs" />
-    <Compile Include="gui\GuiInfo.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="infoPanel\InfoPanel.cs" />
     <Compile Include="infoPanel\InfoPanelPage.cs" />
