@@ -13,20 +13,27 @@ namespace DonnerTech_ECU_Mod.gui
         private string value;
         private bool isLabel = false;
         private GUIStyle valueStyle;
+        private GUIStyle descriptionStyle;
         public GuiDebugInfo(string elementName, string description, string value)
         {
             this.elementName = elementName;
             this.description = description;
             this.value = value;
+            RectOffset padding = new RectOffset(10, 10, 0, 0);
             valueStyle = new GUIStyle(GUI.skin.label)
             {
                 alignment = TextAnchor.MiddleRight,
+                padding = padding,
+            };
+            descriptionStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleLeft,
+                padding = padding,
             };
         }
-        public GuiDebugInfo(string elementName, string description)
+
+        public GuiDebugInfo(string elementName, string description) : this(elementName, description, "")
         {
-            this.elementName = elementName;
-            this.description = description;
             isLabel = true;
         }
 
@@ -34,13 +41,13 @@ namespace DonnerTech_ECU_Mod.gui
         {
             if (isLabel)
             {
-                GUILayout.Label(description);
+                GUILayout.Label(description, descriptionStyle);
                 return;
             }
             GUILayout.BeginHorizontal();
 
-            GUILayout.Label(description);
-            GUILayout.BeginVertical("box");
+            GUILayout.Label(description, descriptionStyle);
+            GUILayout.BeginVertical("box", GUILayout.Width(100));
             GUILayout.Label(value, valueStyle);
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();

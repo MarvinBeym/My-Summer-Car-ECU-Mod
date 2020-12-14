@@ -94,7 +94,6 @@ namespace DonnerTech_ECU_Mod
         public AssetBundle assetBundle;
         public AssetBundle screwableassetBundle;
         public GuiDebug guiDebug;
-        public GuiDebug guiDebug2;
         public bool turboModInstalled = false;
 
         public BugReporter.BugReporter bugReporter;
@@ -284,7 +283,7 @@ namespace DonnerTech_ECU_Mod
             Logger.InitLogger(this, logger_saveFile, 100);
 
             turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
-            guiDebug2 = new GuiDebug(turboModInstalled ? Screen.width - 260 - 260 : Screen.width - 260, 50, 300, "ECU MOD DEBUG", new GuiDebugElement[] {
+            guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 310 - 310 : Screen.width - 310, 50, 300, "ECU MOD DEBUG", new GuiDebugElement[] {
                 new GuiDebugElement("Cruise control"),
             });
 
@@ -976,7 +975,7 @@ namespace DonnerTech_ECU_Mod
 
             if ((bool)debugGuiSetting.Value)
             {
-                guiDebug2.Handle(new GuiDebugInfo[]
+                guiDebug.Handle(new GuiDebugInfo[]
                 {
                     new GuiDebugInfo("Cruise control", "true = Good"),
                     new GuiDebugInfo("Cruise control", "false = Bad (cruise control won't work)"),
