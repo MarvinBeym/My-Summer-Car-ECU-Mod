@@ -4,6 +4,7 @@ using HutongGames.PlayMaker;
 using ScrewablePartAPI;
 using System;
 using ModApi;
+using Tools;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -28,12 +29,6 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-
-        //Car
-        private GameObject satsuma;
-        private Drivetrain satsumaDriveTrain;
-        private CarController satsumaCarController;
-
         private RaycastHit hit;
 
         //Cruise control
@@ -54,48 +49,44 @@ namespace DonnerTech_ECU_Mod
                 }
             }
 
-            satsuma = GameObject.Find("SATSUMA(557kg, 248)");
-            satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-            satsumaCarController = satsuma.GetComponent<CarController>();
-
             cruiseControlPanel = this.gameObject;
             cruiseControlText = cruiseControlPanel.GetComponentInChildren<TextMesh>();
         }
 
         void Update()
         {
-            if (mod.hasPower && allPartsInstalled && mod.playerCurrentVehicle.Value == "Satsuma")
+            if (CarH.hasPower && allPartsInstalled && mod.playerCurrentVehicle.Value == "Satsuma")
             {
                 HandleButtonPresses();
 
                 SetCruiseControlSpeedText(setCruiseControlSpeed.ToString());
-                if (satsumaDriveTrain.gear != 0 && cruiseControlModuleEnabled && satsumaCarController.throttleInput <= 0f)
+                if (CarH.drivetrain.gear != 0 && cruiseControlModuleEnabled && CarH.carController.throttleInput <= 0f)
                 {
                     float valueToThrottle = 0f;
-                    if (satsumaDriveTrain.differentialSpeed >= (setCruiseControlSpeed - 0.5) && satsumaDriveTrain.differentialSpeed <= (setCruiseControlSpeed + 0.5))
+                    if (CarH.drivetrain.differentialSpeed >= (setCruiseControlSpeed - 0.5) && CarH.drivetrain.differentialSpeed <= (setCruiseControlSpeed + 0.5))
                     {
                         valueToThrottle = 0.5f;
                     }
-                    else if (satsumaDriveTrain.differentialSpeed < (setCruiseControlSpeed - 0.5))
+                    else if (CarH.drivetrain.differentialSpeed < (setCruiseControlSpeed - 0.5))
                     {
                         valueToThrottle = 1f;
                     }
-                    else if (satsumaDriveTrain.differentialSpeed >= (setCruiseControlSpeed + 0.5f))
+                    else if (CarH.drivetrain.differentialSpeed >= (setCruiseControlSpeed + 0.5f))
                     {
                         valueToThrottle = 0f;
                     }
-                    else if (satsumaDriveTrain.differentialSpeed >= setCruiseControlSpeed)
+                    else if (CarH.drivetrain.differentialSpeed >= setCruiseControlSpeed)
                     {
                         valueToThrottle = 0.3f;
                     }
-                    satsumaDriveTrain.idlethrottle = valueToThrottle;
-                    if (satsumaDriveTrain.differentialSpeed < 19f || satsumaCarController.brakeInput > 0f || satsumaCarController.clutchInput > 0f || satsumaCarController.handbrakeInput > 0f)
+                    CarH.drivetrain.idlethrottle = valueToThrottle;
+                    if (CarH.drivetrain.differentialSpeed < 19f || CarH.carController.brakeInput > 0f || CarH.carController.clutchInput > 0f || CarH.carController.handbrakeInput > 0f)
                     {
 
                         ResetCruiseControl();
                     }
                 }
-                else if (cruiseControlModuleEnabled && satsumaCarController.throttleInput <= 0f)
+                else if (cruiseControlModuleEnabled && CarH.carController.throttleInput <= 0f)
                 {
                     ResetCruiseControl();
                     setCruiseControlSpeed = 0;
@@ -155,9 +146,7 @@ namespace DonnerTech_ECU_Mod
                             if (Helper.UseButtonDown)
                             {
                                 actionToPerform.Invoke();
-                                AudioSource audio = dashButtonAudioSource;
-                                audio.transform.position = gameObjectHit.transform.position;
-                                audio.Play();
+                                Helper.PlayTouchSound(gameObjectHit);
                             }
                         }
                     }
@@ -179,9 +168,9 @@ namespace DonnerTech_ECU_Mod
         }
         private void SetCruiseControl()
         {
-            if (satsumaDriveTrain.differentialSpeed >= 20)
+            if (CarH.drivetrain.differentialSpeed >= 20)
             {
-                int speedToSet = Convert.ToInt32(satsumaDriveTrain.differentialSpeed);
+                int speedToSet = Convert.ToInt32(CarH.drivetrain.differentialSpeed);
                 if (speedToSet % 2 != 0)
                 {
                     speedToSet--;
@@ -201,19 +190,6 @@ namespace DonnerTech_ECU_Mod
             SetCruiseControlSpeedTextColor(Color.white);
             cruiseControlModuleEnabled = false;
         }
-
-        private AudioSource dashButtonAudioSource
-        {
-            get
-            {
-                if (dashButtonAudio == null)
-                {
-                    dashButtonAudio =  GameObject.Find("dash_button").GetComponent<AudioSource>();
-                }
-                return dashButtonAudio;
-            }
-        }
-
 
         private void SetCruiseControlSpeedText(string toSet)
         {

@@ -11,7 +11,10 @@ using DonnerTech_ECU_Mod.shop;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.parts;
 using DonnerTech_ECU_Mod.infoPanel;
-using DonnerTech_ECU_Mod.gui;
+using Tools;
+using Tools.gui;
+using Parts;
+
 namespace DonnerTech_ECU_Mod
 {
     public class DonnerTech_ECU_Mod : Mod
@@ -74,6 +77,11 @@ namespace DonnerTech_ECU_Mod
 
         /*  Changelog (v1.4.12)
          *  Improved debug gui
+         *  Massive code refactoring
+         *  Code improvement
+         *  Code improvement
+         *  Loading time improvement
+         *  Performance improvement
          *  
          */
         /* BUGS/Need to fix
@@ -223,17 +231,6 @@ namespace DonnerTech_ECU_Mod
         public Vector3 cable_harness_installLocation = new Vector3(-0.117f, 0.0102f, -0.024f);
         public Vector3 mounting_plate_installLocation = new Vector3(0.3115f, -0.276f, -0.0393f);
 
-
-        public GameObject satsuma;
-        public Drivetrain satsumaDriveTrain;
-        public CarController satsumaCarController;
-        public AxisCarController axisCarController;
-        public Axles satsumaAxles;
-        private FsmBool electricsOK;
-
-
-
-
         private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
         private Settings resetPosSetting = new Settings("resetPos", "Reset", Helper.WorkAroundAction);
 
@@ -256,13 +253,6 @@ namespace DonnerTech_ECU_Mod
             0.65f    // 6th
         };
 
-        private static AudioSource dashButtonAudioSource
-        {
-            get
-            {
-                return GameObject.Find("dash_button").GetComponent<AudioSource>();
-            }
-        }
 
         public override void OnNewGame()
         {
@@ -371,17 +361,12 @@ namespace DonnerTech_ECU_Mod
             };
 
             modAssetsFolder = ModLoader.GetModAssetsFolder(this);
-            satsuma = GameObject.Find("SATSUMA(557kg, 248)");
-            satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-            satsumaCarController = satsuma.GetComponent<CarController>();
-            axisCarController = satsuma.GetComponent<AxisCarController>();
-            satsumaAxles = satsuma.GetComponent<Axles>();
             
-            originalGearRatios = satsumaDriveTrain.gearRatios;
+            originalGearRatios = CarH.drivetrain.gearRatios;
 
 #if DEBUG
-            PlayMakerFSM gearboxFSM = GameObject.Find("DatabaseMotor/Gearbox").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM drivegearFSM = GameObject.Find("DatabaseMotor/Drivegear").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM gearboxFSM = Game.Find("DatabaseMotor/Gearbox").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM drivegearFSM = Game.Find("DatabaseMotor/Drivegear").GetComponent<PlayMakerFSM>();
             FsmBool gearbox_installed = gearboxFSM.FsmVariables.FindFsmBool("Installed");
             FsmBool gearbox_bolted = gearboxFSM.FsmVariables.FindFsmBool("Bolted");
 
@@ -433,21 +418,21 @@ namespace DonnerTech_ECU_Mod
             airride_fl_part = new SimplePart(
                 SimplePart.LoadData(this, "airride_fl", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "airride_fl.prefab", "Airride FL"),
-                GameObject.Find("Chassis/FL"),
+                Game.Find("Chassis/FL"),
                 airride_fl_installLocation,
                 new Quaternion { eulerAngles = new Vector3(0, 0, 0) }
             );
             awd_gearbox_part = new SimplePart(
                 SimplePart.LoadData(this, "awd_gearbox", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "awd_gearbox.prefab", "AWD Gearbox"),
-                GameObject.Find("pivot_gearbox"),
+                Game.Find("pivot_gearbox"),
                 awd_gearbox_part_installLocation,
                 new Quaternion { eulerAngles = new Vector3(90, 180, 0) }
             );
             awd_differential_part = new SimplePart(
                 SimplePart.LoadData(this, "awd_differential", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "awd_differential.prefab", "AWD Differential"),
-                satsuma,
+                CarH.satsuma,
                 awd_differential_part_installLocation,
                 new Quaternion { eulerAngles = new Vector3(0, 0, 0) }
             );
@@ -455,7 +440,7 @@ namespace DonnerTech_ECU_Mod
             awd_propshaft_part = new SimplePart(
                 SimplePart.LoadData(this, "awd_propshaft", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "awd_propshaft.prefab", "AWD Propshaft"),
-                satsuma,
+                CarH.satsuma,
                 awd_propshaft_part_installLocation,
                 new Quaternion { eulerAngles = new Vector3(0, 180, 0) }
             );
@@ -464,7 +449,7 @@ namespace DonnerTech_ECU_Mod
             mounting_plate_part = new SimplePart(
                 SimplePart.LoadData(this, "mounting_plate", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "mounting_plate.prefab", "ECU Mounting Plate"),
-                satsuma,
+                CarH.satsuma,
                 mounting_plate_installLocation,
                 new Quaternion { eulerAngles = new Vector3(0, 180, 0) }
             );
@@ -538,7 +523,7 @@ namespace DonnerTech_ECU_Mod
             cruise_control_panel_part = new SimplePart(
                 SimplePart.LoadData(this, "cruise_control_panel", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "cruise_control_panel.prefab", "Cruise Control Panel"),
-                GameObject.Find("dashboard(Clone)"),
+                Game.Find("dashboard(Clone)"),
                 cruise_control_panel_installLocation,
                 new Quaternion { eulerAngles = new Vector3(90, 0, 0) }
             );
@@ -547,7 +532,7 @@ namespace DonnerTech_ECU_Mod
             info_panel_part = new SimplePart(
                 SimplePart.LoadData(this, "info_panel", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "info_panel.prefab", "DonnerTech Info Panel"),
-                GameObject.Find("dashboard(Clone)"),
+                Game.Find("dashboard(Clone)"),
                 info_panel_installLocation,
                 new Quaternion { eulerAngles = new Vector3(0, 180, 180) }
             );
@@ -556,7 +541,7 @@ namespace DonnerTech_ECU_Mod
             rain_light_sensorboard_part = new SimplePart(
                 SimplePart.LoadData(this, "rain_light_sensorboard", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "rain_light_sensorboard.prefab", "Rain & Light Sensorboard"),
-                GameObject.Find("dashboard(Clone)"),
+                Game.Find("dashboard(Clone)"),
                 rain_light_sensorboard_installLocation,
                 new Quaternion { eulerAngles = new Vector3(90, 0, 0) }
             );
@@ -564,7 +549,7 @@ namespace DonnerTech_ECU_Mod
             reverse_camera_part = new SimplePart(
                 SimplePart.LoadData(this, "reverse_camera", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "reverse_camera.prefab", "Reverse Camera"),
-                GameObject.Find("bootlid(Clone)"),                reverse_camera_installLocation,
+                Game.Find("bootlid(Clone)"),                reverse_camera_installLocation,
                 new Quaternion { eulerAngles = new Vector3(120, 0, 0) }
             );
             reverse_camera_logic = reverse_camera_part.rigidPart.AddComponent<ReverseCamera_Logic>();
@@ -574,7 +559,7 @@ namespace DonnerTech_ECU_Mod
             fuel_injection_manifold_part = new SimplePart(
                 SimplePart.LoadData(this, "fuel_injection_manifold", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "fuel_injection_manifold.prefab", "Fuel Injection Manifold"),
-                GameObject.Find("cylinder head(Clone)"),
+                Game.Find("cylinder head(Clone)"),
                 fuel_injection_manifold_installLocation,
                 new Quaternion { eulerAngles = new Vector3(90, 0, 0) }
             );
@@ -584,7 +569,7 @@ namespace DonnerTech_ECU_Mod
             fuel_pump_cover_part = new SimplePart(
                 SimplePart.LoadData(this, "fuel_pump_cover", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "fuel_pump_cover.prefab", "Fuel Pump Cover"),
-                GameObject.Find("block(Clone)"),
+                Game.Find("block(Clone)"),
                 fuel_pump_cover_installLocation,
                 new Quaternion { eulerAngles = new Vector3(90, 0, 0) }
             );
@@ -610,7 +595,7 @@ namespace DonnerTech_ECU_Mod
             electric_fuel_pump_part = new SimplePart(
                 SimplePart.LoadData(this, "electric_fuel_pump", partsBuySave),
                 Helper.LoadPartAndSetName(assetBundle, "electric_fuel_pump.prefab", "Electric Fuel Pump"),
-                satsuma,
+                CarH.satsuma,
                 electric_fuel_pump_installLocation,
                 new Quaternion { eulerAngles = new Vector3(0, 180, 0) }
             );
@@ -679,8 +664,8 @@ namespace DonnerTech_ECU_Mod
 
 
             wires_injectors_pumps_gameObject.transform.parent = fuel_injection_manifold_part.rigidPart.transform;
-            wires_sparkPlugs1_gameObject.transform.parent = GameObject.Find("cylinder head(Clone)").transform;
-            wires_sparkPlugs2_gameObject.transform.parent = satsuma.transform;
+            wires_sparkPlugs1_gameObject.transform.parent = Game.Find("cylinder head(Clone)").transform;
+            wires_sparkPlugs2_gameObject.transform.parent = CarH.satsuma.transform;
 
             wires_injectors_pumps_gameObject.transform.localPosition = new Vector3(0.0085f, 0.053f, 0.0366f); //Temp
             wires_sparkPlugs1_gameObject.transform.localPosition = new Vector3(-0.001f, 0.088f, 0.055f); //Temp
@@ -773,9 +758,9 @@ namespace DonnerTech_ECU_Mod
                     new Screw(new Vector3(0f, -0.04f, 0.01f), new Vector3(0, 180, 0), 0.6f, 8),
                 });
 
-            if (GameObject.Find("Shop for mods") != null)
+            if (Game.Find("Shop for mods") != null)
             {
-                ModsShop.ShopItem modsShop = GameObject.Find("Shop for mods").GetComponent<ModsShop.ShopItem>();
+                ModsShop.ShopItem modsShop = Game.Find("Shop for mods").GetComponent<ModsShop.ShopItem>();
 
                 List<ProductInformation> shopItems = new List<ProductInformation>
                 {
@@ -979,19 +964,19 @@ namespace DonnerTech_ECU_Mod
                 {
                     new GuiDebugInfo("Cruise control", "true = Good"),
                     new GuiDebugInfo("Cruise control", "false = Bad (cruise control won't work)"),
-                    new GuiDebugInfo("Cruise control", "Gear not R", (satsumaDriveTrain.gear != 0).ToString()),
+                    new GuiDebugInfo("Cruise control", "Gear not R", (CarH.drivetrain.gear != 0).ToString()),
                     new GuiDebugInfo("Cruise control", "cruise panel installed", cruise_control_panel_part.installed.ToString()),
                     new GuiDebugInfo("Cruise control", "cruise control enabled", cruiseControlModuleEnabled.ToString()),
                     new GuiDebugInfo("Cruise control", "mounting plate installed", mounting_plate_part.InstalledScrewed().ToString()),
                     new GuiDebugInfo("Cruise control", "smart engine module installed", smart_engine_module_part.InstalledScrewed().ToString()),
-                    new GuiDebugInfo("Cruise control", "not on throttle", (satsumaCarController.throttleInput <= 0f).ToString()),
-                    new GuiDebugInfo("Cruise control", "speed above 20km/h", (satsumaDriveTrain.differentialSpeed >= 20f).ToString()),
-                    new GuiDebugInfo("Cruise control", "brake not pressed", (!satsumaCarController.brakeKey).ToString()),
+                    new GuiDebugInfo("Cruise control", "not on throttle", (CarH.carController.throttleInput <= 0f).ToString()),
+                    new GuiDebugInfo("Cruise control", "speed above 20km/h", (CarH.drivetrain.differentialSpeed >= 20f).ToString()),
+                    new GuiDebugInfo("Cruise control", "brake not pressed", (!CarH.carController.brakeKey).ToString()),
                     new GuiDebugInfo("Cruise control", "clutch not pressed", (!cInput.GetKey("Clutch")).ToString()),
-                    new GuiDebugInfo("Cruise control", "handbrake not pressed", (satsumaCarController.handbrakeInput <= 0f).ToString()),
+                    new GuiDebugInfo("Cruise control", "handbrake not pressed", (CarH.carController.handbrakeInput <= 0f).ToString()),
                     new GuiDebugInfo("Cruise control", "set cruise control speed", setCruiseControlSpeed.ToString()),
-                    new GuiDebugInfo("Cruise control", "car electricity on", hasPower.ToString()),
-                    new GuiDebugInfo("Cruise control", "current speed", satsumaDriveTrain.differentialSpeed.ToString()),
+                    new GuiDebugInfo("Cruise control", "car electricity on", CarH.hasPower.ToString()),
+                    new GuiDebugInfo("Cruise control", "current speed", CarH.drivetrain.differentialSpeed.ToString()),
                 });
             }
         }
@@ -1000,29 +985,6 @@ namespace DonnerTech_ECU_Mod
         {
             fuel_system.Handle();
             info_panel.Handle();
-        }
-
-        public bool engineRunning
-        {
-            get
-            {
-                return satsumaDriveTrain.rpm > 0;
-            }
-        }
-
-        public bool hasPower
-        {
-            get
-            {
-                if (electricsOK == null)
-                {
-                    GameObject carElectrics = GameObject.Find("SATSUMA(557kg, 248)/Electricity");
-                    PlayMakerFSM carElectricsPower = PlayMakerFSM.FindFsmOnGameObject(carElectrics, "Power");
-                    electricsOK = carElectricsPower.FsmVariables.FindFsmBool("ElectricsOK");
-                }
-                
-                return electricsOK.Value;
-            }
         }
 
         private void PosReset()
@@ -1061,16 +1023,16 @@ namespace DonnerTech_ECU_Mod
             {
                 if (value)
                 {
-                    satsumaDriveTrain.gearRatios = newGearRatio;
+                    CarH.drivetrain.gearRatios = newGearRatio;
                     return;
                 }
             }
-            satsumaDriveTrain.gearRatios = originalGearRatios;
+            CarH.drivetrain.gearRatios = originalGearRatios;
             return;
         }
         private void ToggleSmoothInput()
         {
-            axisCarController.smoothInput = !axisCarController.smoothInput;
+            CarH.axisCarController.smoothInput = !CarH.axisCarController.smoothInput;
         }
         private void ToggleAWD()
         {
@@ -1078,11 +1040,11 @@ namespace DonnerTech_ECU_Mod
             {
                 if (value)
                 {
-                    satsumaDriveTrain.SetTransmission(Drivetrain.Transmissions.AWD);
+                    CarH.drivetrain.SetTransmission(Drivetrain.Transmissions.AWD);
                     return;
                 }
             }
-            satsumaDriveTrain.SetTransmission(Drivetrain.Transmissions.FWD);
+            CarH.drivetrain.SetTransmission(Drivetrain.Transmissions.FWD);
         }
     }
 }

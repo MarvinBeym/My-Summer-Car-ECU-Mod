@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod.gui
+namespace Tools.gui
 {
     public class GuiDebugElement
     {
@@ -25,9 +25,9 @@ namespace DonnerTech_ECU_Mod.gui
             if (elementEnabled)
             {
                 GUILayout.BeginVertical("", "box", GUILayout.ExpandHeight(false));
-                foreach(GuiDebugInfo debugInfo in debugInfos)
+                foreach (GuiDebugInfo debugInfo in debugInfos)
                 {
-                    if(debugInfo.elementName == elementName)
+                    if (debugInfo.elementName == elementName)
                     {
                         debugInfo.Handle();
                     }

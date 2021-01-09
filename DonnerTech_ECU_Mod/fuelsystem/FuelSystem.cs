@@ -2,10 +2,12 @@
 using ModApi;
 using ModApi.Attachable;
 using MSCLoader;
+using Parts;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,7 +52,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         public FsmFloat racingCarb_adjustAverage;
         public FsmFloat racingCarb_tolerance;
 
-        public Drivetrain satsumaDriveTrain;
 
         private const string orignal_parts_saveFile = "original_parts_saveFile.json";
         private OriginalPartsSave originalPartsSave;
@@ -89,26 +90,23 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
             this.mod = mod;
 
-            GameObject satsuma = GameObject.Find("SATSUMA(557kg, 248)");
-            satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-
             chip_programmer = new ChipProgrammer(mod, this);
 
-            PlayMakerFSM distributor = GameObject.Find("Distributor").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM distributor = Game.Find("Distributor").GetComponent<PlayMakerFSM>();
 
-            PlayMakerFSM carb = GameObject.Find("Carburator").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM twinCarb = GameObject.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM raceCarb = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
-            //PlayMakerFSM fuelStrainer = GameObject.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM carb = Game.Find("Carburator").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM twinCarb = Game.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM raceCarb = Game.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
+            //PlayMakerFSM fuelStrainer = Game.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
 
             originalPartsSave = Helper.LoadSaveOrReturnNew<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
 
-            allOriginalParts.Add(new OriginalPart("Electrics", "pivot_electrics", GameObject.Find("Electrics"), originalPartsSave.electrics_position, originalPartsSave.electrics_rotation, originalPartsSave.electrics_installed));
-            allOriginalParts.Add(new OriginalPart("Distributor", "pivot_distributor", GameObject.Find("Distributor"), originalPartsSave.distributor_position, originalPartsSave.distributor_rotation, originalPartsSave.distributor_installed));
-            allOriginalParts.Add(new OriginalPart("Racing Carburators", "pivot_carburator", GameObject.Find("Racing Carburators"), originalPartsSave.racingCarb_position, originalPartsSave.racingCarb_rotation, originalPartsSave.racingCarb_installed));
-            allOriginalParts.Add(new OriginalPart("Fuelpump", "pivot_fuel pump", GameObject.Find("Fuelpump"), originalPartsSave.fuelPump_position, originalPartsSave.fuelPump_rotation, originalPartsSave.fuelPump_installed));
+            allOriginalParts.Add(new OriginalPart("Electrics", "pivot_electrics", Game.Find("Electrics"), originalPartsSave.electrics_position, originalPartsSave.electrics_rotation, originalPartsSave.electrics_installed));
+            allOriginalParts.Add(new OriginalPart("Distributor", "pivot_distributor", Game.Find("Distributor"), originalPartsSave.distributor_position, originalPartsSave.distributor_rotation, originalPartsSave.distributor_installed));
+            allOriginalParts.Add(new OriginalPart("Racing Carburators", "pivot_carburator", Game.Find("Racing Carburators"), originalPartsSave.racingCarb_position, originalPartsSave.racingCarb_rotation, originalPartsSave.racingCarb_installed));
+            allOriginalParts.Add(new OriginalPart("Fuelpump", "pivot_fuel pump", Game.Find("Fuelpump"), originalPartsSave.fuelPump_position, originalPartsSave.fuelPump_rotation, originalPartsSave.fuelPump_installed));
 
-            //fuelStrainer_gameObject = GameObject.Find("fuel strainer(Clone)");
+            //fuelStrainer_gameObject = Game.Find("fuel strainer(Clone)");
             //fuelStrainer_detach = GetDetachFsmBool(fuelStrainer_gameObject);
             //fuelStrainer_trigger = distributor.FsmVariables.FindFsmGameObject("Trigger").Value;
             //fuelStrainer_installed = distributor.FsmVariables.FindFsmBool("Installed");

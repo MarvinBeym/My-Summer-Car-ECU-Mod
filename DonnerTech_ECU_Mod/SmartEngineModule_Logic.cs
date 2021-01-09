@@ -1,6 +1,7 @@
 ﻿using HutongGames.PlayMaker;
 using MSCLoader;
 using System;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
@@ -8,12 +9,6 @@ namespace DonnerTech_ECU_Mod
     public class SmartEngineModule_Logic : MonoBehaviour
     {
         private DonnerTech_ECU_Mod mod;
-
-        //Car
-        private static GameObject satsuma;
-        private static Drivetrain satsumaDriveTrain;
-        private CarController satsumaCarController;
-        private Axles satsumaAxles;
 
         private FsmString playerCurrentVehicle;
 
@@ -37,13 +32,8 @@ namespace DonnerTech_ECU_Mod
                 }
             }
 
-            satsuma = GameObject.Find("SATSUMA(557kg, 248)");
-            satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-            satsumaCarController = satsuma.GetComponent<CarController>();
-            satsumaAxles = satsuma.GetComponent<Axles>();
-
             playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
-            satsumaDriveTrain.maxRPM = 8500;
+            CarH.drivetrain.maxRPM = 8500;
 
             smart_engine_moduleFSM = this.gameObject.AddComponent<PlayMakerFSM>();
             smart_engine_moduleFSM.FsmName = "Smart Engine Module";
@@ -64,12 +54,12 @@ namespace DonnerTech_ECU_Mod
 
         void Update()
         {
-            if (mod.smart_engine_module_part.InstalledScrewed() && !step2RevLimiterModule_enabled.Value && satsumaDriveTrain.maxRPM != 8500)
+            if (mod.smart_engine_module_part.InstalledScrewed() && !step2RevLimiterModule_enabled.Value && CarH.drivetrain.maxRPM != 8500)
             {
-                satsumaDriveTrain.maxRPM = 8500;
+                CarH.drivetrain.maxRPM = 8500;
             }
 
-            if (mod.hasPower)
+            if (CarH.hasPower)
             {
                 if(mod.cable_harness_part.installed && mod.mounting_plate_part.installed && mod.mounting_plate_part.InstalledScrewed())
                 {
@@ -94,11 +84,11 @@ namespace DonnerTech_ECU_Mod
             /*
             timeSinceLastBackFire += Time.deltaTime;
             ModCommunication modCommunication = ecu_mod_smartEngineModule_Part.rigidPart.GetComponent<ModCommunication>();
-            if (useThrottleButton && satsumaDriveTrain.rpm > 4000 && !als_backfire_allowed)
+            if (useThrottleButton && CarH.drivetrain.rpm > 4000 && !als_backfire_allowed)
             {
                 als_backfire_allowed = true;
             }
-            else if (!useThrottleButton && satsumaDriveTrain.rpm > 4000 && als_backfire_allowed)
+            else if (!useThrottleButton && CarH.drivetrain.rpm > 4000 && als_backfire_allowed)
             {
                 als_backfire_allowed = false;
                 modCommunication.alsEnabled = true;
@@ -116,12 +106,12 @@ namespace DonnerTech_ECU_Mod
         {
             if (mod.abs_module_part.InstalledScrewed())
             {
-                satsuma.GetComponent<CarController>().ABS = !satsuma.GetComponent<CarController>().ABS;
-                mod.absModule_enabled.Value = satsuma.GetComponent<CarController>().ABS;
+                CarH.carController.ABS = !CarH.carController.ABS;
+                mod.absModule_enabled.Value = CarH.carController.ABS;
             }
             else
             {
-                satsuma.GetComponent<CarController>().ABS = false;
+                CarH.carController.ABS = false;
                 mod.absModule_enabled.Value = false;
             }
 
@@ -131,12 +121,12 @@ namespace DonnerTech_ECU_Mod
         {
             if (mod.esp_module_part.InstalledScrewed())
             {
-                satsuma.GetComponent<CarController>().ESP = !satsuma.GetComponent<CarController>().ESP;
-                mod.espModule_enabled.Value = satsuma.GetComponent<CarController>().ESP;
+                CarH.carController.ESP = !CarH.carController.ESP;
+                mod.espModule_enabled.Value = CarH.carController.ESP;
             }
             else
             {
-                satsuma.GetComponent<CarController>().ESP = false;
+                CarH.carController.ESP = false;
                 mod.espModule_enabled.Value = false;
             }
 
@@ -145,12 +135,12 @@ namespace DonnerTech_ECU_Mod
         {
             if (mod.tcs_module_part.InstalledScrewed())
             {
-                satsuma.GetComponent<CarController>().TCS = !satsuma.GetComponent<CarController>().TCS;
-                mod.tcsModule_enabled.Value = satsuma.GetComponent<CarController>().TCS;
+                CarH.carController.TCS = !CarH.carController.TCS;
+                mod.tcsModule_enabled.Value = CarH.carController.TCS;
             }
             else
             {
-                satsuma.GetComponent<CarController>().TCS = false;
+                CarH.carController.TCS = false;
                 mod.tcsModule_enabled.Value = false;
             }
 
@@ -169,14 +159,14 @@ namespace DonnerTech_ECU_Mod
 
         public void HandleStep2RevLimiterModule()
         {
-            if(mod.step2RevLimiterModule_enabled.Value && satsumaDriveTrain.velo < 3.5f)
+            if(mod.step2RevLimiterModule_enabled.Value && CarH.drivetrain.velo < 3.5f)
             {
-                satsumaDriveTrain.revLimiterTime = 0;
-                satsumaDriveTrain.maxRPM = mod.step2_rpm.Value;
+                CarH.drivetrain.revLimiterTime = 0;
+                CarH.drivetrain.maxRPM = mod.step2_rpm.Value;
             }
             else
             {
-                satsumaDriveTrain.revLimiterTime = 0.2f;
+                CarH.drivetrain.revLimiterTime = 0.2f;
                 if (mod.step2RevLimiterModule_enabled.Value)
                 {
                     Toggle2StepRevLimiter();

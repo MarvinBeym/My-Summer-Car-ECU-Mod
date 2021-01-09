@@ -7,6 +7,7 @@ using HutongGames.PlayMaker;
 using DonnerTech_ECU_Mod.fuelsystem;
 using System;
 using MSCLoader;
+using Tools;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -19,7 +20,6 @@ namespace DonnerTech_ECU_Mod
 
         public float[,] fuelMap;
 
-        private Drivetrain satsumaDriveTrain;
         private Transform throttle_body1_valve;
         private Transform throttle_body2_valve;
         private Transform throttle_body3_valve;
@@ -32,13 +32,12 @@ namespace DonnerTech_ECU_Mod
             throttle_body2_valve = fuel_system.throttle_body2_part.rigidPart.transform.FindChild("Butterfly-Valve");
             throttle_body3_valve = fuel_system.throttle_body3_part.rigidPart.transform.FindChild("Butterfly-Valve");
             throttle_body4_valve = fuel_system.throttle_body4_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            this.satsumaDriveTrain = fuel_system.satsumaDriveTrain;
         }
 
        
         void Update()
         {
-            if (mod.hasPower)
+            if (CarH.hasPower)
             {
                 if (
                     (bool)mod.settingThrottleBodieTurning.Value
@@ -69,20 +68,20 @@ namespace DonnerTech_ECU_Mod
 
                     if(startAssistEnabled)
                     {
-                        if(satsumaDriveTrain.differentialSpeed < 15 && (satsumaDriveTrain.gear == 2 || satsumaDriveTrain.gear == 0))
+                        if(CarH.drivetrain.differentialSpeed < 15 && (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0))
                         {
-                            satsumaDriveTrain.canStall = false;
+                            CarH.drivetrain.canStall = false;
                         }
                         else
                         {
-                            satsumaDriveTrain.canStall = true;
+                            CarH.drivetrain.canStall = true;
                         }
                     }
 
-                    if (fuelMap != null && mod.engineRunning)
+                    if (fuelMap != null && CarH.running)
                     {
-                        int mapRpmIndex = GetRPMIndex(Convert.ToInt32(satsumaDriveTrain.rpm));
-                        int mapThrottleIndex = GetThrottleIndex((int)(mod.axisCarController.throttle) * 100);
+                        int mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
+                        int mapThrottleIndex = GetThrottleIndex((int)(CarH.axisCarController.throttle) * 100);
                         fuel_system.racingCarb_adjustAverage.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
                     }
                     else
@@ -95,10 +94,10 @@ namespace DonnerTech_ECU_Mod
 
         private void HandleThrottleBodyMovement()
         {
-            throttle_body1_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
-            throttle_body2_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
-            throttle_body3_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
-            throttle_body4_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(mod.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body1_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body2_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body3_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
+            throttle_body4_valve.localRotation = new Quaternion { eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0) };
         }
 
         private int GetThrottleIndex(int throttle)

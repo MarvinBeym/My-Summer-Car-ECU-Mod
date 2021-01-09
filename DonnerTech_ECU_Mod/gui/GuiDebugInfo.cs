@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MSCLoader;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod.gui
+namespace Tools.gui
 {
     public class GuiDebugInfo
     {
@@ -45,7 +46,6 @@ namespace DonnerTech_ECU_Mod.gui
                 return;
             }
             GUILayout.BeginHorizontal();
-
             GUILayout.Label(description, descriptionStyle);
             GUILayout.BeginVertical("box", GUILayout.Width(100));
             GUILayout.Label(value, valueStyle);

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod
+namespace Tools
 {
     public static class Logger
     {
@@ -156,7 +156,7 @@ $@"╔{GenerateHeader(" Environment ", maxLineLength)}
 
         public static void New(string message, string additionalInfo, Exception ex)
         {
-            if(errorsLogged <= maxErrorsToLog)
+            if (errorsLogged <= maxErrorsToLog)
             {
                 errorsLogged++;
 

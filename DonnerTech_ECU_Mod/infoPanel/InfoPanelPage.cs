@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -35,10 +36,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         public bool needleUsed {get; set; } = false;
         public bool turbineUsed { get; set; } = false;
 
-        public GameObject satsuma;
-        public Drivetrain satsumaDriveTrain;
-        public CarController satsumaCarController;
-        public Axles satsumaAxles;
         public bool playSound = true;
         private const float needle_maxAngle = 270;
         private const float needle_minAngle = 0;
@@ -54,49 +51,18 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
             pageSprite = assetBundle.LoadAsset<Sprite>(pageName + ".png");
             pageSprite = Helper.LoadNewSprite(pageSprite, Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + pageName + ".png"));
-            satsuma = GameObject.Find("SATSUMA(557kg, 248)");
-            satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-            satsumaCarController = satsuma.GetComponent<CarController>();
-            satsumaAxles = satsuma.GetComponent<Axles>();
         }
 
-
-        public void playTouchSound(GameObject gameObjectHit)
-        {
-            if (playSound)
-            {
-                AudioSource audio = dashButtonAudioSource;
-                audio.transform.position = gameObjectHit.transform.position;
-                audio.Play();
-            }
-        }
-
-        private AudioSource dashButtonAudioSource
-        {
-            get
-            {
-                return GameObject.Find("dash_button").GetComponent<AudioSource>();
-            }
-        }
-
-        public string BoolToOnOffString(bool value)
-        {
-            if (value)
-            {
-                return "ON";
-            }
-            return "OFF";
-        }
         public string GearToString()
         {
-            switch (satsumaDriveTrain.gear)
+            switch (CarH.drivetrain.gear)
             {
                 case 0:
                     return "R";
                 case 1:
                     return "N";
                 default:
-                    return (satsumaDriveTrain.gear - 1).ToString();
+                    return (CarH.drivetrain.gear - 1).ToString();
             }
         }
         public float GetRPMRotation(float rpmOverride)
@@ -110,7 +76,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             else
             {
                 float totalAngleSize = needle_minAngle - needle_maxAngle;
-                float rpmNormalized = satsumaDriveTrain.rpm / needle_maxRPM;
+                float rpmNormalized = CarH.drivetrain.rpm / needle_maxRPM;
                 return needle_minAngle - rpmNormalized * totalAngleSize;
             }
         }

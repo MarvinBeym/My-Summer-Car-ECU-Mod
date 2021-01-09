@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -34,8 +35,8 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
         public override void DisplayValues()
         {
-            display_values["value_1"].text = BoolToOnOffString(logic.rainsensor_enabled);
-            display_values["value_2"].text = BoolToOnOffString(logic.lightsensor_enabled);
+            display_values["value_1"].text = logic.rainsensor_enabled.ToOnOff();
+            display_values["value_2"].text = logic.lightsensor_enabled.ToOnOff();
             display_values["value_3"].text = logic.shift_indicator_greenLine.ToString();
             display_values["value_4"].text = logic.shift_indicator_redLine.ToString();
             switch (logic.GetSelectedSetting())
@@ -89,7 +90,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
                     logic.SetSelectedSetting("Select Shift Indicator red line");
                     break;
             }
-            playTouchSound(gameObjectHit);
+            Helper.PlayTouchSound(gameObjectHit);
         }
     }
 }

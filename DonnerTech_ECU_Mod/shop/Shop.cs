@@ -3,11 +3,13 @@ using DonnerTech_ECU_Mod.shop;
 using ModApi.Attachable;
 using ModsShop;
 using MSCLoader;
+using Parts;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod

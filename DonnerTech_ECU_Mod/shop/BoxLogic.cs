@@ -5,6 +5,8 @@ using ModApi;
 using MSCLoader;
 using System.Linq;
 using DonnerTech_ECU_Mod.parts;
+using Parts;
+using Tools;
 
 namespace DonnerTech_ECU_Mod
 {

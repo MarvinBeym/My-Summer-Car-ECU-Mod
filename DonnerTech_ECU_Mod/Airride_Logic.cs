@@ -4,6 +4,7 @@ using HutongGames.PlayMaker.Actions;
 using MSCLoader;
 using System;
 using System.Collections.Generic;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
@@ -47,27 +48,27 @@ namespace DonnerTech_ECU_Mod
         // Use this for initialization
         void Start()
         {
-            GameObject fl = GameObject.Find("SATSUMA(557kg, 248)/FL");
-            GameObject rl = GameObject.Find("SATSUMA(557kg, 248)/RL");
-            GameObject fr = GameObject.Find("SATSUMA(557kg, 248)/FR");
-            GameObject rr = GameObject.Find("SATSUMA(557kg, 248)/RR");
+            GameObject fl = CarH.satsuma.FindChild("FL");
+            GameObject rl = CarH.satsuma.FindChild("RL");
+            GameObject fr = CarH.satsuma.FindChild("FR");
+            GameObject rr = CarH.satsuma.FindChild("RR");
 
-            suspension = suspension = GameObject.Find("Suspension").GetComponent<PlayMakerFSM>();
+            suspension = Game.Find("Suspension").GetComponent<PlayMakerFSM>();
             wheel_transforms.Add(fl.transform);
             wheel_transforms.Add(rl.transform);
             wheel_transforms.Add(fr.transform);
             wheel_transforms.Add(rr.transform);
 
-            GameObject wheelFL = GameObject.Find("SATSUMA(557kg, 248)/FL/AckerFL/wheelFL");
-            GameObject wheelRL = GameObject.Find("SATSUMA(557kg, 248)/RL/wheelRL");
-            GameObject wheelFR = GameObject.Find("SATSUMA(557kg, 248)/FR/AckerFR/wheelFR");
-            GameObject wheelRR = GameObject.Find("SATSUMA(557kg, 248)/RR/wheelRR");
+            GameObject wheelFL = Game.Find("SATSUMA(557kg, 248)/FL/AckerFL/wheelFL");
+            GameObject wheelRL = Game.Find("SATSUMA(557kg, 248)/RL/wheelRL");
+            GameObject wheelFR = Game.Find("SATSUMA(557kg, 248)/FR/AckerFR/wheelFR");
+            GameObject wheelRR = Game.Find("SATSUMA(557kg, 248)/RR/wheelRR");
             wheels.Add(wheelFL.GetComponent<Wheel>());
             wheels.Add(wheelRL.GetComponent<Wheel>());
             wheels.Add(wheelFR.GetComponent<Wheel>());
             wheels.Add(wheelRR.GetComponent<Wheel>());
 
-            PlayMakerFSM[] playMakerFSMs = mod.satsuma.GetComponents<PlayMakerFSM>();
+            PlayMakerFSM[] playMakerFSMs = CarH.satsuma.GetComponents<PlayMakerFSM>();
             foreach(PlayMakerFSM fsm in playMakerFSMs)
             {
                 if(fsm.FsmName == "SteerLimit")
@@ -87,7 +88,7 @@ namespace DonnerTech_ECU_Mod
         // Update is called once per frame
         void Update()
         {
-            if (mod.engineRunning)
+            if (CarH.running)
             {
                 if(airride.action == Airride.Action.None)
                 {

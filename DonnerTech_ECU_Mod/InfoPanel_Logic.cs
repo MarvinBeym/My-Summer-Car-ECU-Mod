@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
@@ -70,11 +71,6 @@ namespace DonnerTech_ECU_Mod
 
         private Dictionary<string, TextMesh> display_values = new Dictionary<string, TextMesh>();
 
-        //Car
-        private GameObject satsuma;
-        private Drivetrain satsumaDriveTrain;
-        private CarController satsumaCarController;
-
         private RaycastHit hit;
 
         private string selectedSetting = "";
@@ -108,31 +104,7 @@ namespace DonnerTech_ECU_Mod
         {
             try
             {
-                satsuma = GameObject.Find("SATSUMA(557kg, 248)");
-            }
-            catch(Exception ex)
-            {
-                Logger.New("Satsuma gameobject could not be found", "SATSUMA(557kg, 248)", ex);
-            }
-            try
-            {
-                satsumaDriveTrain = satsuma.GetComponent<Drivetrain>();
-            }
-            catch (Exception ex)
-            {
-                Logger.New("Drivetrain could not be found on satsuma", ex);
-            }
-            try
-            {
-                satsumaCarController = satsuma.GetComponent<CarController>();
-            } catch(Exception ex)
-            {
-                Logger.New("CarController could not be found on satsuma", ex);
-            }
-            
-            try
-            {
-                turnSignals = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
+                turnSignals = Game.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
                 PlayMakerFSM blinkers = null;
                 PlayMakerFSM[] turnSignalComps = turnSignals.GetComponents<PlayMakerFSM>();
                 foreach (PlayMakerFSM turnSignalComp in turnSignalComps)
@@ -152,7 +124,7 @@ namespace DonnerTech_ECU_Mod
 
             try
             {
-                GameObject powerON = GameObject.Find("SATSUMA(557kg, 248)/Electricity/PowerON");
+                GameObject powerON = Game.Find("SATSUMA(557kg, 248)/Electricity/PowerON");
                 for (int i = 0; i < powerON.transform.childCount; i++)
                 {
                     GameObject tmp = powerON.transform.GetChild(i).gameObject;
@@ -172,7 +144,7 @@ namespace DonnerTech_ECU_Mod
             }
 
             rainIntensity = PlayMakerGlobals.Instance.Variables.FindFsmFloat("RainIntensity");
-            GameObject buttonWipers = GameObject.Find("SATSUMA(557kg, 248)/Dashboard/pivot_dashboard/dashboard(Clone)/pivot_meters/dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers");
+            GameObject buttonWipers = Game.Find("SATSUMA(557kg, 248)/Dashboard/pivot_dashboard/dashboard(Clone)/pivot_meters/dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers");
             PlayMakerFSM[] buttonWipersFSMs = buttonWipers.GetComponents<PlayMakerFSM>();
             foreach(PlayMakerFSM buttonWiperFSM in buttonWipersFSMs)
             {
@@ -183,8 +155,8 @@ namespace DonnerTech_ECU_Mod
                 }
             }
             
-            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Day", new Action(delegate() { isNight = false; }));
-            FsmHook.FsmInject(GameObject.Find("StreetLights"), "Night", new Action(delegate () { isNight = true; }));
+            FsmHook.FsmInject(Game.Find("StreetLights"), "Day", new Action(delegate() { isNight = false; }));
+            FsmHook.FsmInject(Game.Find("StreetLights"), "Night", new Action(delegate () { isNight = true; }));
         }
 
         private void LoadECU_PanelImageOverride()
@@ -214,7 +186,7 @@ namespace DonnerTech_ECU_Mod
         void Update()
         {
 
-            if (mod.hasPower && infoPanel.part.InstalledScrewed())
+            if (CarH.hasPower && infoPanel.part.InstalledScrewed())
             {
                 if (!isBooted)
                 {
@@ -299,7 +271,7 @@ namespace DonnerTech_ECU_Mod
                 mod.SetReverseCameraEnabled(false);
                 return;
             }
-            if (satsumaDriveTrain.gear == 0)
+            if (CarH.drivetrain.gear == 0)
             {
                 ecu_InfoPanel_Display_Reverse_Camera.enabled = true;
                 mod.SetReverseCameraEnabled(true);
@@ -412,11 +384,11 @@ namespace DonnerTech_ECU_Mod
 
         private void HandleShiftIndicator()
         {
-            if(mod.engineRunning)
+            if(CarH.running)
             {
-                float gradientValue = satsumaDriveTrain.rpm / 10000;
+                float gradientValue = CarH.drivetrain.rpm / 10000;
                 
-                if (satsumaDriveTrain.rpm >= 7500)
+                if (CarH.drivetrain.rpm >= 7500)
                 {
                     shift_indicator_blink_timer += Time.deltaTime;
 
@@ -567,9 +539,7 @@ namespace DonnerTech_ECU_Mod
                             if (Helper.UseButtonDown || Helper.LeftMouseDown)
                             {
                                 actionToPerform.Invoke();
-                                AudioSource audio = dashButtonAudioSource;
-                                audio.transform.position = gameObjectHit.transform.position;
-                                audio.Play();
+                                Helper.PlayTouchSound(gameObjectHit);
                             }
                         }
                     }
@@ -668,7 +638,7 @@ namespace DonnerTech_ECU_Mod
         {
             ecu_InfoPanel_LowBeam.enabled = beamShort.activeSelf;
             ecu_InfoPanel_HighBeam.enabled = beamLong.activeSelf;
-            if (satsumaCarController.handbrakeInput > 0)
+            if (CarH.carController.handbrakeInput > 0)
             {
                 ecu_InfoPanel_Handbrake.enabled = true;
             }
@@ -680,7 +650,7 @@ namespace DonnerTech_ECU_Mod
 
             if (blinkerLeft == null)
             {
-                blinkerLeft = GameObject.Find("BlinkLeft");
+                blinkerLeft = Game.Find("BlinkLeft");
             }
             else
             {
@@ -688,7 +658,7 @@ namespace DonnerTech_ECU_Mod
             }
             if (blinkerRight == null)
             {
-                blinkerRight = GameObject.Find("BlinkRight");
+                blinkerRight = Game.Find("BlinkRight");
             }
             else
             {
@@ -707,7 +677,7 @@ namespace DonnerTech_ECU_Mod
             else
             {
                 float totalAngleSize = ecu_InfoPanel_Needle_minAngle - ecu_InfoPanel_Needle_maxAngle;
-                float rpmNormalized = satsumaDriveTrain.rpm / ecu_InfoPanel_Needle_maxRPM;
+                float rpmNormalized = CarH.drivetrain.rpm / ecu_InfoPanel_Needle_maxRPM;
                 return ecu_InfoPanel_Needle_minAngle - rpmNormalized * totalAngleSize;
             }
         }
@@ -866,14 +836,6 @@ namespace DonnerTech_ECU_Mod
             if ((bool)mod.enableAirrideInfoPanelPage.Value)
             {
                 pages.Add(new Airride("airride_page", infoPanelBaseInfo));
-            }
-        }
-
-        private AudioSource dashButtonAudioSource
-        {
-            get
-            {
-                return GameObject.Find("dash_button").GetComponent<AudioSource>();
             }
         }
 

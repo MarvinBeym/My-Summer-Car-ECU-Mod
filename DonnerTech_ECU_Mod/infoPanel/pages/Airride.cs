@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -102,10 +103,10 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             airrideLogic = logic.panel.AddComponent<Airride_Logic>();
             airrideLogic.Init(this, mod);
 
-            airride_audioSource = mod.satsuma.AddComponent<AudioSource>();
+            airride_audioSource = CarH.satsuma.AddComponent<AudioSource>();
             airride_sound.audioSource = airride_audioSource;
 
-            compressor_audioSource = mod.satsuma.AddComponent<AudioSource>();
+            compressor_audioSource = CarH.satsuma.AddComponent<AudioSource>();
             compressor_sound.audioSource = compressor_audioSource;
 
             airride_sound.LoadAudioFromFile(Path.Combine(ModLoader.GetModAssetsFolder(mod), "airride_sound.wav"), true, false);
@@ -137,7 +138,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             display_values["value_2"].text = "DOWN";
             display_values["value_3"].text = "HIGH";
             display_values["value_4"].text = "LOW";
-            display_values["value_13"].text = mod.engineRunning ? "INFINITE" : "LOW";
+            display_values["value_13"].text = CarH.running ? "INFINITE" : "LOW";
             display_values["value_16"].text = "All";
         }
 
@@ -170,7 +171,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
                     playSound = false;
                     break;
             }
-            playTouchSound(gameObjectHit);
+            Helper.PlayTouchSound(gameObjectHit);
         }
     }
 }

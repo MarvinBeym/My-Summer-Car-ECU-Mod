@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -92,7 +93,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         {
             try
             {
-                GameObject racingTurbo = GameObject.Find("Racing Turbocharger(Clone)");
+                GameObject racingTurbo = Game.Find("Racing Turbocharger(Clone)");
                 if (racingTurbo != null)
                 {
                     turbocharger_bigFSM = racingTurbo.GetComponent<PlayMakerFSM>();
@@ -118,7 +119,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         {
             try
             {
-                GameObject gtTurbo = GameObject.Find("GT Turbocharger(Clone)");
+                GameObject gtTurbo = Game.Find("GT Turbocharger(Clone)");
                 if (gtTurbo != null)
                 {
                     turbocharger_smallFSM = gtTurbo.GetComponent<PlayMakerFSM>();

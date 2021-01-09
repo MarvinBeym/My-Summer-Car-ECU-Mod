@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -36,16 +37,16 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
         public Faults2(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
         {
-            PlayMakerFSM race_radiatorFSM = GameObject.Find("Racing Radiator").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM radiatorFSM = GameObject.Find("Radiator").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM oilpanFSM = GameObject.Find("Oilpan").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM brakeMasterCylinderFSM = GameObject.Find("BrakeMasterCylinder").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM clutchMasterCylinderFSM = GameObject.Find("ClutchMasterCylinder").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM sparkPlug1FSM = GameObject.Find("Sparkplug1").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM sparkPlug2FSM = GameObject.Find("Sparkplug2").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM sparkPlug3FSM = GameObject.Find("Sparkplug3").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM sparkPlug4FSM = GameObject.Find("Sparkplug4").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM[] dataBaseMechanicsFSMs = GameObject.Find("Database/DatabaseMechanics").GetComponentsInChildren<PlayMakerFSM>(true);
+            PlayMakerFSM race_radiatorFSM = Game.Find("Racing Radiator").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM radiatorFSM = Game.Find("Radiator").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM oilpanFSM = Game.Find("Oilpan").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM brakeMasterCylinderFSM = Game.Find("BrakeMasterCylinder").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM clutchMasterCylinderFSM = Game.Find("ClutchMasterCylinder").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM sparkPlug1FSM = Game.Find("Sparkplug1").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM sparkPlug2FSM = Game.Find("Sparkplug2").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM sparkPlug3FSM = Game.Find("Sparkplug3").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM sparkPlug4FSM = Game.Find("Sparkplug4").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM[] dataBaseMechanicsFSMs = Game.Find("Database/DatabaseMechanics").GetComponentsInChildren<PlayMakerFSM>(true);
             foreach (PlayMakerFSM fsm in dataBaseMechanicsFSMs)
             {
                 if (fsm.name == "FuelTank")

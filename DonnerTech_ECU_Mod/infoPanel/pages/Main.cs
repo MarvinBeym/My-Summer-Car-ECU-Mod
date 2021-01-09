@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -43,9 +44,9 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             this.needle = needle;
             needleUsed = true;
 
-            PlayMakerFSM carbFSM = GameObject.Find("Carburator").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM racingCarbFSM = GameObject.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
-            PlayMakerFSM twinCarb = GameObject.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM carbFSM = Game.Find("Carburator").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM racingCarbFSM = Game.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
+            PlayMakerFSM twinCarb = Game.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
 
             carbInstalled = carbFSM.FsmVariables.FindFsmBool("Installed");
             racingCarbInstalled = racingCarbFSM.FsmVariables.FindFsmBool("Installed");
@@ -55,19 +56,19 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             afRatioRacingCarb = racingCarbFSM.FsmVariables.FindFsmFloat("AdjustAverage");
             afRatioTwinCarb = twinCarb.FsmVariables.FindFsmFloat("IdleAdjust");
 
-            GameObject dataBaseMechanics = GameObject.Find("Database/DatabaseMechanics");
+            GameObject dataBaseMechanics = Game.Find("Database/DatabaseMechanics");
             PlayMakerFSM[] dataBaseMechanicsFSMs = dataBaseMechanics.GetComponentsInChildren<PlayMakerFSM>(true);
 
-            GameObject odometer = GameObject.Find("dashboard meters(Clone)/Gauges/Odometer");
+            GameObject odometer = Game.Find("dashboard meters(Clone)/Gauges/Odometer");
             PlayMakerFSM odometerFSM = odometer.GetComponentInChildren<PlayMakerFSM>();
             odometerKM = odometerFSM.FsmVariables.FindFsmInt("OdometerReading");
 
-            GameObject electrics = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/Car/Electrics");
+            GameObject electrics = Game.Find("SATSUMA(557kg, 248)/CarSimulation/Car/Electrics");
             PlayMakerFSM electricsFSM = electrics.GetComponent<PlayMakerFSM>();
             voltage = electricsFSM.FsmVariables.FindFsmFloat("Volts");
 
             
-            GameObject cooling = GameObject.Find("SATSUMA(557kg, 248)/CarSimulation/Car/Cooling").gameObject;
+            GameObject cooling = Game.Find("SATSUMA(557kg, 248)/CarSimulation/Car/Cooling").gameObject;
             PlayMakerFSM coolingFSM = PlayMakerFSM.FindFsmOnGameObject(cooling, "Cooling");
             coolantTemp = coolingFSM.FsmVariables.FindFsmFloat("CoolantTemp");
             coolantPressurePSI = coolingFSM.FsmVariables.FindFsmFloat("WaterPressurePSI");
@@ -99,7 +100,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         {
             float[] fuelCalculated = FuelKMCalculate();
             
-            display_values["value_1"].text = Convert.ToInt32(satsumaDriveTrain.rpm).ToString();
+            display_values["value_1"].text = Convert.ToInt32(CarH.drivetrain.rpm).ToString();
             display_values["value_2"].text = Convert.ToInt32(coolantTemp.Value).ToString();
             if (carbInstalled.Value)
             {
@@ -129,7 +130,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
                 }
             }
             
-            display_values["value_kmh"].text = Convert.ToInt32(satsumaDriveTrain.differentialSpeed).ToString();
+            display_values["value_kmh"].text = Convert.ToInt32(CarH.drivetrain.differentialSpeed).ToString();
 
             clockUpdateTimer.Call();
             voltageUpdateTimer.Call();

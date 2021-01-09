@@ -8,12 +8,82 @@ using System.Text;
 using UnityEngine;
 using ScrewablePartAPI;
 using HutongGames.PlayMaker;
+using ScrewablePartAPI.V2;
+using Parts;
 
-namespace DonnerTech_ECU_Mod
+namespace Tools
 {
     public static class Helper
     {
-        public static AssetBundle LoadAssetBundle(Mod mod,string fileName)
+        private static AudioSource dashButtonAudioSource;
+        
+        public static void PlayTouchSound(GameObject gameObjectToPlayOn)
+        {
+            if(dashButtonAudioSource == null)
+            {
+                dashButtonAudioSource = Game.Find("dash_button").GetComponent<AudioSource>();
+            }
+            if(dashButtonAudioSource != null)
+            {
+                AudioSource audio = dashButtonAudioSource;
+                audio.transform.position = gameObjectToPlayOn.transform.position;
+                audio.Play();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>1 when scrolling up, -1 when scrolling down, otherwise 0</returns>
+        public static int ScrollingUpDown()
+        {
+            float scrollWheel = Input.GetAxis("Mouse ScrollWheel");
+            switch (scrollWheel)
+            {
+                case float _ when scrollWheel > 0f:
+                    return 1;
+                    break;
+                case float _ when scrollWheel < 0f:
+                    return -1;
+                default:
+                    return 0;
+            }
+        }
+
+        public static PlayMakerFSM FindFsmOnGameObject(GameObject gameObject, string fsmName)
+        {
+            foreach(PlayMakerFSM fSM in gameObject.GetComponents<PlayMakerFSM>())
+            {
+                if (fSM.FsmName == fsmName) { return fSM; }
+            }
+            return null;
+        }
+        public static bool CheckContainsState(PlayMakerFSM fSM, string stateName)
+        {
+            foreach(FsmState state in fSM.FsmStates)
+            {
+                if(state.Name == stateName)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static GameObject GetGameObjectFromFsm(GameObject fsmGameObject, string fsmToUse = "Data")
+        {
+            foreach(PlayMakerFSM fsm in fsmGameObject.GetComponents<PlayMakerFSM>())
+            {
+                if(fsm.FsmName == fsmToUse)
+                {
+                    return fsm.FsmVariables.FindFsmGameObject("ThisPart").Value;
+                }
+            }
+            Logger.New("Unable to find base gameobject on supplied fsm gameobject", fsmGameObject.name + "fsmToUse: " + fsmToUse);
+            return null;
+        }
+
+        public static AssetBundle LoadAssetBundle(Mod mod, string fileName)
         {
             try
             {
@@ -49,6 +119,19 @@ namespace DonnerTech_ECU_Mod
         {
             return FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle").Value == "Satsuma";
         }
+        public static ScrewablePartV2[] GetScrewablePartsArrayFromPartsList(List<AdvPart> partsList)
+        {
+            List<ScrewablePartV2> screwableParts = new List<ScrewablePartV2>();
+
+            partsList.ForEach(delegate (AdvPart part)
+            {
+                if (part.screwablePart != null)
+                {
+                    screwableParts.Add(part.screwablePart);
+                }
+            });
+            return screwableParts.ToArray();
+        }
         public static ScrewablePart[] GetScrewablePartsArrayFromPartsList(List<SimplePart> partsList)
         {
             List<ScrewablePart> screwableParts = new List<ScrewablePart>();
@@ -62,6 +145,7 @@ namespace DonnerTech_ECU_Mod
             });
             return screwableParts.ToArray();
         }
+
         public static GameObject LoadPartAndSetName(AssetBundle assetsBundle, string prefabName, string name)
         {
             GameObject gameObject = assetsBundle.LoadAsset(prefabName) as GameObject;
@@ -75,6 +159,11 @@ namespace DonnerTech_ECU_Mod
         {
             get { return Input.GetMouseButtonDown(0); }
         }
+        public static bool LeftMouseDownContinuous
+        {
+            get { return Input.GetMouseButton(0); }
+        }
+
         public static bool RightMouseDown
         {
             get { return Input.GetMouseButtonDown(1); }

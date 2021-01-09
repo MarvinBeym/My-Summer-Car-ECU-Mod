@@ -1,5 +1,6 @@
 ﻿using ModApi.Attachable;
 using MSCLoader;
+using Parts;
 using ScrewablePartAPI;
 using System;
 using System.Collections.Generic;
