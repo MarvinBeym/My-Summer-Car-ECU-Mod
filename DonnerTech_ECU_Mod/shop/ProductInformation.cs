@@ -1,19 +1,14 @@
-﻿using DonnerTech_ECU_Mod.parts;
-using ModsShop;
+﻿using ModsShop;
 using Parts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod.shop
+namespace ModShop
 {
     class ProductInformation
     {
         public GameObject gameObject;
-        public SimplePart part;
-        public SimplePart[] parts;
+        public AdvPart part;
+        public AdvPart[] parts;
         public bool usingSimplePart = false;
 
         public string productName;
@@ -21,8 +16,8 @@ namespace DonnerTech_ECU_Mod.shop
         public string iconName;
         public bool bought;
         public string gameObjectName;
-        public ProductDetails product;
 
+        public ProductDetails product;
         public ProductInformation(Kit kit, string productName, float price, string iconName)
         {
             this.gameObject = kit.kitBox;
@@ -43,7 +38,7 @@ namespace DonnerTech_ECU_Mod.shop
             this.bought = box.bought;
         }
 
-        public ProductInformation(SimplePart part, string productName, float price, string iconName)
+        public ProductInformation(AdvPart part, string productName, float price, string iconName)
         {
             usingSimplePart = true;
             this.part = part;

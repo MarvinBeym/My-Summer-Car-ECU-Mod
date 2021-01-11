@@ -1,6 +1,7 @@
 ﻿using HutongGames.PlayMaker;
 using ModApi;
 using MSCLoader;
+using Parts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         private InputField input_sparkAngle;
         private bool chipInstalledOnProgrammer = false;
-        private ChipPart chipOnProgrammer = null;
+        private Chip chipOnProgrammer = null;
 
         private RaycastHit hit;
 
@@ -139,27 +140,28 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
             if (chip_errors.Count == 0)
             {
-                for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
+                for (int index = 0; index < fuelSystem.chips.Count; index++)
                 {
-                    ChipPart part = fuelSystem.chip_parts[index];
-                    if (part.chipInstalledOnProgrammer)
+                    Chip chip = fuelSystem.chips[index];
+                    AdvPart part = chip.part;
+                    if (chip.chipInstalledOnProgrammer)
                     {
                         part.activePart.SetActive(true);
                         chip_programmer_chip.SetActive(false);
                         chipInstalledOnProgrammer = false;
                         chipOnProgrammer = null;
-                        part.chipInstalledOnProgrammer = false;
-                        part.chipSave.map = fuelMap;
-                        part.chipSave.chipProgrammed = true;
-                        part.chipSave.startAssistEnabled = startAssistEnabled;
+                        chip.chipInstalledOnProgrammer = false;
+                        chip.chipSave.map = fuelMap;
+                        chip.chipSave.chipProgrammed = true;
+                        chip.chipSave.startAssistEnabled = startAssistEnabled;
                         try
                         {
-                            part.chipSave.sparkAngle = Convert.ToSingle(input_sparkAngle.text);
+                            chip.chipSave.sparkAngle = Convert.ToSingle(input_sparkAngle.text);
                         }
                         catch (Exception e)
                         {
                             Logger.New("Error while trying to save spark timing after chip programming", "input field value: " + input_sparkAngle.text, e);
-                            part.chipSave.sparkAngle = 14.5f;
+                            chip.chipSave.sparkAngle = 14.5f;
                         }
 
 
@@ -233,17 +235,17 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                             ModClient.guiInteract("insert chip", GuiInteractSymbolEnum.Assemble);
                             if (Helper.LeftMouseDown)
                             {
-                                for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
+                                for (int index = 0; index < fuelSystem.chips.Count; index++)
                                 {
-                                    ChipPart part = fuelSystem.chip_parts[index];
-                                    if (part.activePart.name == itemInHand.name)
+                                    Chip chip = fuelSystem.chips[index];
+                                    if (chip.part.activePart.name == itemInHand.name)
                                     {
-                                        part.activePart.SetActive(false);
+                                        chip.part.activePart.SetActive(false);
                                         chip_programmer_chip.SetActive(true);
                                         chipInstalledOnProgrammer = true;
-                                        part.chipInstalledOnProgrammer = true;
+                                        chip.chipInstalledOnProgrammer = true;
 
-                                        chipOnProgrammer = part;
+                                        chipOnProgrammer = chip;
                                         break;
                                     }
                                 }
@@ -266,20 +268,20 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     ModClient.guiInteraction = guiText;
                     if (Helper.RightMouseDown)
                     {
-                        for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
+                        for (int index = 0; index < fuelSystem.chips.Count; index++)
                         {
-                            ChipPart part = fuelSystem.chip_parts[index];
-                            if (part.chipInstalledOnProgrammer)
+                            Chip chip = fuelSystem.chips[index];
+                            if (chip.chipInstalledOnProgrammer)
                             {
                                 SetProgrammerUIStatus(false);
-                                part.activePart.SetActive(true);
+                                chip.part.activePart.SetActive(true);
                                 chip_programmer_chip.SetActive(false);
                                 chipInstalledOnProgrammer = false;
-                                part.chipInstalledOnProgrammer = false;
+                                chip.chipInstalledOnProgrammer = false;
 
                                 chipOnProgrammer = null;
                                 Vector3 chip_programmer_position = mod.chip_programmer_part.activePart.transform.position;
-                                part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
+                                chip.part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
                                 break;
                             }
                         }
@@ -330,17 +332,17 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         public void Save()
         {
-            for (int index = 0; index < fuelSystem.chip_parts.Count; index++)
+            for (int index = 0; index < fuelSystem.chips.Count; index++)
             {
-                ChipPart part = fuelSystem.chip_parts[index];
-                if (part.chipInstalledOnProgrammer)
+                Chip chip = fuelSystem.chips[index];
+                if (chip.chipInstalledOnProgrammer)
                 {
-                    part.activePart.SetActive(true);
+                    chip.part.activePart.SetActive(true);
                     chip_programmer_chip.SetActive(false);
-                    part.chipInstalledOnProgrammer = false;
+                    chip.chipInstalledOnProgrammer = false;
 
                     Vector3 chip_programmer_position = mod.chip_programmer_part.activePart.transform.position;
-                    part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
+                    chip.part.activePart.transform.position = new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f, chip_programmer_position.z);
                     break;
                 }
             }

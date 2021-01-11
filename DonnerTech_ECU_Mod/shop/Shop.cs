@@ -1,27 +1,21 @@
-﻿using DonnerTech_ECU_Mod.fuelsystem;
-using DonnerTech_ECU_Mod.shop;
-using ModApi.Attachable;
-using ModsShop;
+﻿using ModsShop;
 using MSCLoader;
-using Parts;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Tools;
 using UnityEngine;
+using Tools;
+using Parts;
 
-namespace DonnerTech_ECU_Mod
+namespace ModShop
 {
     class Shop
     {
-        private DonnerTech_ECU_Mod mod;
+        private Mod mod;
         private ShopItem modsShopItem;
         private AssetBundle assetBundle;
         private List<ProductInformation> shopItems;
 
-        public Shop(DonnerTech_ECU_Mod mod, ShopItem modsShopItem, AssetBundle assetBundle, List<ProductInformation> shopItems)
+        public Shop(Mod mod, ShopItem modsShopItem, AssetBundle assetBundle, List<ProductInformation> shopItems)
         {
             this.mod = mod;
             this.modsShopItem = modsShopItem;
@@ -35,7 +29,7 @@ namespace DonnerTech_ECU_Mod
             item.gameObject.SetActive(true);
             shopItems.ForEach(delegate (ProductInformation productInformation)
             {
-                if (productInformation.gameObjectName == item.gameObject.name)
+                if(productInformation.gameObjectName == item.gameObject.name)
                 {
                     if (productInformation.usingSimplePart)
                     {
@@ -43,49 +37,20 @@ namespace DonnerTech_ECU_Mod
                     }
                     else
                     {
-                        foreach (SimplePart part in productInformation.parts)
+                        foreach(AdvPart part in productInformation.parts)
                         {
                             SetPartBought(true, part);
                         }
-
+                        
                     }
-
+                    
                 }
             });
         }
-
-        private void PurchaseMadeChip(PurchaseInfo item)
+        
+        private void SetPartBought(bool bought, AdvPart part)
         {
-            
-            int chip_count_before = mod.fuel_system.chip_parts.Count;
-            for (int i = 0; i < item.qty; i++)
-            {
-                GameObject chip = GameObject.Instantiate(item.gameObject);
-
-                int nextChipId = (chip_count_before) + i;
-                Helper.SetObjectNameTagLayer(chip, "Chip" + nextChipId);
-
-                string fuel_system_savePath = Helper.CreatePathIfNotExists(Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", "chips" }));
-                string saveFile = Path.Combine(fuel_system_savePath, "chip" + nextChipId + "_saveFile.json");
-                string fuelMap_saveFile = Path.Combine(fuel_system_savePath, "chip" + nextChipId + ".fuelmap");
-                
-                ChipPart chip_part = new ChipPart(
-                    SimplePart.LoadData(mod, "chip" + nextChipId, null),
-                    chip,
-                    mod.smart_engine_module_part.rigidPart,
-                    mod.fuel_system.chip_installLocation,
-                    new Quaternion { eulerAngles = mod.fuel_system.chip_installRotation }
-                );
-                chip_part.SetDisassembleFunction(new Action(mod.fuel_system.DisassembleChip));
-                chip_part.mapSaveFile = fuelMap_saveFile;
-                chip_part.chipSave = new ChipSave();
-                chip_part.saveFile = saveFile;
-                mod.fuel_system.chip_parts.Add(chip_part);
-            }
-        }
-        private void SetPartBought(bool bought, SimplePart part)
-        {
-            part.bought = true;
+            part.bought = bought;
         }
 
         private void AddToShop(ProductInformation productInformation)
@@ -118,17 +83,23 @@ namespace DonnerTech_ECU_Mod
                 productInformation.gameObjectName = productInformation.gameObject.name;
                 AddToShop(productInformation);
             });
+        }
 
-            ProductDetails chip_product = new ModsShop.ProductDetails
+        internal static void Save(Mod mod, string saveFile, AdvPart[] parts)
+        {
+            try
             {
-                productName = "Programmable Chip",
-                multiplePurchases = true,
-                productCategory = "DonnerTech Racing",
-                productIcon = assetBundle.LoadAsset<Sprite>("chip_productImage.png"),
-                productPrice = 500
-            };
-
-            this.modsShopItem.Add(mod, chip_product, ModsShop.ShopType.Fleetari, PurchaseMadeChip, mod.chip);
+                Dictionary<string, bool> save = new Dictionary<string, bool>();
+                foreach (AdvPart part in parts)
+                {
+                    save[part.boughtId] = part.bought;
+                }
+                SaveLoad.SerializeSaveFile<Dictionary<string, bool>>(mod, save, saveFile);
+            }
+            catch (Exception ex)
+            {
+                Logger.New("Error while trying to save shop information", ex);
+            }
         }
     }
 }

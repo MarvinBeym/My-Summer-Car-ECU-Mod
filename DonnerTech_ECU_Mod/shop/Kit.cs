@@ -1,22 +1,19 @@
-﻿using Parts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using MSCLoader;
+using Parts;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod
+namespace ModShop
 {
     public class Kit
     {
-        private DonnerTech_ECU_Mod mod;
+        private Mod mod;
         public GameObject kitBox;
-        public SimplePart[] parts;
+        public AdvPart[] parts;
         private KitLogic logic;
         public int spawnedCounter = 0;
         public string boughtId;
         public bool bought;
-        public Kit(DonnerTech_ECU_Mod mod, GameObject kitBox, SimplePart[] simpleParts)
+        public Kit(Mod mod, GameObject kitBox, AdvPart[] simpleParts)
         {
             this.mod = mod;
             this.kitBox = kitBox;
@@ -25,7 +22,7 @@ namespace DonnerTech_ECU_Mod
             bought = simpleParts[0].bought;
             if (!bought)
             {
-                foreach (SimplePart part in parts)
+                foreach (AdvPart part in parts)
                 {
                     part.removePart();
                     part.activePart.SetActive(false);
@@ -42,7 +39,7 @@ namespace DonnerTech_ECU_Mod
             {
                 if (spawnedCounter < parts.Length)
                 {
-                    foreach (SimplePart part in parts)
+                    foreach (AdvPart part in parts)
                     {
                         if (!part.installed && !part.activePart.activeSelf)
                         {

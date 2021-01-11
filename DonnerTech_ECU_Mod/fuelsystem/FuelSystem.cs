@@ -18,21 +18,21 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         public FuelSystemLogic fuel_system_logic { get; set; }
         public ChipProgrammer chip_programmer { get; set; }
 
-        public SimplePart fuel_injector1_part;
-        public SimplePart fuel_injector2_part;
-        public SimplePart fuel_injector3_part;
-        public SimplePart fuel_injector4_part;
+        public AdvPart fuel_injector1_part;
+        public AdvPart fuel_injector2_part;
+        public AdvPart fuel_injector3_part;
+        public AdvPart fuel_injector4_part;
 
-        public SimplePart throttle_body1_part;
-        public SimplePart throttle_body2_part;
-        public SimplePart throttle_body3_part;
-        public SimplePart throttle_body4_part;
+        public AdvPart throttle_body1_part;
+        public AdvPart throttle_body2_part;
+        public AdvPart throttle_body3_part;
+        public AdvPart throttle_body4_part;
 
-        public SimplePart fuel_rail_part;
-        public SimplePart fuel_pump_cover_part;
-        public SimplePart fuel_injection_manifold_part;
-        public SimplePart electric_fuel_pump_part;
-        public List<SimplePart> allParts = new List<SimplePart>();
+        public AdvPart fuel_rail_part;
+        public AdvPart fuel_pump_cover_part;
+        public AdvPart fuel_injection_manifold_part;
+        public AdvPart electric_fuel_pump_part;
+        public List<AdvPart> allParts = new List<AdvPart>();
         public List<OriginalPart> allOriginalParts = new List<OriginalPart>();
 
         public FsmFloat distributor_sparkAngle;
@@ -56,12 +56,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         private const string orignal_parts_saveFile = "original_parts_saveFile.json";
         private OriginalPartsSave originalPartsSave;
 
-        public List<ChipPart> chip_parts = new List<ChipPart>();
+        public List<Chip> chips = new List<Chip>();
 
         public bool fuel_injection_manifold_applied = false;
 
         public Vector3 chip_installLocation = new Vector3(0.008f, 0.001f, -0.058f);
         public Vector3 chip_installRotation = new Vector3(0, 90, -90);
+        private AdvPart.AdvPartBaseInfo advPartBaseInfo;
         public DonnerTech_ECU_Mod mod;
         public bool allInstalled
         {
@@ -85,10 +86,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             }
         }
 
-        public FuelSystem(DonnerTech_ECU_Mod mod)
+        public FuelSystem(DonnerTech_ECU_Mod mod, AdvPart.AdvPartBaseInfo advPartBaseInfo)
         {
-
             this.mod = mod;
+            this.advPartBaseInfo = advPartBaseInfo;
 
             chip_programmer = new ChipProgrammer(mod, this);
 
@@ -170,11 +171,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             LoadChips();
         }
 
-        public void DisassembleChip()
-        {
-            fuel_system_logic.fuelMap = null;
-        }
-
         public bool allInstalled_applied = false;
         public void Handle()
         {
@@ -187,7 +183,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
             if (anyOriginalInstalled && !anyInstalled_tmp)
             {
-                foreach (SimplePart part in allParts)
+                foreach (AdvPart part in allParts)
                 {
                     part.removePart();
                     part.partTrigger.triggerGameObject.SetActive(false);
@@ -200,7 +196,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             
             if(anyInstalled_tmp && !anyOriginalInstalled)
             {
-                foreach (SimplePart part in allParts)
+                foreach (AdvPart part in allParts)
                 {
                     part.partTrigger.triggerGameObject.SetActive(true);
                 }
@@ -216,7 +212,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 {
                     originalPart.trigger.SetActive(true);
                 }
-                foreach (SimplePart part in allParts)
+                foreach (AdvPart part in allParts)
                 {
                     part.partTrigger.triggerGameObject.SetActive(true);
                 }
@@ -233,21 +229,21 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     mod.wires_sparkPlugs2.enabled = true;
 
                     allInstalled_applied = true;
-                    if (chip_parts.Any(c => c.InstalledScrewed() == true))
+                    if (chips.Any(chip => chip.part.InstalledScrewed() == true))
                     {
-                        for (int i = 0; i < chip_parts.Count; i++)
+                        for (int i = 0; i < chips.Count; i++)
                         {
-                            if (!chip_parts[i].InstalledScrewed())
+                            if (!chips[i].part.InstalledScrewed())
                             {
-                                chip_parts[i].partTrigger.triggerGameObject.SetActive(false);
+                                chips[i].part.partTrigger.triggerGameObject.SetActive(false);
                             }
                         }
                     }
                     else
                     {
-                        for (int i = 0; i < chip_parts.Count; i++)
+                        for (int i = 0; i < chips.Count; i++)
                         {
-                            chip_parts[i].partTrigger.triggerGameObject.SetActive(true);
+                            chips[i].part.partTrigger.triggerGameObject.SetActive(true);
                         }
                     }
 
@@ -315,12 +311,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         public void SaveChips()
         {
-            chip_parts.ForEach(delegate (ChipPart part)
+            chips.ForEach(delegate (Chip chip)
             {
-                SaveChip(part);
+                chip.SaveFuelMap(mod);
             });
-
-
         }
         public void LoadChips()
         {
@@ -342,41 +336,27 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 string saveFile = Helper.CombinePaths(new string[] { "fuelSystem", "chips", Path.GetFileName(saveFullPath) });
                 string mapSaveFile = Helper.CombinePaths(new string[] { "fuelSystem", "chips", Path.GetFileName(mapFullPath) });
 
-                GameObject chip = GameObject.Instantiate(mod.chip);
+                GameObject chip_object = GameObject.Instantiate(mod.chip);
 
-                Helper.SetObjectNameTagLayer(chip, "Chip" + i);
+                Helper.SetObjectNameTagLayer(chip_object, "Chip" + i);
 
                 ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, mapSaveFile);
 
-                ChipPart chip_part = new ChipPart(
-                    SimplePart.LoadData(mod, fuel_system_savePath + "\\chip" + i, null),
-                    chip,
-                    mod.smart_engine_module_part.rigidPart,
-                    chip_installLocation,
-                    new Quaternion { eulerAngles = chip_installRotation }
-                );
-                chip_part.SetDisassembleFunction(new Action(DisassembleChip));
-
-                chip_part.chipSave = chipSave;
-
-                chip_part.mapSaveFile = mapSaveFile;
+                AdvPart chip_part = AdvPart.Create(new AdvPart(advPartBaseInfo, $"chip{i}", $"Chip{i}", mod.smart_engine_module_part.part, chip_object, chip_installRotation, chip_installRotation, true, $"chip{i}"));
                 chip_part.saveFile = saveFile;
-                chip_parts.Add(chip_part);
+                Chip chip = new Chip(chip_part);
+
+                chip_part.AddOnDisassembleAction(delegate() 
+                {
+                    fuel_system_logic.fuelMap = null;
+                });
+
+                chip.chipSave = chipSave;
+                chip.mapSaveFile = mapSaveFile;
+
+                chips.Add(chip);
             }
         }
-
-        private void SaveChip(ChipPart part)
-        {
-            try
-            {
-                SaveLoad.SerializeSaveFile<ChipSave>(mod, part.chipSave, part.mapSaveFile);
-            }
-            catch (Exception ex)
-            {
-                Logger.New("Unable to save chips, there was an error while trying to save the chip", $"save file: {part.mapSaveFile}", ex);
-            }
-        }
-
         public void Save()
         {
             chip_programmer.Save();

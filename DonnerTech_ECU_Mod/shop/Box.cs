@@ -1,78 +1,68 @@
-﻿using ModApi.Attachable;
-using Parts;
-using ScrewablePartAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Tools;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using ScrewablePartAPI.V2;
+using Parts;
+using static Parts.AdvPart;
+using MSCLoader;
+using System.Linq;
 
-namespace DonnerTech_ECU_Mod.parts
+namespace ModShop
 {
     public class Box
     {
         public string id;
         public GameObject box;
         public bool bought;
-        private GameObject[] part_gameObjects;
         public int spawnedCounter = 0;
-        public SimplePart[] parts;
-        private string[] saveFiles;
+        public AdvPart[] parts;
         public BoxLogic logic;
-        public Box(DonnerTech_ECU_Mod mod, GameObject box, GameObject part_gameObject, string partName, int numberOfParts, SimplePart parent, Dictionary<string, bool> partsBuySave, Vector3[] installLocations, Vector3[] rotations)
+        public Box(Mod mod, GameObject box, GameObject part_gameObject, string boughtId, string partName, int numberOfParts, AdvPart parent, Dictionary<string, bool> partsBuySave, Vector3[] installLocations, Vector3[] installRotations, List<AdvPart> partsList, bool dontCollideOnRigid = true)
         {
+            AdvPartBaseInfo advPartBaseInfo = new AdvPartBaseInfo
+            {
+                mod = mod,
+                partsBuySave = partsBuySave,
+            };
+
             this.box = box;
-            id = partName.ToLower().Replace(" ", "_");
-            string boughtId = id + "_box";
-            
-            try
-            {
-                bought = partsBuySave[boughtId];
-            }
-            catch
-            {
-                bought = false;
-            }
 
-            part_gameObjects = new GameObject[numberOfParts];
-            saveFiles = new string[numberOfParts];
-            parts = new SimplePart[numberOfParts];
+            parts = new AdvPart[numberOfParts];
 
-            for(int i = 0; i < numberOfParts; i++)
+            for (int i = 0; i < numberOfParts; i++)
             {
                 int iOffset = i + 1;
-                part_gameObjects[i] = GameObject.Instantiate(part_gameObject);
-                Helper.SetObjectNameTagLayer(part_gameObjects[i], partName + " " + iOffset + "(Clone)");
-                saveFiles[i] = id + iOffset + "_saveFile.json";
 
-                parts[i] = new SimplePart(
-                    SimplePart.LoadData(mod, id + iOffset, partsBuySave, boughtId),
-                    part_gameObjects[i],
-                    parent.rigidPart,
-                    installLocations[i],
-                    new Quaternion { eulerAngles = rotations[i] }
-                );
+                parts[i] = new AdvPart(advPartBaseInfo, 
+                    id + iOffset, partName + " " + iOffset, 
+                    parent.part, part_gameObject, installLocations[i], installRotations[i],
+                    dontCollideOnRigid, boughtId);
 
-                if (!bought)
+                if (!parts[i].bought)
                 {
                     parts[i].removePart();
                     parts[i].activePart.SetActive(false);
                 }
             }
+
+            if(parts.Any(part => part.bought))
+            {
+                this.bought = true;
+            }
+
             logic = box.AddComponent<BoxLogic>();
             logic.Init(mod, parts, "Unpack " + partName.ToLower(), this);
-            foreach(SimplePart part in parts)
+            foreach (AdvPart part in parts)
             {
-                mod.partsList.Add(part);
+                parent.AddChildPart(part);
+                partsList.Add(part);
             }
         }
 
-        public void AddScrewable(SortedList<string, Screws> screwListSave, AssetBundle screwableAssetsBundle, Screw[] screws)
+        public void AddScrewable(ScrewablePartV2BaseInfo baseInfo, AssetBundle screwableAssetsBundle, ScrewV2[] screws)
         {
-            foreach(SimplePart part in parts)
+            foreach (AdvPart part in parts)
             {
-                part.screwablePart = new ScrewablePart(screwListSave, screwableAssetsBundle, part.rigidPart, screws);
+                part.screwablePart = new ScrewablePartV2(baseInfo, part.id, part.rigidPart, screws);
             }
         }
 
@@ -82,7 +72,7 @@ namespace DonnerTech_ECU_Mod.parts
             {
                 if (spawnedCounter < parts.Length)
                 {
-                    foreach (SimplePart part in parts)
+                    foreach (AdvPart part in parts)
                     {
                         if (!part.installed && !part.activePart.activeSelf)
                         {

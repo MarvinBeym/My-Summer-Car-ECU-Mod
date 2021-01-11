@@ -7,12 +7,6 @@ namespace DonnerTech_ECU_Mod
 {
     public class PartBuySave
     {
-#if DEBUG
-        public bool bought_airrideFL { get; set; } = false;
-        public bool boughtAwdGearbox { get; set; } = false;
-        public bool boughtAwdDifferential { get; set; } = false;
-        public bool boughtAwdPropshaft { get; set; } = false;
-#endif
         public bool bought_rainLightSensorboard { get; set; } = false;
         public bool bought_reverseCamera { get; set; } = false;
         public bool boughtInfoPanel { get; set; } = false;  

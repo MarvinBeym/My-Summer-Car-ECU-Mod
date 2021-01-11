@@ -1,15 +1,14 @@
 ﻿using ModApi;
 using MSCLoader;
 using Parts;
-using System;
 using Tools;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod
+namespace ModShop
 {
     public class KitLogic : MonoBehaviour
     {
-        private DonnerTech_ECU_Mod mod;
+        private Mod mod;
         private Kit kit;
         private RaycastHit hit;
 
@@ -33,7 +32,7 @@ namespace DonnerTech_ECU_Mod
                         ModClient.guiInteraction = string.Format("Press [{0}] to {1}", cInput.GetText("Use"), "Unpack " + kit.parts[kit.spawnedCounter].activePart.name.Replace("(Clone)", ""));
                         if (Helper.UseButtonDown)
                         {
-                            SimplePart part = kit.parts[kit.spawnedCounter];
+                            AdvPart part = kit.parts[kit.spawnedCounter];
 
                             part.activePart.transform.position = hit.point;
 
@@ -49,7 +48,7 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        public void Init(DonnerTech_ECU_Mod mod, Kit kit)
+        public void Init(Mod mod, Kit kit)
         {
             this.mod = mod;
             this.kit = kit;

@@ -1,5 +1,6 @@
 ﻿using HutongGames.PlayMaker;
 using MSCLoader;
+using Parts;
 using System;
 using Tools;
 using UnityEngine;
@@ -14,7 +15,11 @@ namespace DonnerTech_ECU_Mod
 
         private PlayMakerFSM smart_engine_moduleFSM;
         private FsmBool smart_engine_module_allInstalled;
-       
+        private AdvPart part;
+        private AdvPart absModulePart;
+        private AdvPart espModulePart;
+        private AdvPart tcsModulePart;
+
         public FsmBool alsModule_enabled { get; set; }
         public FsmBool step2RevLimiterModule_enabled { get; set; }
        
@@ -172,6 +177,64 @@ namespace DonnerTech_ECU_Mod
                     Toggle2StepRevLimiter();
                 }
             }
+        }
+
+        internal void Init(AdvPart smart_engine_module_part, AdvPart absModulePart, AdvPart espModulePart, AdvPart tcsModulePart)
+        {
+            part = smart_engine_module_part;
+            part.AddOnAssembleAction(OnAssemble);
+            part.AddOnDisassembleAction(OnDisassemble);
+
+            this.absModulePart = absModulePart;
+            this.espModulePart = espModulePart;
+            this.tcsModulePart = tcsModulePart;
+        }
+
+        private void OnDisassemble()
+        {
+            SetAbs(false);
+            SetEsp(false);
+            SetTcs(false);
+        }
+        public void SetAbs(bool newStatus)
+        {
+            if (absModulePart.InstalledScrewed())
+            {
+                CarH.carController.ABS = newStatus;
+            }
+            else
+            {
+                CarH.carController.ABS = false;
+            }
+        }
+
+        public void SetEsp(bool newStatus)
+        {
+            if (espModulePart.InstalledScrewed())
+            {
+                CarH.carController.ESP = newStatus;
+            }
+            else
+            {
+                CarH.carController.ESP = false;
+            }
+        }
+
+        public void SetTcs(bool newStatus)
+        {
+            if (tcsModulePart.InstalledScrewed())
+            {
+                CarH.carController.TCS = newStatus;
+            }
+            else
+            {
+                CarH.carController.TCS = false;
+            }
+        }
+
+        private void OnAssemble()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -54,14 +54,14 @@ namespace DonnerTech_ECU_Mod
                 {
 
 
-                    for (int index = 0; index < fuel_system.chip_parts.Count; index++)
+                    for (int index = 0; index < fuel_system.chips.Count; index++)
                     {
-                        ChipPart part = fuel_system.chip_parts[index];
-                        if (part.installed && part.chipSave.chipProgrammed)
+                        Chip chip = fuel_system.chips[index];
+                        if (chip.part.installed && chip.chipSave.chipProgrammed)
                         {
-                            fuelMap = part.chipSave.map;
-                            startAssistEnabled = part.chipSave.startAssistEnabled;
-                            fuel_system.distributor_sparkAngle.Value = part.chipSave.sparkAngle;
+                            fuelMap = chip.chipSave.map;
+                            startAssistEnabled = chip.chipSave.startAssistEnabled;
+                            fuel_system.distributor_sparkAngle.Value = chip.chipSave.sparkAngle;
                             break;
                         }
                     }

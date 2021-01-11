@@ -16,10 +16,10 @@ namespace DonnerTech_ECU_Mod.infoPanel
         private DonnerTech_ECU_Mod mod;
         
         private bool workaroundChildDisableDone = false;
-        public SimplePart part { get; set; }
+        public AdvPart part { get; set; }
         public InfoPanel_Logic logic { get; set; }
 
-        public InfoPanel(DonnerTech_ECU_Mod mod, SimplePart part, AssetBundle assetBundle)
+        public InfoPanel(DonnerTech_ECU_Mod mod, AdvPart part, AssetBundle assetBundle)
         {
             this.mod = mod;
             this.part = part;
