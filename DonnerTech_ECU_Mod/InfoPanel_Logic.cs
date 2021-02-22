@@ -17,6 +17,13 @@ namespace DonnerTech_ECU_Mod
 {
     public class InfoPanel_Logic : MonoBehaviour
     {
+        public enum PressedButton
+        {
+            Circle,
+            Cross,
+            Plus,
+            Minus,
+        };
         public GameObject panel;
         private InfoPanel infoPanel;
         private DonnerTech_ECU_Mod mod;
@@ -61,11 +68,6 @@ namespace DonnerTech_ECU_Mod
         //Reverse Camera stuff
         private MeshRenderer ecu_InfoPanel_Display_Reverse_Camera;
 
-        //Airride stuff
-        //camber -> wheelFL, .... 
-
-
-
         //Lightsensor stuff
         private bool isNight = false;
 
@@ -96,7 +98,7 @@ namespace DonnerTech_ECU_Mod
         private Gradient shift_indicator_gradient;
 
         private float shift_indicator_blink_timer = 0;
-        private int shift_indicator_baseLine = 3500;
+        public int shift_indicator_baseLine = 3500;
         public int shift_indicator_greenLine = 6500;
         public int shift_indicator_redLine = 7500;
 
@@ -356,7 +358,7 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        private void SetupShiftIndicator()
+        public void SetupShiftIndicator()
         {
             shift_indicator_gradient = new Gradient();
             GradientColorKey[] colorKey = new GradientColorKey[3];
@@ -423,27 +425,27 @@ namespace DonnerTech_ECU_Mod
             {
                 if (mod.arrowUp.GetKeybindDown())
                 {
-                    Pressed_Button_ArrowUp();
+                    OnArrowUp();
                 }
                 else if (mod.arrowDown.GetKeybindDown())
                 {
-                    Pressed_Button_ArrowUp();
+                    OnArrowDown();
                 }
                 else if (mod.circle.GetKeybindDown())
                 {
-                    Pressed_Button_Circle();
+                    pages[currentPage].PressedButton(PressedButton.Circle, selectedSetting);
                 }
                 else if (mod.cross.GetKeybindDown())
                 {
-                    Pressed_Button_Cross();
+                    pages[currentPage].PressedButton(PressedButton.Cross, selectedSetting);
                 }
                 else if (mod.plus.GetKeybindDown())
                 {
-                    Pressed_Button_Plus();
+                    pages[currentPage].PressedButton(PressedButton.Plus, selectedSetting);
                 }
                 else if (mod.minus.GetKeybindDown())
                 {
-                    Pressed_Button_Minus();
+                    pages[currentPage].PressedButton(PressedButton.Minus, selectedSetting);
                 }
             }
         }
@@ -465,9 +467,10 @@ namespace DonnerTech_ECU_Mod
                         {
                             if (gameObjectHit.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
                             {
-                                foundObject = true;
+    
                                 valueToPass = guiTexts[i - 1];
                                 guiText = guiTexts[i - 1];
+                                foundObject = true;
                                 break;
                             }
                         }
@@ -490,57 +493,21 @@ namespace DonnerTech_ECU_Mod
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f, 1 << LayerMask.NameToLayer("DontCollide")) != false)
                 {
                     GameObject gameObjectHit;
-                    bool foundObject = false;
                     string guiText = "";
                     gameObjectHit = hit.collider?.gameObject;
                     if (gameObjectHit != null)
                     {
-                        Action actionToPerform = null;
-                        if (gameObjectHit.name == "buttonArrowDown")
-                        {
-                            foundObject = true;
-                            actionToPerform = Pressed_Button_ArrowDown;
-                            guiText = "Arrow down";
-                        }
-                        else if (gameObjectHit.name == "buttonArrowUp")
-                        {
-                            foundObject = true;
-                            actionToPerform = Pressed_Button_ArrowUp;
-                            guiText = "Arrow up";
-                        }
-                        else if (gameObjectHit.name == "buttonCircle")
-                        {
-                            foundObject = true;
-                            actionToPerform = Pressed_Button_Circle;
-                            guiText = "Circle";
-                        }
-                        else if (gameObjectHit.name == "buttonCross")
-                        {
-                            foundObject = true;
-                            actionToPerform = Pressed_Button_Cross;
-                            guiText = "Cross";
-                        }
-                        else if (gameObjectHit.name == "buttonMinus")
-                        {
-                            foundObject = true;
-                            actionToPerform = Pressed_Button_Minus;
-                            guiText = "Minus";
-                        }
-                        else if (gameObjectHit.name == "buttonPlus")
-                        {
-                            foundObject = true;
-                            actionToPerform = Pressed_Button_Plus;
-                            guiText = "Plus";
+                        Action actionToPerform = delegate () { ButtonPress(currentPage, gameObjectHit.name); };
+
+                        if (!gameObjectHit.name.StartsWith("button")){
+                            return;
                         }
 
-                        if (foundObject)
+                        ModClient.guiInteract(gameObjectHit.name.Replace("button", "").Replace("Arrow", ""));
+                        if (Helper.UseButtonDown || Helper.LeftMouseDown)
                         {
-                            ModClient.guiInteract(guiText);
-                            if (Helper.UseButtonDown || Helper.LeftMouseDown)
-                            {
-                                actionToPerform.Invoke();
-                                Helper.PlayTouchSound(gameObjectHit);
-                            }
+                            actionToPerform.Invoke();
+                            Helper.PlayTouchSound(gameObjectHit);
                         }
                     }
 
@@ -549,58 +516,33 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        private void Pressed_Button_Plus()
+        private void ButtonPress(int pageNumer, string action)
         {
-            switch (selectedSetting)
+            switch (action)
             {
-                case "Select 2Step RPM":
-                    mod.step2_rpm.Value += 100;
-                    if (mod.step2_rpm.Value >= 10000) { mod.step2_rpm.Value = 10000; }
-                    break;
-                case "Select Shift Indicator green line":
-                    shift_indicator_greenLine += 100;
-                    if(shift_indicator_greenLine >= shift_indicator_redLine) { shift_indicator_greenLine -= 100; }
-                    SetupShiftIndicator();
-                    break;
-                case "Select Shift Indicator red line":
-                    shift_indicator_redLine += 100;
-                    SetupShiftIndicator();
-                    break;
+                case "buttonArrowDown":
+                    OnArrowDown();
+                    return;
+                case "buttonArrowUp":
+                    OnArrowUp();
+                    return;
+                case "buttonCircle":
+                    pages[pageNumer].PressedButton(PressedButton.Circle, selectedSetting);
+                    return;
+                case "buttonCross":
+                    pages[pageNumer].PressedButton(PressedButton.Cross, selectedSetting);
+                    return;
+                case "buttonMinus":
+                    pages[pageNumer].PressedButton(PressedButton.Minus, selectedSetting);
+                    return;
+                case "buttonPlus":
+                    pages[pageNumer].PressedButton(PressedButton.Plus, selectedSetting);
+                    return;
             }
+            return;
         }
 
-        private void Pressed_Button_Minus()
-        {
-            switch (selectedSetting)
-            {
-                case "Select 2Step RPM":
-                    mod.step2_rpm.Value -= 100;
-                    if (mod.step2_rpm.Value <= 2000) { mod.step2_rpm.Value = 2000; }
-                    break;
-                case "Select Shift Indicator green line":
-                    shift_indicator_greenLine -= 100;
-                    if(shift_indicator_greenLine <= shift_indicator_baseLine) { shift_indicator_greenLine += 100; }
-                    SetupShiftIndicator();
-                    break;
-                case "Select Shift Indicator red line":
-                    shift_indicator_redLine -= 100;
-                    if (shift_indicator_redLine <= shift_indicator_greenLine) { shift_indicator_redLine += 100; }
-                    SetupShiftIndicator();
-                    break;
-            }
-        }
-
-        private void Pressed_Button_Cross()
-        {
-            
-        }
-
-        private void Pressed_Button_Circle()
-        {
-            
-        }
-
-        private void Pressed_Button_ArrowUp()
+        private void OnArrowUp()
         {
             currentPage++;
             if(currentPage > pages.Count - 1)
@@ -610,7 +552,7 @@ namespace DonnerTech_ECU_Mod
             ChangeInfoPanelPage(currentPage);
         }
 
-        private void Pressed_Button_ArrowDown()
+        private void OnArrowDown()
         {
             currentPage--;
             if(currentPage < 0)

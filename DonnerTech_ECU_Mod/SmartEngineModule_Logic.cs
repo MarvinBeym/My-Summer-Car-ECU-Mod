@@ -11,18 +11,27 @@ namespace DonnerTech_ECU_Mod
     {
         private DonnerTech_ECU_Mod mod;
 
-        private FsmString playerCurrentVehicle;
+        public enum Module
+        {
+            Abs,
+            Esp,
+            Tcs,
+            Als,
+            TwoStep,
+        }
 
-        private PlayMakerFSM smart_engine_moduleFSM;
-        private FsmBool smart_engine_module_allInstalled;
         private AdvPart part;
         private AdvPart absModulePart;
         private AdvPart espModulePart;
         private AdvPart tcsModulePart;
 
-        public FsmBool alsModule_enabled { get; set; }
-        public FsmBool step2RevLimiterModule_enabled { get; set; }
-       
+        public PlayMakerFSM modulesFsm;
+        public FsmFloat twoStepRpm = new FsmFloat("2Step rpm");
+        public FsmBool absModuleEnabled = new FsmBool("ABS Module Enabled");
+        public FsmBool espModuleEnabled = new FsmBool("ESP Module Enabled");
+        public FsmBool tcsModuleEnabled = new FsmBool("TCS Module Enabled");
+        public FsmBool alsModuleEnabled = new FsmBool("ALS Module Enabled");
+        public FsmBool twoStepModuleEnabled = new FsmBool("2STEP Module Enabled");
 
         void Start()
         {
@@ -37,50 +46,47 @@ namespace DonnerTech_ECU_Mod
                 }
             }
 
-            playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
             CarH.drivetrain.maxRPM = 8500;
+            twoStepRpm.Value = 6500;
 
-            smart_engine_moduleFSM = this.gameObject.AddComponent<PlayMakerFSM>();
-            smart_engine_moduleFSM.FsmName = "Smart Engine Module";
+            modulesFsm = Game.Find(mod.ID).AddComponent<PlayMakerFSM>();
+            modulesFsm.FsmName = "Modules";
 
-
-            smart_engine_module_allInstalled = new FsmBool("All installed");
-            alsModule_enabled = new FsmBool("ALS Enabled");
-            step2RevLimiterModule_enabled = new FsmBool("Step2RevLimiter Enabled");
-
-            smart_engine_moduleFSM.FsmVariables.BoolVariables = new FsmBool[]
+            modulesFsm.FsmVariables.BoolVariables = new FsmBool[]
             {
-                smart_engine_module_allInstalled,
-                alsModule_enabled,
-                step2RevLimiterModule_enabled
+                absModuleEnabled,
+                espModuleEnabled,
+                tcsModuleEnabled,
+                alsModuleEnabled,
+                twoStepModuleEnabled,
+            };
+            modulesFsm.FsmVariables.FloatVariables = new FsmFloat[]
+            {
+                twoStepRpm,
             };
         }
 
 
         void Update()
         {
-            if (mod.smart_engine_module_part.InstalledScrewed() && !step2RevLimiterModule_enabled.Value && CarH.drivetrain.maxRPM != 8500)
+            if (mod.smart_engine_module_part.InstalledScrewed() && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
             {
                 CarH.drivetrain.maxRPM = 8500;
             }
 
-            if (CarH.hasPower)
+            if(!CarH.hasPower || !Helper.PlayerInCar() || !mod.cable_harness_part.InstalledScrewed() || !mod.mounting_plate_part.InstalledScrewed())
             {
-                if(mod.cable_harness_part.installed && mod.mounting_plate_part.installed && mod.mounting_plate_part.InstalledScrewed())
-                {
-                    if (playerCurrentVehicle.Value == "Satsuma")
-                    {
-                        if (mod.step2RevLimiterModule_enabled.Value)
-                        {
-                            HandleStep2RevLimiterModule();
-                        }
+                return;
+            }
 
-                        if (mod.alsModule_enabled.Value)
-                        {
-                            HandleALSModuleLogic();
-                        }
-                    }
-                }
+            if (twoStepModuleEnabled.Value)
+            {
+                HandleTwoStep();
+            }
+
+            if (alsModuleEnabled.Value)
+            {
+                HandleALSModuleLogic();
             }
         }
 
@@ -107,75 +113,17 @@ namespace DonnerTech_ECU_Mod
             */
         }
 
-        public void ToggleABS()
+        public void HandleTwoStep()
         {
-            if (mod.abs_module_part.InstalledScrewed())
-            {
-                CarH.carController.ABS = !CarH.carController.ABS;
-                mod.absModule_enabled.Value = CarH.carController.ABS;
-            }
-            else
-            {
-                CarH.carController.ABS = false;
-                mod.absModule_enabled.Value = false;
-            }
-
-
-        }
-        public void ToggleESP()
-        {
-            if (mod.esp_module_part.InstalledScrewed())
-            {
-                CarH.carController.ESP = !CarH.carController.ESP;
-                mod.espModule_enabled.Value = CarH.carController.ESP;
-            }
-            else
-            {
-                CarH.carController.ESP = false;
-                mod.espModule_enabled.Value = false;
-            }
-
-        }
-        public void ToggleTCS()
-        {
-            if (mod.tcs_module_part.InstalledScrewed())
-            {
-                CarH.carController.TCS = !CarH.carController.TCS;
-                mod.tcsModule_enabled.Value = CarH.carController.TCS;
-            }
-            else
-            {
-                CarH.carController.TCS = false;
-                mod.tcsModule_enabled.Value = false;
-            }
-
-        }
-
-        public void ToggleALS()
-        {
-            mod.alsModule_enabled.Value = !mod.alsModule_enabled.Value;
-            alsModule_enabled.Value = !alsModule_enabled.Value;
-        }
-        public void Toggle2StepRevLimiter()
-        {
-            mod.step2RevLimiterModule_enabled.Value = !mod.step2RevLimiterModule_enabled.Value;
-            step2RevLimiterModule_enabled.Value = !step2RevLimiterModule_enabled.Value;
-        }
-
-        public void HandleStep2RevLimiterModule()
-        {
-            if(mod.step2RevLimiterModule_enabled.Value && CarH.drivetrain.velo < 3.5f)
+            if(twoStepModuleEnabled.Value && CarH.drivetrain.velo < 3.5f)
             {
                 CarH.drivetrain.revLimiterTime = 0;
-                CarH.drivetrain.maxRPM = mod.step2_rpm.Value;
+                CarH.drivetrain.maxRPM = twoStepRpm.Value;
             }
             else
             {
                 CarH.drivetrain.revLimiterTime = 0.2f;
-                if (mod.step2RevLimiterModule_enabled.Value)
-                {
-                    Toggle2StepRevLimiter();
-                }
+                SetTwoStep(false);
             }
         }
 
@@ -195,41 +143,70 @@ namespace DonnerTech_ECU_Mod
             SetAbs(false);
             SetEsp(false);
             SetTcs(false);
+            SetAls(false);
+            SetTwoStep(false);
         }
-        public void SetAbs(bool newStatus)
+
+        public void ToggleModule(Module module)
         {
-            if (absModulePart.InstalledScrewed())
+            switch (module)
             {
-                CarH.carController.ABS = newStatus;
-            }
-            else
-            {
-                CarH.carController.ABS = false;
+                case Module.Abs:
+                    SetAbs(!absModuleEnabled.Value);
+                    break;
+                case Module.Esp:
+                    SetEsp(!espModuleEnabled.Value);
+                    break;
+                case Module.Tcs:
+                    SetTcs(!tcsModuleEnabled.Value);
+                    break;
+                case Module.Als:
+                    SetAls(!alsModuleEnabled.Value);
+                    break;
+                case Module.TwoStep:
+                    SetTwoStep(!twoStepModuleEnabled.Value);
+                    break;
             }
         }
 
-        public void SetEsp(bool newStatus)
+        public void SetAbs(bool newState)
         {
-            if (espModulePart.InstalledScrewed())
-            {
-                CarH.carController.ESP = newStatus;
-            }
-            else
-            {
-                CarH.carController.ESP = false;
-            }
+            newState = checkStatePartInstalled(newState);
+            absModuleEnabled.Value = newState;
+            CarH.carController.ABS = newState;
         }
 
-        public void SetTcs(bool newStatus)
+        public void SetEsp(bool newState)
         {
-            if (tcsModulePart.InstalledScrewed())
+            newState = checkStatePartInstalled(newState);
+            espModuleEnabled.Value = newState;
+            CarH.carController.ESP = newState;
+        }
+
+        public void SetTcs(bool newState)
+        {
+            newState = checkStatePartInstalled(newState);
+            tcsModuleEnabled.Value = newState;
+            CarH.carController.TCS = newState;
+        }
+
+        public void SetAls(bool newState)
+        {
+            alsModuleEnabled.Value = checkStatePartInstalled(newState);
+        }
+
+        public void SetTwoStep(bool newState)
+        {
+            twoStepModuleEnabled.Value = checkStatePartInstalled(newState);
+        }
+
+        private bool checkStatePartInstalled(bool state)
+        {
+            if(!this.part.InstalledScrewed())
             {
-                CarH.carController.TCS = newStatus;
+                state = false;
             }
-            else
-            {
-                CarH.carController.TCS = false;
-            }
+            return state;
         }
 
         private void OnAssemble()

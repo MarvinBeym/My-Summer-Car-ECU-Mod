@@ -63,6 +63,40 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
             DisplayValues();
         }
 
+        public override void PressedButton(InfoPanel_Logic.PressedButton pressedButton, string action)
+        {
+            switch (pressedButton)
+            {
+                case InfoPanel_Logic.PressedButton.Plus:
+                    switch (action)
+                    {
+                        case "Select Shift Indicator green line":
+                            logic.shift_indicator_greenLine += 100;
+                            break;
+                        case "Select Shift Indicator red line":
+                            logic.shift_indicator_redLine += 100;
+                            break;
+                    }
+                    break;
+                case InfoPanel_Logic.PressedButton.Minus:
+                    switch (action)
+                    {
+                        case "Select Shift Indicator green line":
+                            logic.shift_indicator_greenLine -= 100;
+                            break;
+                        case "Select Shift Indicator red line":
+                            logic.shift_indicator_redLine -= 100;
+                            break;
+                    }
+                    break;
+            }
+            if (logic.shift_indicator_greenLine >= logic.shift_indicator_redLine) { logic.shift_indicator_greenLine -= 100; }
+            if (logic.shift_indicator_greenLine <= logic.shift_indicator_baseLine) { logic.shift_indicator_greenLine += 100; }
+            if (logic.shift_indicator_redLine <= logic.shift_indicator_greenLine) { logic.shift_indicator_redLine += 100; }
+            logic.SetupShiftIndicator();
+
+        }
+
         public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
         {
             switch (value)

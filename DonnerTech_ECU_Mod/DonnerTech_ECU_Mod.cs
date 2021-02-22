@@ -110,6 +110,8 @@ namespace DonnerTech_ECU_Mod
 
         public BugReporter.BugReporter bugReporter;
 
+        public GameObject ecu_mod_gameObject;
+
         //Keybinds
         public Keybind highestKeybind = new Keybind("airride_highest", "Airride Highest", KeyCode.LeftArrow);
         public Keybind lowestKeybind = new Keybind("airride_lowest", "Airride Lowest", KeyCode.RightArrow);
@@ -132,15 +134,6 @@ namespace DonnerTech_ECU_Mod
         //Installed FSM
         public FsmBool fuelInjection_allInstalled;
         public FsmBool fuelInjection_anyInstalled;
-
-        //Modules FSM
-        public PlayMakerFSM modulesFsm;
-        public FsmFloat step2_rpm;
-        public FsmBool absModule_enabled;
-        public FsmBool espModule_enabled;
-        public FsmBool tcsModule_enabled;
-        public FsmBool alsModule_enabled;
-        public FsmBool step2RevLimiterModule_enabled;
 
         //FuelSystem
         public FuelSystem fuel_system;
@@ -308,7 +301,7 @@ namespace DonnerTech_ECU_Mod
             }
 
 
-            GameObject ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
+            ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
             ecu_mod_gameObject.name = this.ID;
 
             PlayMakerFSM installedFsm = ecu_mod_gameObject.AddComponent<PlayMakerFSM>();
@@ -321,30 +314,6 @@ namespace DonnerTech_ECU_Mod
             {
                 fuelInjection_allInstalled,
                 fuelInjection_anyInstalled,
-            };
-
-            modulesFsm = ecu_mod_gameObject.AddComponent<PlayMakerFSM>();
-            modulesFsm.FsmName = "Modules";
-
-            absModule_enabled = new FsmBool("ABS Enabled");
-            espModule_enabled = new FsmBool("ESP Enabled");
-            tcsModule_enabled = new FsmBool("TCS Enabled");
-            alsModule_enabled = new FsmBool("ALS Enabled");
-            step2RevLimiterModule_enabled = new FsmBool("Step2RevLimiter Enabled");
-            step2_rpm = new FsmFloat("Rpm");
-            step2_rpm.Value = 6500;
-
-            modulesFsm.FsmVariables.BoolVariables = new FsmBool[]
-            {
-                absModule_enabled,
-                espModule_enabled,
-                tcsModule_enabled,
-                alsModule_enabled,
-                step2RevLimiterModule_enabled,
-            };
-            modulesFsm.FsmVariables.FloatVariables = new FsmFloat[]
-            {
-                step2_rpm
             };
 
             modAssetsFolder = ModLoader.GetModAssetsFolder(this);
@@ -414,6 +383,7 @@ namespace DonnerTech_ECU_Mod
             smart_engine_module_part = Create(new AdvPart(advPartBaseInfo, "smart_engine_module",
                 "Smart Engine ECU", mounting_plate_part.part,
                 smart_engine_module_installLocation, new Vector3(0, 0, 0)));
+
             smart_engine_module_part.AddOnDisassembleAction(DisassembleSmartEngineModule);
             smart_engine_module_logic = smart_engine_module_part.rigidPart.AddComponent<SmartEngineModule_Logic>();
             smart_engine_module_logic.Init(smart_engine_module_part, abs_module_part, esp_module_part, tcs_module_part);
@@ -425,6 +395,7 @@ namespace DonnerTech_ECU_Mod
             cruise_control_panel_part = Create(new AdvPart(advPartBaseInfo, "cruise_control_panel",
                 "Cruise Control Panel", Game.Find("dashboard(Clone)"),
                 cruise_control_panel_installLocation, new Vector3(90, 0, 0)));
+
             cruise_control_logic = cruise_control_panel_part.rigidPart.AddComponent<CruiseControl_Logic>();
 
             info_panel_part = Create(new AdvPart(advPartBaseInfo, "info_panel",

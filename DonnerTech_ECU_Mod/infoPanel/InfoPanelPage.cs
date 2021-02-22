@@ -105,5 +105,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
             return intPercentage.ToString("000") + "%";
         }
+
+        public virtual void PressedButton(InfoPanel_Logic.PressedButton pressedButton, string action) { }
     }
 }

@@ -13,7 +13,6 @@ namespace ModShop
         private string actionToDisplay;
         private Mod mod;
         private AdvPart[] parts;
-        private RaycastHit hit;
         // Use this for initialization
         void Start()
         {
@@ -23,14 +22,14 @@ namespace ModShop
         // Update is called once per frame
         void Update()
         {
-            if (Camera.main != null && box.spawnedCounter < parts.Length && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 0.8f, 1 << LayerMask.NameToLayer("Parts")) != false)
+            if (Helper.DetectRaycastHitObject(this.gameObject) && box.spawnedCounter < parts.Length)
             {
                 ModClient.guiInteraction = string.Format("Press [{0}] to {1}", cInput.GetText("Use"), actionToDisplay);
                 if (Helper.UseButtonDown)
                 {
                     AdvPart part = parts[box.spawnedCounter];
 
-                    part.activePart.transform.position = hit.point;
+                    part.activePart.transform.position = this.gameObject.transform.position;
 
                     part.activePart.SetActive(true);
                     box.spawnedCounter++;
