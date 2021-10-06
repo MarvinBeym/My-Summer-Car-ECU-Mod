@@ -41,7 +41,7 @@ namespace DonnerTech_ECU_Mod.old_file_checker
             oldToNew.Add("screwable_saveFile.txt", "screwable_saveFile.json");
 
             oldToNew.Add("fuelSystem\\original_parts_saveFile.txt", "fuelSystem\\original_parts_saveFile.json");
-            string fuel_system_savePath = Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", "chips" });
+            string fuel_system_savePath = Helper.CombinePaths(new string[] { ModLoader.GetModSettingsFolder(mod), "fuelSystem", "chips" });
             if (Directory.Exists(fuel_system_savePath))
             {
                 string[] fuelSystemChipSaveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*_saveFile.txt");
@@ -53,7 +53,7 @@ namespace DonnerTech_ECU_Mod.old_file_checker
             }
 
 
-            RenameOldFiles(ModLoader.GetModConfigFolder(mod), oldToNew);
+            RenameOldFiles(ModLoader.GetModSettingsFolder(mod), oldToNew);
         }
     }
 }

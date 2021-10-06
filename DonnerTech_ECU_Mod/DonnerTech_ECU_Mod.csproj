@@ -37,10 +37,6 @@
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BugReporter">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\References\BugReporter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="cInput">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\cInput.dll</HintPath>
       <Private>False</Private>
@@ -60,6 +56,10 @@
     </Reference>
     <Reference Include="MSCLoader">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MscPartApi">
+      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\MscPartApi.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

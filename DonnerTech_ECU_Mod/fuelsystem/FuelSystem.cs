@@ -100,7 +100,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             PlayMakerFSM raceCarb = Game.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
             //PlayMakerFSM fuelStrainer = Game.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
 
-            originalPartsSave = Helper.LoadSaveOrReturnNew<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
+            originalPartsSave = Helper.LoadSaveOrReturnNew<OriginalPartsSave>(mod, Helper.CombinePaths(new string[] { ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile }));
 
             allOriginalParts.Add(new OriginalPart("Electrics", "pivot_electrics", Game.Find("Electrics"), originalPartsSave.electrics_position, originalPartsSave.electrics_rotation, originalPartsSave.electrics_installed));
             allOriginalParts.Add(new OriginalPart("Distributor", "pivot_distributor", Game.Find("Distributor"), originalPartsSave.distributor_position, originalPartsSave.distributor_rotation, originalPartsSave.distributor_installed));
@@ -300,11 +300,11 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 originalPartsSave.electrics_position = electrics.gameObject.transform.position;
                 originalPartsSave.electrics_rotation = electrics.gameObject.transform.rotation;
 
-                SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave, Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile }));
+                SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave, Helper.CombinePaths(new string[] { ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile }));
             }
             catch (Exception ex)
             {
-                Logger.New("Error while trying to save original parts replaced by fuel injection system", $"path of save file: {Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", orignal_parts_saveFile })}", ex);
+                Logger.New("Error while trying to save original parts replaced by fuel injection system", $"path of save file: {Helper.CombinePaths(new string[] { ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile })}", ex);
             }
 
         }
@@ -318,7 +318,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
         }
         public void LoadChips()
         {
-            string fuel_system_savePath = Helper.CreatePathIfNotExists(Helper.CombinePaths(new string[] { ModLoader.GetModConfigFolder(mod), "fuelSystem", "chips" }));
+            string fuel_system_savePath = Helper.CreatePathIfNotExists(Helper.CombinePaths(new string[] { ModLoader.GetModSettingsFolder(mod), "fuelSystem", "chips" }));
 
             string[] saveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*_saveFile.json");
             string[] mapSaveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*.fuelmap");

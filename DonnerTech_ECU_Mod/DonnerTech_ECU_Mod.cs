@@ -86,6 +86,7 @@ namespace DonnerTech_ECU_Mod
          *  Loading time improvement
          *  Performance improvement
          *  Added copyright notice to mod settings
+         *  Remove BugReporter
          *  
          */
         /* BUGS/Need to fix
@@ -107,8 +108,6 @@ namespace DonnerTech_ECU_Mod
         public AssetBundle screwableassetBundle;
         public GuiDebug guiDebug;
         public bool turboModInstalled = false;
-
-        public BugReporter.BugReporter bugReporter;
 
         public GameObject ecu_mod_gameObject;
 
@@ -265,24 +264,6 @@ namespace DonnerTech_ECU_Mod
             assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
             screwableassetBundle = Helper.LoadAssetBundle(this, "screwableapi.unity3d");
 
-
-            List<BugReporter.Report> reports = new List<BugReporter.Report>();
-
-            reports.Add(new BugReporter.Report("Mod Settings", new string[] { ModLoader.GetModConfigFolder(this) }, true));
-            reports.Add(new BugReporter.Report("ModLoader Output", new string[] { Helper.CombinePaths(new string[] { Path.GetFullPath("."), "mysummercar_Data", "output_log.txt" }) }));
-
-            BugReporter.Report gameSave_report = new BugReporter.Report("MSC Savegame", 
-                Directory.GetFiles(
-                    Path.GetFullPath(
-                        Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
-                            @"..\LocalLow\Amistech\My Summer Car\")
-                        )
-                    ));
-
-            reports.Add(gameSave_report);
-            bugReporter = new BugReporter.BugReporter(this, reports, true);
-
             Keybind.AddHeader(this, "ECU-Panel Keybinds");
             Keybind.Add(this, arrowUp);
             Keybind.Add(this, arrowDown);
@@ -437,7 +418,7 @@ namespace DonnerTech_ECU_Mod
             electric_fuel_pump_part.rigidPart.transform.FindChild("fuelLine-1").GetComponent<Renderer>().enabled = true;
             electric_fuel_pump_part.rigidPart.transform.FindChild("fuelLine-2").GetComponent<Renderer>().enabled = true;
 
-            string screwSavePath = Path.Combine(ModLoader.GetModConfigFolder(this), screwableV2_saveFile);
+            string screwSavePath = Path.Combine(ModLoader.GetModSettingsFolder(this), screwableV2_saveFile);
             ScrewablePartV2BaseInfo baseInfo = new ScrewablePartV2BaseInfo(screwSavePath, true);
 
             fuel_injectors_box = new Box(this, fuel_injectors_box_gameObject, fuel_injector, "fuel_injector_box", "Fuel Injector", 4, fuel_injection_manifold_part, partsBuySave,
@@ -676,7 +657,6 @@ namespace DonnerTech_ECU_Mod
                 "5.Gear: " + newGearRatio[6] + "\n" +
                 "6.Gear: " + newGearRatio[7]
                 );
-            BugReporter.BugReporter.SetupModSettings(this);
             Settings.AddText(this, "Copyright © Marvin Beym 2020-2021");
 
         }
@@ -707,7 +687,6 @@ namespace DonnerTech_ECU_Mod
         
         public override void OnGUI()
         {
-            bugReporter.HandleDescriptionGui();
             saveFileRenamer.GuiHandler();
             overrideFileRenamer.GuiHandler();
 
