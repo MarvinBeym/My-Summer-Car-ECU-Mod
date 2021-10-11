@@ -8,10 +8,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 {
 	public class SparkAngleInputForce : MonoBehaviour
 	{
-
 		public InputField inputField;
 		private int min = 0;
 		private int max = 20;
+
 		public void OnValueChange()
 		{
 			try
@@ -29,7 +29,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					}
 				}
 				else if (value <= 0)
-                {
+				{
 					if (Regex.Match(inputField.text, @"\.\d").Success)
 					{
 						inputField.text = min.ToString("0.0");
@@ -44,7 +44,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			{
 				return;
 			}
-
 		}
 
 		private char OnValidateInput(string input, int charIndex, char addedChar)
@@ -52,21 +51,22 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			if (Char.IsNumber(addedChar) || addedChar == '.')
 			{
 				return addedChar;
-
 			}
+
 			return '\0';
 		}
 
 		void Start()
 		{
 			inputField.onValueChange.AddListener(delegate { OnValueChange(); });
-			inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) { return OnValidateInput(input, charIndex, addedChar); };
+			inputField.onValidateInput += delegate(string input, int charIndex, char addedChar)
+			{
+				return OnValidateInput(input, charIndex, addedChar);
+			};
 		}
 
 		void Update()
 		{
-
 		}
 	}
-
 }

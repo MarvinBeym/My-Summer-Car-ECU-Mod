@@ -1,6 +1,5 @@
 ﻿using MSCLoader;
 using MscPartApi;
-
 using ScrewablePartAPI.V2;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,10 @@ namespace ModShop
 		public int spawnedCounter = 0;
 		public Part[] parts;
 		public BoxLogic logic;
-		public Box(string partId, string partName, GameObject box, GameObject part_gameObject, int numberOfParts, Part parent, Vector3[] installLocations, Vector3[] installRotations, List<Part> partsList, bool dontCollideOnRigid = true)
+
+		public Box(string partId, string partName, GameObject box, GameObject part_gameObject, int numberOfParts,
+			Part parent, Vector3[] installLocations, Vector3[] installRotations, List<Part> partsList,
+			bool dontCollideOnRigid = true)
 		{
 			var partBaseInfo = parent.partBaseInfo;
 
@@ -25,41 +27,50 @@ namespace ModShop
 
 			parts = new Part[numberOfParts];
 
-			for (int i = 0; i < numberOfParts; i++) {
+			for (int i = 0; i < numberOfParts; i++)
+			{
 				int iOffset = i + 1;
 
 				parts[i] = new Part(
 					$"{partId}_{i}", partName + " " + iOffset, part_gameObject,
 					parent, installLocations[i], installRotations[i], partBaseInfo);
 
-				if (!parts[i].GetBought()) {
+				if (!parts[i].GetBought())
+				{
 					parts[i].Uninstall();
 					parts[i].gameObject.SetActive(false);
 				}
 			}
 
-			if (parts.Any(part => part.GetBought())) {
+			if (parts.Any(part => part.GetBought()))
+			{
 				this.bought = true;
 			}
 
 			logic = box.AddComponent<BoxLogic>();
 			logic.Init(parts, "Unpack " + partName, this);
-			foreach (Part part in parts) {
+			foreach (Part part in parts)
+			{
 				partsList.Add(part);
 			}
 		}
 
 		public void CheckUnpackedOnSave()
 		{
-			if (parts[0].GetBought()) {
-				if (spawnedCounter < parts.Length) {
-					foreach (Part part in parts) {
-						if (!part.IsInstalled() && !part.gameObject.activeSelf) {
+			if (parts[0].GetBought())
+			{
+				if (spawnedCounter < parts.Length)
+				{
+					foreach (Part part in parts)
+					{
+						if (!part.IsInstalled() && !part.gameObject.activeSelf)
+						{
 							part.SetPosition(box.transform.position);
 							part.SetActive(true);
 						}
 					}
 				}
+
 				box.SetActive(false);
 				box.transform.position = new Vector3(0, 0, 0);
 				box.transform.localPosition = new Vector3(0, 0, 0);

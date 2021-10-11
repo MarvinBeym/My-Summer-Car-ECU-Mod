@@ -7,28 +7,27 @@ using UnityEngine;
 
 namespace Tools
 {
-    public static class Game
-    {
-        public static Dictionary<string, GameObject> gameObjects = new Dictionary<string, GameObject>();
+	public static class Game
+	{
+		public static Dictionary<string, GameObject> gameObjects = new Dictionary<string, GameObject>();
 
-        public static GameObject Find(string findText)
-        {
-            try
-            {
-                GameObject gameObject = gameObjects[findText];
-                if (gameObject != null)
-                {
-	                return gameObject;
-                }
-            }
-            catch
-            {
-                
-            }
+		public static GameObject Find(string findText)
+		{
+			try
+			{
+				GameObject gameObject = gameObjects[findText];
+				if (gameObject != null)
+				{
+					return gameObject;
+				}
+			}
+			catch
+			{
+			}
 
-            GameObject foundObject = GameObject.Find(findText);
-            gameObjects[findText] = foundObject;
-            return foundObject;
-        }
-    }
+			GameObject foundObject = GameObject.Find(findText);
+			gameObjects[findText] = foundObject;
+			return foundObject;
+		}
+	}
 }

@@ -6,34 +6,36 @@ using UnityEngine;
 
 namespace Tools.gui
 {
-    public class GuiDebugElement
-    {
-        private string elementName;
-        private bool elementEnabled = false;
-        public GuiDebugElement(string elementName)
-        {
-            this.elementName = elementName;
-        }
+	public class GuiDebugElement
+	{
+		private string elementName;
+		private bool elementEnabled = false;
 
-        public void Handle(GuiDebugInfo[] debugInfos)
-        {
-            if (GUILayout.Button(elementName))
-            {
-                elementEnabled = !elementEnabled;
-            }
+		public GuiDebugElement(string elementName)
+		{
+			this.elementName = elementName;
+		}
 
-            if (elementEnabled)
-            {
-                GUILayout.BeginVertical("", "box", GUILayout.ExpandHeight(false));
-                foreach (GuiDebugInfo debugInfo in debugInfos)
-                {
-                    if (debugInfo.elementName == elementName)
-                    {
-                        debugInfo.Handle();
-                    }
-                }
-                GUILayout.EndVertical();
-            }
-        }
-    }
+		public void Handle(GuiDebugInfo[] debugInfos)
+		{
+			if (GUILayout.Button(elementName))
+			{
+				elementEnabled = !elementEnabled;
+			}
+
+			if (elementEnabled)
+			{
+				GUILayout.BeginVertical("", "box", GUILayout.ExpandHeight(false));
+				foreach (GuiDebugInfo debugInfo in debugInfos)
+				{
+					if (debugInfo.elementName == elementName)
+					{
+						debugInfo.Handle();
+					}
+				}
+
+				GUILayout.EndVertical();
+			}
+		}
+	}
 }

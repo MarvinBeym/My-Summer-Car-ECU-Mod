@@ -8,12 +8,12 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 {
 	public class FloatForce : MonoBehaviour
 	{
-
 		public InputField inputField;
 
 		// Use this for initialization
 		private Color orange = new Color32(255, 133, 105, 255);
 		private Color khaki = new Color32(240, 230, 140, 255);
+
 		public void OnValueChange()
 		{
 			if (inputField.text == "")
@@ -21,6 +21,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				inputField.image.color = Color.white;
 				return;
 			}
+
 			if (inputField.text.StartsWith("0"))
 			{
 				inputField.text = inputField.text.Remove(0, 1);
@@ -65,7 +66,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			{
 				return;
 			}
-
 		}
 
 		private char OnValidateInput(string input, int charIndex, char addedChar)
@@ -73,24 +73,24 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			if (Char.IsNumber(addedChar) || addedChar == '.')
 			{
 				return addedChar;
-
 			}
+
 			return '\0';
 		}
 
 		void Start()
 		{
 			inputField.onValueChange.AddListener(delegate { OnValueChange(); });
-			inputField.onValidateInput += delegate (string input, int charIndex, char addedChar) { return OnValidateInput(input, charIndex, addedChar); };
+			inputField.onValidateInput += delegate(string input, int charIndex, char addedChar)
+			{
+				return OnValidateInput(input, charIndex, addedChar);
+			};
 		}
-
 
 
 		// Update is called once per frame
 		void Update()
 		{
-
 		}
 	}
-
 }

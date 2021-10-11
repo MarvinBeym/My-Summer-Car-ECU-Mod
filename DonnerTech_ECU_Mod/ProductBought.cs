@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
 {
-    class ProductBought
-    {
-	    public ProductDetails product;
-        public bool bought = false;
-        public string gameObjectName;
-    }
+	class ProductBought
+	{
+		public ProductDetails product;
+		public bool bought = false;
+		public string gameObjectName;
+	}
 }
