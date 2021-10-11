@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.infoPanel;
-using DonnerTech_ECU_Mod.old_file_checker;
 using HutongGames.PlayMaker;
 using ModApi.Attachable;
 using ModShop;
@@ -104,8 +103,6 @@ namespace DonnerTech_ECU_Mod
 		public override string Version => "1.4.11"; //Version
 		public override bool UseAssetsFolder => true;
 
-		SaveFileRenamer saveFileRenamer;
-		OverrideFileRenamer overrideFileRenamer;
 		public AssetBundle assetBundle;
 		public AssetBundle screwableassetBundle;
 		public GuiDebug guiDebug;
@@ -357,9 +354,6 @@ namespace DonnerTech_ECU_Mod
 			Helper.SetObjectNameTagLayer(wires_injectors_pumps_gameObject, "wires_injectors_pumps");
 			Helper.SetObjectNameTagLayer(wires_sparkPlugs1_gameObject, "wires_sparkPlugs1");
 			Helper.SetObjectNameTagLayer(wires_sparkPlugs2_gameObject, "wires_sparkPlugs2");
-
-			saveFileRenamer = new SaveFileRenamer(this, 900);
-			overrideFileRenamer = new OverrideFileRenamer(this, 900);
 
 			PartBaseInfo partBaseInfo = new PartBaseInfo(this, assetBundle, parts_saveFile);
 
@@ -722,9 +716,6 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnGUI()
 		{
-			saveFileRenamer.GuiHandler();
-			overrideFileRenamer.GuiHandler();
-
 			if ((bool) debugGuiSetting.Value)
 			{
 				guiDebug.Handle(new[]

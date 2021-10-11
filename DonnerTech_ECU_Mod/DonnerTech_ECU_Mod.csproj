@@ -151,9 +151,6 @@
     <Compile Include="infoPanel\pages\Faults.cs" />
     <Compile Include="infoPanel\pages\Main.cs" />
     <Compile Include="infoPanel\pages\Modules.cs" />
-    <Compile Include="old_file_checker\OldFileRenamer.cs" />
-    <Compile Include="old_file_checker\OverrideFileRenamer.cs" />
-    <Compile Include="old_file_checker\SaveFileRenamer.cs" />
     <Compile Include="ProductBought.cs" />
     <Compile Include="Airride_Logic.cs" />
     <Compile Include="InfoPanel_Logic.cs" />
