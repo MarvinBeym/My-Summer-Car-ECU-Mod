@@ -420,7 +420,7 @@ namespace DonnerTech_ECU_Mod
 				fuel_rail_installLocation, new Vector3(30, 0, 0), partBaseInfo);
 
 			chip_programmer_part = new Part("chip_programmer",
-				"Chip Programmer", new GameObject(),
+				"Chip Programmer",
 				new Vector3(0, 0, 0), new Vector3(0, 0, 0), partBaseInfo);
 
 			electric_fuel_pump_part = new Part("electric_fuel_pump",

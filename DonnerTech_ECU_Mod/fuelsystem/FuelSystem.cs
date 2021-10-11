@@ -193,7 +193,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				foreach (Part part in allParts)
 				{
 					part.Uninstall();
-					part.trigger.SetActive(false);
+					part.BlockInstall(true);
 				}
 
 				foreach (OriginalPart originalPart in allOriginalParts)
@@ -206,7 +206,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			{
 				foreach (Part part in allParts)
 				{
-					part.trigger.SetActive(true);
+					part.BlockInstall(false);
 				}
 
 				foreach (OriginalPart originalPart in allOriginalParts)
@@ -224,7 +224,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 				foreach (Part part in allParts)
 				{
-					part.trigger.SetActive(true);
+					part.BlockInstall(false);
 				}
 			}
 
@@ -245,7 +245,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 							{
 								if (!chips[i].part.IsFixed())
 								{
-									chips[i].part.trigger.SetActive(false);
+									chips[i].part.BlockInstall(true);
 								}
 							}
 						}
@@ -253,7 +253,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 						{
 							for (int i = 0; i < chips.Count; i++)
 							{
-								chips[i].part.trigger.SetActive(true);
+								chips[i].part.BlockInstall(false);
 							}
 						}
 
