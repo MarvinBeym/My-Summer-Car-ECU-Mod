@@ -1,7 +1,8 @@
 ﻿using HutongGames.PlayMaker;
 using MSCLoader;
-using Parts;
+
 using System;
+using MscPartApi;
 using Tools;
 using UnityEngine;
 
@@ -20,10 +21,10 @@ namespace DonnerTech_ECU_Mod
             TwoStep,
         }
 
-        private AdvPart part;
-        private AdvPart absModulePart;
-        private AdvPart espModulePart;
-        private AdvPart tcsModulePart;
+        private Part part;
+        private Part absModulePart;
+        private Part espModulePart;
+        private Part tcsModulePart;
 
         public PlayMakerFSM modulesFsm;
         public FsmFloat twoStepRpm = new FsmFloat("2Step rpm");
@@ -69,12 +70,12 @@ namespace DonnerTech_ECU_Mod
 
         void Update()
         {
-            if (mod.smart_engine_module_part.InstalledScrewed() && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
+            if (mod.smart_engine_module_part.IsFixed() && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
             {
                 CarH.drivetrain.maxRPM = 8500;
             }
 
-            if(!CarH.hasPower || !Helper.PlayerInCar() || !mod.cable_harness_part.InstalledScrewed() || !mod.mounting_plate_part.InstalledScrewed())
+            if(!CarH.hasPower || !Helper.PlayerInCar() || !mod.cable_harness_part.IsFixed() || !mod.mounting_plate_part.IsFixed())
             {
                 return;
             }
@@ -127,18 +128,17 @@ namespace DonnerTech_ECU_Mod
             }
         }
 
-        internal void Init(AdvPart smart_engine_module_part, AdvPart absModulePart, AdvPart espModulePart, AdvPart tcsModulePart)
+        internal void Init(Part smart_engine_module_part, Part absModulePart, Part espModulePart, Part tcsModulePart)
         {
             part = smart_engine_module_part;
-            part.AddOnAssembleAction(OnAssemble);
-            part.AddOnDisassembleAction(OnDisassemble);
+            part.AddPostUninstallAction(OnUninstall);
 
             this.absModulePart = absModulePart;
             this.espModulePart = espModulePart;
             this.tcsModulePart = tcsModulePart;
         }
 
-        private void OnDisassemble()
+        private void OnUninstall()
         {
             SetAbs(false);
             SetEsp(false);
@@ -202,16 +202,11 @@ namespace DonnerTech_ECU_Mod
 
         private bool checkStatePartInstalled(bool state)
         {
-            if(!this.part.InstalledScrewed())
+            if(!this.part.IsFixed())
             {
                 state = false;
             }
             return state;
-        }
-
-        private void OnAssemble()
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 	public class SparkAngleInputForce : MonoBehaviour
 	{
 
-		public InputField inputField { get; set; }
+		public InputField inputField;
 		private int min = 0;
 		private int max = 20;
 		public void OnValueChange()

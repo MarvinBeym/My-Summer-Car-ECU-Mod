@@ -28,10 +28,10 @@ namespace DonnerTech_ECU_Mod
         // Use this for initialization
         void Start()
         {
-            throttle_body1_valve = fuel_system.throttle_body1_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body2_valve = fuel_system.throttle_body2_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body3_valve = fuel_system.throttle_body3_part.rigidPart.transform.FindChild("Butterfly-Valve");
-            throttle_body4_valve = fuel_system.throttle_body4_part.rigidPart.transform.FindChild("Butterfly-Valve");
+            throttle_body1_valve = fuel_system.throttle_body1_part.transform.FindChild("Butterfly-Valve");
+            throttle_body2_valve = fuel_system.throttle_body2_part.transform.FindChild("Butterfly-Valve");
+            throttle_body3_valve = fuel_system.throttle_body3_part.transform.FindChild("Butterfly-Valve");
+            throttle_body4_valve = fuel_system.throttle_body4_part.transform.FindChild("Butterfly-Valve");
         }
 
        
@@ -41,23 +41,23 @@ namespace DonnerTech_ECU_Mod
             {
                 if (
                     (bool)mod.settingThrottleBodieTurning.Value
-                    && fuel_system.throttle_body1_part.InstalledScrewed()
-                    && fuel_system.throttle_body2_part.InstalledScrewed()
-                    && fuel_system.throttle_body3_part.InstalledScrewed()
-                    && fuel_system.throttle_body4_part.InstalledScrewed()
+                    && fuel_system.throttle_body1_part.IsFixed()
+                    && fuel_system.throttle_body2_part.IsFixed()
+                    && fuel_system.throttle_body3_part.IsFixed()
+                    && fuel_system.throttle_body4_part.IsFixed()
                     )
                 {
                     HandleThrottleBodyMovement();
                 }
 
-                if (fuel_system.allInstalled && mod.smart_engine_module_part.InstalledScrewed())
+                if (fuel_system.allInstalled && mod.smart_engine_module_part.IsFixed())
                 {
 
 
                     for (int index = 0; index < fuel_system.chips.Count; index++)
                     {
                         Chip chip = fuel_system.chips[index];
-                        if (chip.part.installed && chip.chipSave.chipProgrammed)
+                        if (chip.part.IsInstalled() && chip.chipSave.chipProgrammed)
                         {
                             fuelMap = chip.chipSave.map;
                             startAssistEnabled = chip.chipSave.startAssistEnabled;

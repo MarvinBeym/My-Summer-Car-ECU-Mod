@@ -11,9 +11,9 @@ namespace DonnerTech_ECU_Mod
 {
     public abstract class OldFileRenamer
     {
-        public Dictionary<string, string> renamedFiles { get; set; } = new Dictionary<string, string>();
-        public Dictionary<string, string> oldToNew { get; set; } = new Dictionary<string, string>();
-        public bool showGui { get; set; } = false;
+        public Dictionary<string, string> renamedFiles = new Dictionary<string, string>();
+        public Dictionary<string, string> oldToNew = new Dictionary<string, string>();
+        public bool showGui = false;
         private Mod mod;
         private int guiWidth;
         public OldFileRenamer(Mod mod, int guiWidth)

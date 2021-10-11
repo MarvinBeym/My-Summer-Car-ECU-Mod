@@ -1,5 +1,6 @@
 ﻿using ModsShop;
-using Parts;
+using MscPartApi;
+
 using UnityEngine;
 
 namespace ModShop
@@ -7,9 +8,9 @@ namespace ModShop
     class ProductInformation
     {
         public GameObject gameObject;
-        public AdvPart part;
-        public AdvPart[] parts;
-        public bool usingSimplePart = false;
+        public Part part;
+        public Part[] parts;
+        public bool usingPart = false;
 
         public string productName;
         public float price;
@@ -38,15 +39,15 @@ namespace ModShop
             this.bought = box.bought;
         }
 
-        public ProductInformation(AdvPart part, string productName, float price, string iconName)
+        public ProductInformation(Part part, string productName, float price, string iconName)
         {
-            usingSimplePart = true;
+            usingPart = true;
             this.part = part;
-            this.gameObject = part.activePart;
+            this.gameObject = part.gameObject;
             this.productName = productName;
             this.price = price;
             this.iconName = iconName;
-            this.bought = part.bought;
+            this.bought = part.GetBought();
         }
 
 

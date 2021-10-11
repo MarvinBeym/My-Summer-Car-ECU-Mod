@@ -16,7 +16,10 @@ namespace Tools
             try
             {
                 GameObject gameObject = gameObjects[findText];
-                return gameObject;
+                if (gameObject != null)
+                {
+	                return gameObject;
+                }
             }
             catch
             {

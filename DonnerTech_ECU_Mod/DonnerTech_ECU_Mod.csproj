@@ -73,6 +73,7 @@
     </Reference>
     <Reference Include="ScrewablePartAPI">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\ScrewablePartAPI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -110,15 +111,6 @@
     </Compile>
     <Compile Include="..\..\..\My Summer Car Modding\Logger.cs">
       <Link>Logger.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\parts\AdvPart.cs">
-      <Link>parts\AdvPart.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\parts\NewPart.cs">
-      <Link>parts\NewPart.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\parts\SimplePart.cs">
-      <Link>parts\SimplePart.cs</Link>
     </Compile>
     <Compile Include="..\..\..\My Summer Car Modding\shop\Box.cs">
       <Link>shop\Box.cs</Link>

@@ -1,6 +1,6 @@
 ﻿using ModApi.Attachable;
 using MSCLoader;
-using Parts;
+
 using ScrewablePartAPI;
 using System;
 using System.Collections.Generic;
@@ -16,21 +16,21 @@ namespace DonnerTech_ECU_Mod.infoPanel
         private DonnerTech_ECU_Mod mod;
         
         private bool workaroundChildDisableDone = false;
-        public AdvPart part { get; set; }
-        public InfoPanel_Logic logic { get; set; }
+        public MscPartApi.Part part;
+        public InfoPanel_Logic logic;
 
-        public InfoPanel(DonnerTech_ECU_Mod mod, AdvPart part, AssetBundle assetBundle)
+        public InfoPanel(DonnerTech_ECU_Mod mod, MscPartApi.Part part, AssetBundle assetBundle)
         {
             this.mod = mod;
             this.part = part;
 
-            TextMesh[] textMeshes = part.activePart.GetComponentsInChildren<TextMesh>(true);
+            TextMesh[] textMeshes = part.gameObject.GetComponentsInChildren<TextMesh>(true);
             foreach (TextMesh textMesh in textMeshes)
             {
                 textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
             }
 
-            SpriteRenderer[] spriteRenderers = part.activePart.GetComponentsInChildren<SpriteRenderer>(true);
+            SpriteRenderer[] spriteRenderers = part.gameObject.GetComponentsInChildren<SpriteRenderer>(true);
             foreach (SpriteRenderer spriteRenderer in spriteRenderers)
             {
                 spriteRenderer.enabled = false;
@@ -41,7 +41,7 @@ namespace DonnerTech_ECU_Mod.infoPanel
             }
 
 
-            logic = part.rigidPart.AddComponent<InfoPanel_Logic>();
+            logic = part.AddWhenInstalledMono<InfoPanel_Logic>();
             logic.Init(this, mod, assetBundle);
 
             UnityEngine.Object.Destroy(gameObject);
@@ -49,22 +49,22 @@ namespace DonnerTech_ECU_Mod.infoPanel
 
         public void Handle()
         {
-            if (!part.installed)
+            if (!part.IsInstalled())
             {
-                if (part.activePart.transform.localScale.x < 1.5f)
+                if (part.gameObject.transform.localScale.x < 1.5f)
                 {
-                    part.activePart.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+                    part.gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
                 }
                 if (!workaroundChildDisableDone)
                 {
-                    TextMesh[] textMeshes = part.activePart.GetComponentsInChildren<TextMesh>(true);
+                    TextMesh[] textMeshes = part.gameObject.GetComponentsInChildren<TextMesh>(true);
                     foreach (TextMesh textMesh in textMeshes)
                     {
                         textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
                     }
 
 
-                    SpriteRenderer[] spriteRenderers = part.activePart.GetComponentsInChildren<SpriteRenderer>(true);
+                    SpriteRenderer[] spriteRenderers = part.gameObject.GetComponentsInChildren<SpriteRenderer>(true);
                     foreach (SpriteRenderer spriteRenderer in spriteRenderers)
                     {
                         spriteRenderer.enabled = false;

@@ -9,7 +9,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 	public class FloatForce : MonoBehaviour
 	{
 
-		public InputField inputField { get; set; }
+		public InputField inputField;
 
 		// Use this for initialization
 		private Color orange = new Color32(255, 133, 105, 255);

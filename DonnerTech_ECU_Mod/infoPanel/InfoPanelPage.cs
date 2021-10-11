@@ -34,7 +34,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
         protected Dictionary<string, TextMesh> display_values;
 
         public bool needleUsed {get; set; } = false;
-        public bool turbineUsed { get; set; } = false;
+        public bool turbineUsed = false;
 
         public bool playSound = true;
         private const float needle_maxAngle = 270;

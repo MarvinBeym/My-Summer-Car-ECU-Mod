@@ -2,37 +2,39 @@
 using ModApi;
 using ModApi.Attachable;
 using MSCLoader;
-using Parts;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using MscPartApi;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
+using Part = MscPartApi.Part;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
 {
     public class FuelSystem
     {
-        public FuelSystemLogic fuel_system_logic { get; set; }
-        public ChipProgrammer chip_programmer { get; set; }
+        public FuelSystemLogic fuel_system_logic;
+        public ChipProgrammer chip_programmer;
 
-        public AdvPart fuel_injector1_part;
-        public AdvPart fuel_injector2_part;
-        public AdvPart fuel_injector3_part;
-        public AdvPart fuel_injector4_part;
+        public Part fuel_injector1_part;
+        public Part fuel_injector2_part;
+        public Part fuel_injector3_part;
+        public Part fuel_injector4_part;
 
-        public AdvPart throttle_body1_part;
-        public AdvPart throttle_body2_part;
-        public AdvPart throttle_body3_part;
-        public AdvPart throttle_body4_part;
+        public Part throttle_body1_part;
+        public Part throttle_body2_part;
+        public Part throttle_body3_part;
+        public Part throttle_body4_part;
 
-        public AdvPart fuel_rail_part;
-        public AdvPart fuel_pump_cover_part;
-        public AdvPart fuel_injection_manifold_part;
-        public AdvPart electric_fuel_pump_part;
-        public List<AdvPart> allParts = new List<AdvPart>();
+        public Part fuel_rail_part;
+        public Part fuel_pump_cover_part;
+        public Part fuel_injection_manifold_part;
+        public Part electric_fuel_pump_part;
+        public List<Part> allParts = new List<Part>();
         public List<OriginalPart> allOriginalParts = new List<OriginalPart>();
 
         public FsmFloat distributor_sparkAngle;
@@ -62,20 +64,20 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
         public Vector3 chip_installLocation = new Vector3(0.008f, 0.001f, -0.058f);
         public Vector3 chip_installRotation = new Vector3(0, 90, -90);
-        private AdvPart.AdvPartBaseInfo advPartBaseInfo;
+        private PartBaseInfo partBaseInfo;
         public DonnerTech_ECU_Mod mod;
         public bool allInstalled
         {
             get
             {
-                return allParts.All(c => c.InstalledScrewed() == true);
+                return allParts.All(c => c.IsFixed());
             }
         }
         public bool anyInstalled
         {
             get
             {
-                return allParts.Any(c => c.InstalledScrewed() == true);
+                return allParts.Any(c => c.IsFixed());
             }
         }
         public bool anyOriginalInstalled
@@ -86,10 +88,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             }
         }
 
-        public FuelSystem(DonnerTech_ECU_Mod mod, AdvPart.AdvPartBaseInfo advPartBaseInfo)
+        public FuelSystem(DonnerTech_ECU_Mod mod, PartBaseInfo partBaseInfo, Part[] fuelInjectorParts, Part[] throttleBodyParts)
         {
             this.mod = mod;
-            this.advPartBaseInfo = advPartBaseInfo;
+            this.partBaseInfo = partBaseInfo;
 
             chip_programmer = new ChipProgrammer(mod, this);
 
@@ -125,15 +127,15 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             racingCarb_tolerance = raceCarb.FsmVariables.FindFsmFloat("Tolerance");
 
 
-            fuel_injector1_part = mod.fuel_injectors_box.parts[0];
-            fuel_injector2_part = mod.fuel_injectors_box.parts[1];
-            fuel_injector3_part = mod.fuel_injectors_box.parts[2];
-            fuel_injector4_part = mod.fuel_injectors_box.parts[3];
+            fuel_injector1_part = fuelInjectorParts[0];
+            fuel_injector2_part = fuelInjectorParts[1];
+            fuel_injector3_part = fuelInjectorParts[2];
+            fuel_injector4_part = fuelInjectorParts[3];
 
-            throttle_body1_part = mod.throttle_bodies_box.parts[0];
-            throttle_body2_part = mod.throttle_bodies_box.parts[1];
-            throttle_body3_part = mod.throttle_bodies_box.parts[2];
-            throttle_body4_part = mod.throttle_bodies_box.parts[3];
+            throttle_body1_part = throttleBodyParts[0];
+            throttle_body2_part = throttleBodyParts[1];
+            throttle_body3_part = throttleBodyParts[2];
+            throttle_body4_part = throttleBodyParts[3];
 
             fuel_rail_part = mod.fuel_rail_part;
             fuel_pump_cover_part = mod.fuel_pump_cover_part;
@@ -157,7 +159,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             allParts.Add(electric_fuel_pump_part);
 
 
-            fuel_system_logic = mod.smart_engine_module_part.rigidPart.AddComponent<FuelSystemLogic>();
+            fuel_system_logic = mod.smart_engine_module_part.AddWhenInstalledMono<FuelSystemLogic>();
             fuel_system_logic.Init(this, mod);
 
             if (anyInstalled)
@@ -183,10 +185,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
             if (anyOriginalInstalled && !anyInstalled_tmp)
             {
-                foreach (AdvPart part in allParts)
+                foreach (Part part in allParts)
                 {
-                    part.removePart();
-                    part.partTrigger.triggerGameObject.SetActive(false);
+                    part.Uninstall();
+                    part.trigger.SetActive(false);
                 }
                 foreach (OriginalPart originalPart in allOriginalParts)
                 {
@@ -196,9 +198,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
             
             if(anyInstalled_tmp && !anyOriginalInstalled)
             {
-                foreach (AdvPart part in allParts)
+                foreach (Part part in allParts)
                 {
-                    part.partTrigger.triggerGameObject.SetActive(true);
+                    part.trigger.SetActive(true);
                 }
                 foreach (OriginalPart originalPart in allOriginalParts)
                 {
@@ -212,15 +214,15 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                 {
                     originalPart.trigger.SetActive(true);
                 }
-                foreach (AdvPart part in allParts)
+                foreach (Part part in allParts)
                 {
-                    part.partTrigger.triggerGameObject.SetActive(true);
+	                part.trigger.SetActive(true);
                 }
             }
 
             if(anyInstalled_tmp)
 
-            if (mod.smart_engine_module_part.InstalledScrewed())
+            if (mod.smart_engine_module_part.IsFixed())
             {
                 if (allInstalled_tmp && !allInstalled_applied)
                 {
@@ -229,13 +231,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     mod.wires_sparkPlugs2.enabled = true;
 
                     allInstalled_applied = true;
-                    if (chips.Any(chip => chip.part.InstalledScrewed() == true))
+                    if (chips.Any(chip => chip.part.IsFixed() == true))
                     {
                         for (int i = 0; i < chips.Count; i++)
                         {
-                            if (!chips[i].part.InstalledScrewed())
+                            if (!chips[i].part.IsFixed())
                             {
-                                chips[i].part.partTrigger.triggerGameObject.SetActive(false);
+                                chips[i].part.trigger.SetActive(false);
                             }
                         }
                     }
@@ -243,8 +245,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
                     {
                         for (int i = 0; i < chips.Count; i++)
                         {
-                            chips[i].part.partTrigger.triggerGameObject.SetActive(true);
-                        }
+	                        chips[i].part.trigger.SetActive(true);
+	                    }
                     }
 
 
@@ -342,11 +344,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
                 ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, mapSaveFile);
 
-                AdvPart chip_part = AdvPart.Create(new AdvPart(advPartBaseInfo, $"chip{i}", $"Chip{i}", mod.smart_engine_module_part.part, chip_object, chip_installRotation, chip_installRotation, true, $"chip{i}"));
-                chip_part.saveFile = saveFile;
-                Chip chip = new Chip(chip_part);
+                Part chipPart = new Part($"chip_{i}", $"Chip{i}", chip_object, mod.smart_engine_module_part, chip_installRotation, chip_installRotation, partBaseInfo);
+                Chip chip = new Chip(chipPart);
 
-                chip_part.AddOnDisassembleAction(delegate() 
+                chipPart.AddPreUninstallAction(delegate 
                 {
                     fuel_system_logic.fuelMap = null;
                 });

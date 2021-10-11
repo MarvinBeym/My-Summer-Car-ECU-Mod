@@ -17,17 +17,13 @@ namespace DonnerTech_ECU_Mod
 
         private AudioSource dashButtonAudio;
 
-        private bool allPartsInstalled
-        {
-            get 
-            { return 
-                    (
-                    mod.smart_engine_module_part.InstalledScrewed() &&
-                    mod.cable_harness_part.InstalledScrewed() &&
-                    mod.mounting_plate_part.InstalledScrewed() &&
-                    mod.fuel_system.allInstalled);
-            }
-        }
+        private bool allPartsInstalled =>
+        (
+	        mod.smart_engine_module_part.IsFixed() &&
+	        mod.cable_harness_part.IsFixed() &&
+	        mod.mounting_plate_part.IsFixed() &&
+	        mod.fuel_system.allInstalled
+	    );
 
         private RaycastHit hit;
 

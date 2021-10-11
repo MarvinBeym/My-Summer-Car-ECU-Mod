@@ -79,11 +79,11 @@ namespace DonnerTech_ECU_Mod
 
         private FsmFloat rainIntensity;
         PlayMakerFSM wiperLogicFSM;
-        public bool rainsensor_enabled { get; set; } = false;
+        public bool rainsensor_enabled = false;
         private bool rainsensor_wasEnabled = false;
 
 
-        public bool lightsensor_enabled { get; set; } = false;
+        public bool lightsensor_enabled = false;
         private bool lightsensor_wasEnabled = false;
 
         private Sprite needleSprite;
@@ -188,7 +188,7 @@ namespace DonnerTech_ECU_Mod
         void Update()
         {
 
-            if (CarH.hasPower && infoPanel.part.InstalledScrewed())
+            if (CarH.hasPower && infoPanel.part.IsFixed())
             {
                 if (!isBooted)
                 {
@@ -267,7 +267,7 @@ namespace DonnerTech_ECU_Mod
         }
         private void HandleReverseCamera()
         {
-            if (!mod.reverse_camera_part.InstalledScrewed())
+            if (!mod.reverse_camera_part.IsFixed())
             {
                 ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
                 mod.SetReverseCameraEnabled(false);

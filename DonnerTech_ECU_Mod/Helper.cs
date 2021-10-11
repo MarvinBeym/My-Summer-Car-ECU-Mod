@@ -9,7 +9,7 @@ using UnityEngine;
 using ScrewablePartAPI;
 using HutongGames.PlayMaker;
 using ScrewablePartAPI.V2;
-using Parts;
+
 
 namespace Tools
 {
@@ -118,32 +118,6 @@ namespace Tools
         public static bool PlayerInCar()
         {
             return FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle").Value == "Satsuma";
-        }
-        public static ScrewablePartV2[] GetScrewablePartsArrayFromPartsList(List<AdvPart> partsList)
-        {
-            List<ScrewablePartV2> screwableParts = new List<ScrewablePartV2>();
-
-            partsList.ForEach(delegate (AdvPart part)
-            {
-                if (part.screwablePart != null)
-                {
-                    screwableParts.Add(part.screwablePart);
-                }
-            });
-            return screwableParts.ToArray();
-        }
-        public static ScrewablePart[] GetScrewablePartsArrayFromPartsList(List<SimplePart> partsList)
-        {
-            List<ScrewablePart> screwableParts = new List<ScrewablePart>();
-
-            partsList.ForEach(delegate (SimplePart part)
-            {
-                if (part.screwablePart != null)
-                {
-                    screwableParts.Add(part.screwablePart);
-                }
-            });
-            return screwableParts.ToArray();
         }
 
         public static GameObject LoadPartAndSetName(AssetBundle assetsBundle, string prefabName, string name)

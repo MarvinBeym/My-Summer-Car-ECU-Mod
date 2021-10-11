@@ -1,5 +1,6 @@
 ﻿using MSCLoader;
-using Parts;
+using MscPartApi;
+
 using UnityEngine;
 
 namespace ModShop
@@ -8,24 +9,22 @@ namespace ModShop
     {
         private Mod mod;
         public GameObject kitBox;
-        public AdvPart[] parts;
+        public Part[] parts;
         private KitLogic logic;
         public int spawnedCounter = 0;
-        public string boughtId;
         public bool bought;
-        public Kit(Mod mod, GameObject kitBox, AdvPart[] simpleParts)
+        public Kit(Mod mod, GameObject kitBox, Part[] parts)
         {
             this.mod = mod;
             this.kitBox = kitBox;
-            this.parts = simpleParts;
-            boughtId = simpleParts[0].boughtId;
-            bought = simpleParts[0].bought;
+            this.parts = parts;
+            bought = parts[0].GetBought();
             if (!bought)
             {
-                foreach (AdvPart part in parts)
+                foreach (Part part in parts)
                 {
-                    part.removePart();
-                    part.activePart.SetActive(false);
+	                part.Uninstall();
+                    part.SetActive(false);
                 }
             }
 
@@ -35,16 +34,16 @@ namespace ModShop
 
         public void CheckUnpackedOnSave()
         {
-            if (parts[0].bought)
+            if (parts[0].GetBought())
             {
                 if (spawnedCounter < parts.Length)
                 {
-                    foreach (AdvPart part in parts)
+                    foreach (Part part in parts)
                     {
-                        if (!part.installed && !part.activePart.activeSelf)
+                        if (!part.IsInstalled() && !part.gameObject.activeSelf)
                         {
-                            part.activePart.transform.position = kitBox.transform.position;
-                            part.activePart.SetActive(true);
+                            part.SetPosition(kitBox.transform.position);
+                            part.SetActive(true);
                         }
                     }
                 }

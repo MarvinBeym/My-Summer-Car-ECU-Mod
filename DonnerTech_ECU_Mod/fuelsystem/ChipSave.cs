@@ -9,11 +9,11 @@ namespace DonnerTech_ECU_Mod.fuelsystem
     public class ChipSave
     {
 
-        public float sparkAngle { get; set; } = 20.0f;
+        public float sparkAngle = 20.0f;
 
-        public bool chipProgrammed { get; set; } = false;
-        public bool startAssistEnabled { get; set; } = false;
-        public float[,] map { get; set; } = null;
+        public bool chipProgrammed = false;
+        public bool startAssistEnabled = false;
+        public float[,] map = null;
 
         public static string[] LoadSaveFiles(string savePath, string filenaming)
         {

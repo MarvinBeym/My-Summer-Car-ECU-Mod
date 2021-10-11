@@ -9,8 +9,8 @@ namespace DonnerTech_ECU_Mod
 {
     class ProductBought
     {
-        public ProductDetails product { get; set; }
-        public bool bought { get; set; } = false;
-        public string gameObjectName { get; set; }
+	    public ProductDetails product;
+        public bool bought = false;
+        public string gameObjectName;
     }
 }

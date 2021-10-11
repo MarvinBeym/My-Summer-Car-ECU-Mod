@@ -1,9 +1,10 @@
 ﻿using MSCLoader;
-using Parts;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MscPartApi;
 using Tools;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
@@ -12,10 +13,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
     {
         internal ChipSave chipSave;
         internal string mapSaveFile;
-        internal AdvPart part;
+        internal Part part;
         internal bool chipInstalledOnProgrammer;
 
-        public Chip(AdvPart part)
+        public Chip(Part part)
         {
             this.part = part;
         }

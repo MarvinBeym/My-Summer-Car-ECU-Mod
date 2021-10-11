@@ -2,9 +2,10 @@
 using MSCLoader;
 using System;
 using System.Collections.Generic;
+using MscPartApi;
 using UnityEngine;
 using Tools;
-using Parts;
+
 
 namespace ModShop
 {
@@ -31,26 +32,21 @@ namespace ModShop
             {
                 if(productInformation.gameObjectName == item.gameObject.name)
                 {
-                    if (productInformation.usingSimplePart)
+                    if (productInformation.usingPart)
                     {
-                        SetPartBought(true, productInformation.part);
+                        productInformation.part.SetBought(true);
                     }
                     else
                     {
-                        foreach(AdvPart part in productInformation.parts)
+                        foreach(Part part in productInformation.parts)
                         {
-                            SetPartBought(true, part);
+                            part.SetBought(true);
                         }
                         
                     }
                     
                 }
             });
-        }
-        
-        private void SetPartBought(bool bought, AdvPart part)
-        {
-            part.bought = bought;
         }
 
         private void AddToShop(ProductInformation productInformation)
@@ -83,23 +79,6 @@ namespace ModShop
                 productInformation.gameObjectName = productInformation.gameObject.name;
                 AddToShop(productInformation);
             });
-        }
-
-        internal static void Save(Mod mod, string saveFile, AdvPart[] parts)
-        {
-            try
-            {
-                Dictionary<string, bool> save = new Dictionary<string, bool>();
-                foreach (AdvPart part in parts)
-                {
-                    save[part.boughtId] = part.bought;
-                }
-                SaveLoad.SerializeSaveFile<Dictionary<string, bool>>(mod, save, saveFile);
-            }
-            catch (Exception ex)
-            {
-                Logger.New("Error while trying to save shop information", ex);
-            }
         }
     }
 }

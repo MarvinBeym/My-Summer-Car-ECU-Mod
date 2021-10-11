@@ -75,6 +75,7 @@ namespace Tools
             {
                 if(car == null)
                 {
+	                var t = GameObject.Find("SATSUMA(557kg, 248)");
                     car = Game.Find("SATSUMA(557kg, 248)");
                 }
                 return car;
