@@ -131,10 +131,6 @@ namespace DonnerTech_ECU_Mod
 		private const string modsShop_saveFile = "mod_shop_saveFile.json";
 		private const string screwableV2_saveFile = "screwableV2_saveFile.json";
 
-		//Installed FSM
-		public FsmBool fuelInjection_allInstalled;
-		public FsmBool fuelInjection_anyInstalled;
-
 		//FuelSystem
 		public FuelSystem fuel_system;
 
@@ -294,18 +290,6 @@ namespace DonnerTech_ECU_Mod
 			ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
 			ecu_mod_gameObject.name = ID;
 
-			PlayMakerFSM installedFsm = ecu_mod_gameObject.AddComponent<PlayMakerFSM>();
-			installedFsm.FsmName = "Installed";
-
-			fuelInjection_allInstalled = new FsmBool("Fuel Injection All");
-			fuelInjection_anyInstalled = new FsmBool("Fuel Injection Any");
-
-			installedFsm.FsmVariables.BoolVariables = new[]
-			{
-				fuelInjection_allInstalled,
-				fuelInjection_anyInstalled,
-			};
-
 			modAssetsFolder = ModLoader.GetModAssetsFolder(this);
 
 			originalGearRatios = CarH.drivetrain.gearRatios;
@@ -405,12 +389,10 @@ namespace DonnerTech_ECU_Mod
 			fuel_injection_manifold_part = new Part("fuel_injection_manifold",
 				"Fuel Injection Manifold", Cache.Find("cylinder head(Clone)"),
 				fuel_injection_manifold_installLocation, new Vector3(90, 0, 0), partBaseInfo);
-			fuel_injection_manifold_part.AddPostUninstallAction(DisassembleFuelInjectionManifold);
 
 			fuel_pump_cover_part = new Part("fuel_pump_cover",
 				"Fuel Pump Cover", Cache.Find("block(Clone)"),
 				fuel_pump_cover_installLocation, new Vector3(90, 0, 0), partBaseInfo);
-			fuel_pump_cover_part.AddPostUninstallAction(DisassembleFuelInjectionPump);
 
 			fuel_rail_part = new Part("fuel_rail",
 				"Fuel Rail", fuel_injection_manifold_part,
@@ -423,7 +405,6 @@ namespace DonnerTech_ECU_Mod
 			electric_fuel_pump_part = new Part("electric_fuel_pump",
 				"Electric Fuel Pump", CarH.satsuma,
 				electric_fuel_pump_installLocation, new Vector3(0, 180, 0), partBaseInfo);
-			electric_fuel_pump_part.AddPostUninstallAction(DisassembleFuelInjectionPump);
 			electric_fuel_pump_part.transform.FindChild("fuelLine-1").GetComponent<Renderer>().enabled = true;
 			electric_fuel_pump_part.transform.FindChild("fuelLine-2").GetComponent<Renderer>().enabled = true;
 
@@ -443,6 +424,11 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(30, 0, 0),
 					new Vector3(30, 0, 0),
 				}, partsList);
+			foreach (var part in fuel_injectors_box.parts)
+			{
+				part.AddPreSaveAction(fuel_injectors_box.CheckUnpackedOnSave);
+			}
+
 			throttle_bodies_box = new Box("throttle_body", "Throttle Body", throttle_bodies_box_gameObject,
 				throttle_body, 4, fuel_injection_manifold_part,
 				new[]
@@ -459,6 +445,9 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(-40, 0, 0),
 					new Vector3(-40, 0, 0),
 				}, partsList);
+			foreach (var part in throttle_bodies_box.parts) {
+				part.AddPreSaveAction(throttle_bodies_box.CheckUnpackedOnSave);
+			}
 
 			throttle_bodies_box.AddScrews(
 				new[]
@@ -643,22 +632,6 @@ namespace DonnerTech_ECU_Mod
 			reverse_camera_logic.SetReverseCameraEnabled(enabled);
 		}
 
-		public void DisassembleFuelInjectionPump()
-		{
-			foreach (OriginalPart originalPart in fuel_system.allOriginalParts)
-			{
-				originalPart.SetFakedInstallStatus(false);
-			}
-		}
-
-		public void DisassembleFuelInjectionManifold()
-		{
-			foreach (OriginalPart originalPart in fuel_system.allOriginalParts)
-			{
-				originalPart.SetFakedInstallStatus(false);
-			}
-		}
-
 		public void DisassembleSmartEngineModule()
 		{
 			for (int i = 0; i < fuel_system.chips.Count; i++)
@@ -699,9 +672,6 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnSave()
 		{
-			fuel_injectors_box.CheckUnpackedOnSave();
-			throttle_bodies_box.CheckUnpackedOnSave();
-
 			fuel_system.SaveChips();
 			fuel_system.Save();
 		}

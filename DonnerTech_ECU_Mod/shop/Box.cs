@@ -18,6 +18,8 @@ namespace ModShop
 		public Part[] parts;
 		public BoxLogic logic;
 
+		private bool checkedUnpacked = false;
+
 		public Box(string partId, string partName, GameObject box, GameObject part_gameObject, int numberOfParts,
 			Part parent, Vector3[] installLocations, Vector3[] installRotations, List<Part> partsList,
 			bool dontCollideOnRigid = true)
@@ -58,17 +60,16 @@ namespace ModShop
 
 		public void CheckUnpackedOnSave()
 		{
-			if (parts[0].GetBought())
+			if (!checkedUnpacked && parts[0].GetBought())
 			{
+				checkedUnpacked = true;
 				if (spawnedCounter < parts.Length)
 				{
-					foreach (Part part in parts)
+					foreach (var part in parts)
 					{
-						if (!part.IsInstalled() && !part.gameObject.activeSelf)
-						{
-							part.SetPosition(box.transform.position);
-							part.SetActive(true);
-						}
+						if (part.IsInstalled() || part.gameObject.activeSelf) continue;
+						part.SetPosition(box.transform.position);
+						part.SetActive(true);
 					}
 				}
 

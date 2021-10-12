@@ -50,11 +50,11 @@ namespace DonnerTech_ECU_Mod
 					HandleThrottleBodyMovement();
 				}
 
-				if (fuel_system.allInstalled && mod.smart_engine_module_part.IsFixed())
+				if (fuel_system.fuelInjectionParts.AreAllNewFixed() && mod.smart_engine_module_part.IsFixed())
 				{
 					for (int index = 0; index < fuel_system.chips.Count; index++)
 					{
-						Chip chip = fuel_system.chips[index];
+						var chip = fuel_system.chips[index];
 						if (chip.part.IsInstalled() && chip.chipSave.chipProgrammed)
 						{
 							fuelMap = chip.chipSave.map;
@@ -82,10 +82,6 @@ namespace DonnerTech_ECU_Mod
 						int mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
 						int mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
 						fuel_system.racingCarb_adjustAverage.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
-					}
-					else
-					{
-						fuel_system.allInstalled_applied = false;
 					}
 				}
 			}
