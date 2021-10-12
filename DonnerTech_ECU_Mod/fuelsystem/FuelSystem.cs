@@ -8,10 +8,12 @@ using System.IO;
 using System.Linq;
 using MscModApi;
 using MscModApi.Caching;
-using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 using MscModApi.Parts.ReplacePart;
+using MscModApi.Tools;
+using Tools;
+using Helper = MscModApi.Tools.Helper;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
 {
@@ -338,8 +340,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		public void LoadChips()
 		{
-			string fuel_system_savePath = Helper.CreatePathIfNotExists(Helper.CombinePaths(new string[]
-				{ModLoader.GetModSettingsFolder(mod), "fuelSystem", "chips"}));
+			string fuel_system_savePath = Helper.CombinePathsAndCreateIfNotExists(ModLoader.GetModSettingsFolder(mod), "fuelSystem", "chips");
 
 			string[] saveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*_saveFile.json");
 			string[] mapSaveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*.fuelmap");
@@ -363,7 +364,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 				GameObject chip_object = GameObject.Instantiate(mod.chip);
 
-				Helper.SetObjectNameTagLayer(chip_object, "Chip" + i);
+				chip_object.SetNameLayerTag("Chip" + i);
 
 				ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, mapSaveFile);
 

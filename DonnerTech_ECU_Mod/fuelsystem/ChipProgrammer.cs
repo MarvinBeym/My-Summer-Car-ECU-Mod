@@ -245,7 +245,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 							itemInHand.transform.position) <= 0.075f)
 						{
 							UserInteraction.GuiInteraction(UserInteraction.Type.Assemble, "Insert chip");
-							if (Helper.LeftMouseDown)
+							if (UserInteraction.LeftMouseDown)
 							{
 								for (int index = 0; index < fuelSystem.chips.Count; index++)
 								{
@@ -269,7 +269,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			if (chipInstalledOnProgrammer && chipOnProgrammer != null)
 			{
-				if (Helper.DetectRaycastHitObject(mod.chip_programmer_part.gameObject))
+				if (mod.chip_programmer_part.gameObject.IsLookingAt())
 				{
 					string guiText = String.Format(
 						"Press [{0}] to {1}\n" +
@@ -278,7 +278,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					);
 
 					UserInteraction.GuiInteraction(guiText);
-					if (Helper.RightMouseDown)
+					if (UserInteraction.RightMouseDown)
 					{
 						for (int index = 0; index < fuelSystem.chips.Count; index++)
 						{
@@ -300,7 +300,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 							}
 						}
 					}
-					else if (Helper.UseButtonDown)
+					else if (UserInteraction.UseButtonDown)
 					{
 						for (int y = 0; y < inputFieldMap.GetLength(0); y++)
 						{

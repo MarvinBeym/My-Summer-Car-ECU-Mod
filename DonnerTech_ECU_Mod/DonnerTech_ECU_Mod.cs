@@ -10,7 +10,7 @@ using MSCLoader;
 using MscModApi;
 using MscModApi.Caching;
 using MscModApi.Parts;
-using Tools;
+using MscModApi.Tools;
 using Tools.gui;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -257,7 +257,7 @@ namespace DonnerTech_ECU_Mod
 		public override void OnLoad()
 		{
 			ModConsole.Print(Name + $" [v{Version}");
-			Logger.InitLogger(this, logger_saveFile, 100);
+			Tools.Logger.InitLogger(this, logger_saveFile, 100);
 
 			turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
 			guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 310 - 310 : Screen.width - 310, 50, 300,
@@ -317,7 +317,7 @@ namespace DonnerTech_ECU_Mod
 			}
 			catch (Exception ex)
 			{
-				Logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
+				Tools.Logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
 			}
 
 			GameObject fuel_injector = (assetBundle.LoadAsset("fuel_injector.prefab") as GameObject);
@@ -346,12 +346,12 @@ namespace DonnerTech_ECU_Mod
 			wires_sparkPlugs2 =
 				wires_sparkPlugs2_gameObject.transform.FindChild("default").GetComponent<MeshRenderer>();
 
-			Helper.SetObjectNameTagLayer(fuel_injectors_box_gameObject, "Fuel Injectors(Clone)");
-			Helper.SetObjectNameTagLayer(throttle_bodies_box_gameObject, "Throttle Bodies(Clone)");
-			Helper.SetObjectNameTagLayer(chip, "Chip");
-			Helper.SetObjectNameTagLayer(wires_injectors_pumps_gameObject, "wires_injectors_pumps");
-			Helper.SetObjectNameTagLayer(wires_sparkPlugs1_gameObject, "wires_sparkPlugs1");
-			Helper.SetObjectNameTagLayer(wires_sparkPlugs2_gameObject, "wires_sparkPlugs2");
+			fuel_injectors_box_gameObject.SetNameLayerTag("Fuel Injectors(Clone)");
+			throttle_bodies_box_gameObject.SetNameLayerTag("Throttle Bodies(Clone)");
+			chip.SetNameLayerTag("Chip");
+			wires_injectors_pumps_gameObject.SetNameLayerTag("wires_injectors_pumps");
+			wires_sparkPlugs1_gameObject.SetNameLayerTag("wires_sparkPlugs1");
+			wires_sparkPlugs2_gameObject.SetNameLayerTag("wires_sparkPlugs2");
 
 			PartBaseInfo partBaseInfo = new PartBaseInfo(this, assetBundle, parts_saveFile);
 

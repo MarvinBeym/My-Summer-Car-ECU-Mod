@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Tools;
+using MscModApi.Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
@@ -74,12 +74,12 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		internal void HandleOriginalSave()
 		{
 			removalFsm.SendEvent("REMOVE");
-			if (!Helper.ApproximatelyVector(originalPosition, Vector3.zero) &&
-			    !Helper.ApproximatelyQuaternion(originalRotation, Quaternion.identity))
-			{
-				gameObject.transform.position = originalPosition;
-				gameObject.transform.rotation = originalRotation;
-			}
+			if (
+				originalPosition.CompareVector3(Vector3.zero, 0f)
+			    || !originalRotation.CompareQuaternion(Quaternion.identity)
+				) return;
+			gameObject.transform.position = originalPosition;
+			gameObject.transform.rotation = originalRotation;
 		}
 	}
 }

@@ -4,7 +4,7 @@ using System;
 using MscModApi;
 using MscModApi.Caching;
 using MscModApi.Parts;
-using Tools;
+
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
@@ -76,7 +76,7 @@ namespace DonnerTech_ECU_Mod
 				CarH.drivetrain.maxRPM = 8500;
 			}
 
-			if (!CarH.hasPower || !Helper.PlayerInCar() || !mod.cable_harness_part.IsFixed() ||
+			if (!CarH.hasPower || !CarH.playerInCar || !mod.cable_harness_part.IsFixed() ||
 			    !mod.mounting_plate_part.IsFixed())
 			{
 				return;

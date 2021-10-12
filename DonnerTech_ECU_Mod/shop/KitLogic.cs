@@ -3,7 +3,6 @@ using MSCLoader;
 using MscModApi;
 using MscModApi.Parts;
 using MscModApi.Tools;
-using Tools;
 using UnityEngine;
 
 namespace ModShop
@@ -39,7 +38,7 @@ namespace ModShop
 								"Unpack " + kit.parts[kit.spawnedCounter].gameObject.name.Replace("(Clone)", "")
 								)
 							);
-						if (Helper.UseButtonDown)
+						if (UserInteraction.UseButtonDown)
 						{
 							Part part = kit.parts[kit.spawnedCounter];
 

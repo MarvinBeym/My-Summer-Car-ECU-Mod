@@ -14,6 +14,7 @@ using MscModApi.Caching;
 using MscModApi.Tools;
 using Tools;
 using UnityEngine;
+using Helper = MscModApi.Tools.Helper;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -435,7 +436,7 @@ namespace DonnerTech_ECU_Mod
 
 		private void HandleKeybinds()
 		{
-			if (Helper.PlayerInCar())
+			if (CarH.playerInCar)
 			{
 				if (mod.arrowUp.GetKeybindDown())
 				{
@@ -492,7 +493,7 @@ namespace DonnerTech_ECU_Mod
 						if (foundObject)
 						{
 							UserInteraction.GuiInteraction(guiText);
-							if (Helper.UseButtonDown || Helper.LeftMouseDown)
+							if (UserInteraction.UseButtonDown || UserInteraction.LeftMouseDown)
 							{
 								page.Pressed_Display_Value(valueToPass, gameObjectHit);
 							}
@@ -522,10 +523,10 @@ namespace DonnerTech_ECU_Mod
 						}
 
 						UserInteraction.GuiInteraction(gameObjectHit.name.Replace("button", "").Replace("Arrow", ""));
-						if (Helper.UseButtonDown || Helper.LeftMouseDown)
+						if (UserInteraction.UseButtonDown || UserInteraction.LeftMouseDown)
 						{
 							actionToPerform.Invoke();
-							Helper.PlayTouchSound(gameObjectHit);
+							gameObjectHit.PlayTouch();
 						}
 					}
 				}

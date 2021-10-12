@@ -5,7 +5,6 @@ using System.Linq;
 using MscModApi;
 using MscModApi.Parts;
 using MscModApi.Tools;
-using Tools;
 
 
 namespace ModShop
@@ -25,10 +24,10 @@ namespace ModShop
 		// Update is called once per frame
 		void Update()
 		{
-			if (Helper.DetectRaycastHitObject(this.gameObject) && box.spawnedCounter < parts.Length)
+			if (gameObject.IsLookingAt() && box.spawnedCounter < parts.Length)
 			{
 				UserInteraction.GuiInteraction(string.Format("Press [{0}] to {1}", cInput.GetText("Use"), actionToDisplay));
-				if (Helper.UseButtonDown)
+				if (UserInteraction.UseButtonDown)
 				{
 					Part part = parts[box.spawnedCounter];
 

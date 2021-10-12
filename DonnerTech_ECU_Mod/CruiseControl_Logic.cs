@@ -5,7 +5,6 @@ using HutongGames.PlayMaker;
 using System;
 using MscModApi.Caching;
 using MscModApi.Tools;
-using Tools;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -145,10 +144,10 @@ namespace DonnerTech_ECU_Mod
 						if (foundObject)
 						{
 							UserInteraction.GuiInteraction(guiText);
-							if (Helper.UseButtonDown)
+							if (UserInteraction.UseButtonDown)
 							{
 								actionToPerform.Invoke();
-								Helper.PlayTouchSound(gameObjectHit);
+								gameObjectHit.PlayTouch();
 							}
 						}
 					}

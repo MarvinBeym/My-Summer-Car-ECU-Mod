@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using MscModApi.Caching;
-using Tools;
+using MscModApi.Tools;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -182,7 +182,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					break;
 			}
 
-			Helper.PlayTouchSound(gameObjectHit);
+			gameObjectHit.PlayTouch();
 		}
 	}
 }
