@@ -95,9 +95,6 @@
     <Compile Include="..\..\..\My Summer Car Modding\gui\GuiDebugInfo.cs">
       <Link>gui\GuiDebugInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\Helper.cs">
-      <Link>Helper.cs</Link>
-    </Compile>
     <Compile Include="..\..\..\My Summer Car Modding\Logger.cs">
       <Link>Logger.cs</Link>
     </Compile>
