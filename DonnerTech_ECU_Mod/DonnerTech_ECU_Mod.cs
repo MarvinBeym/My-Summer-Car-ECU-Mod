@@ -8,6 +8,7 @@ using ModShop;
 using ModsShop;
 using MSCLoader;
 using MscModApi;
+using MscModApi.Caching;
 using MscModApi.Parts;
 using Tools;
 using Tools.gui;
@@ -383,32 +384,32 @@ namespace DonnerTech_ECU_Mod
 				cable_harness_installLocation, new Vector3(0, 0, 0), partBaseInfo);
 
 			cruise_control_panel_part = new Part("cruise_control_panel",
-				"Cruise Control Panel", Game.Find("dashboard(Clone)"),
+				"Cruise Control Panel", Cache.Find("dashboard(Clone)"),
 				cruise_control_panel_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 
 			cruise_control_logic = cruise_control_panel_part.AddWhenInstalledMono<CruiseControl_Logic>();
 
 			info_panel_part = new Part("info_panel",
-				"Info Panel", Game.Find("dashboard(Clone)"),
+				"Info Panel", Cache.Find("dashboard(Clone)"),
 				info_panel_installLocation, new Vector3(0, 180, 180), partBaseInfo);
 			info_panel = new InfoPanel(this, info_panel_part, assetBundle);
 
 			rain_light_sensorboard_part = new Part("rain_light_sensorboard",
-				"Rain & Light Sensorboard", Game.Find("dashboard(Clone)"),
+				"Rain & Light Sensorboard", Cache.Find("dashboard(Clone)"),
 				rain_light_sensorboard_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 
 			reverse_camera_part = new Part("reverse_camera",
-				"Reverse Camera", Game.Find("bootlid(Clone)"),
+				"Reverse Camera", Cache.Find("bootlid(Clone)"),
 				reverse_camera_installLocation, new Vector3(120, 0, 0), partBaseInfo);
 			reverse_camera_logic = reverse_camera_part.AddWhenInstalledMono<ReverseCamera_Logic>();
 
 			fuel_injection_manifold_part = new Part("fuel_injection_manifold",
-				"Fuel Injection Manifold", Game.Find("cylinder head(Clone)"),
+				"Fuel Injection Manifold", Cache.Find("cylinder head(Clone)"),
 				fuel_injection_manifold_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 			fuel_injection_manifold_part.AddPostUninstallAction(DisassembleFuelInjectionManifold);
 
 			fuel_pump_cover_part = new Part("fuel_pump_cover",
-				"Fuel Pump Cover", Game.Find("block(Clone)"),
+				"Fuel Pump Cover", Cache.Find("block(Clone)"),
 				fuel_pump_cover_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 			fuel_pump_cover_part.AddPostUninstallAction(DisassembleFuelInjectionPump);
 
@@ -469,7 +470,7 @@ namespace DonnerTech_ECU_Mod
 
 
 			wires_injectors_pumps_gameObject.transform.parent = fuel_injection_manifold_part.transform;
-			wires_sparkPlugs1_gameObject.transform.parent = Game.Find("cylinder head(Clone)").transform;
+			wires_sparkPlugs1_gameObject.transform.parent = Cache.Find("cylinder head(Clone)").transform;
 			wires_sparkPlugs2_gameObject.transform.parent = CarH.satsuma.transform;
 
 			wires_injectors_pumps_gameObject.transform.localPosition = new Vector3(0.0085f, 0.053f, 0.0366f); //Temp
@@ -576,9 +577,9 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(0f, -0.04f, 0.01f), new Vector3(0, 180, 0)),
 				}, 0.6f, 8);
 
-			if (Game.Find("Shop for mods") != null)
+			if (Cache.Find("Shop for mods") != null)
 			{
-				ShopItem modsShop = Game.Find("Shop for mods").GetComponent<ShopItem>();
+				ShopItem modsShop = Cache.Find("Shop for mods").GetComponent<ShopItem>();
 
 				List<ProductInformation> shopItems = new List<ProductInformation>
 				{

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MscModApi.Caching;
 using Tools;
 using UnityEngine;
 

@@ -4,6 +4,7 @@ using HutongGames.PlayMaker.Actions;
 using MSCLoader;
 using System;
 using System.Collections.Generic;
+using MscModApi.Caching;
 using Tools;
 using UnityEngine;
 
@@ -55,16 +56,16 @@ namespace DonnerTech_ECU_Mod
 			GameObject fr = CarH.satsuma.FindChild("FR");
 			GameObject rr = CarH.satsuma.FindChild("RR");
 
-			suspension = Game.Find("Suspension").GetComponent<PlayMakerFSM>();
+			suspension = Cache.Find("Suspension").GetComponent<PlayMakerFSM>();
 			wheel_transforms.Add(fl.transform);
 			wheel_transforms.Add(rl.transform);
 			wheel_transforms.Add(fr.transform);
 			wheel_transforms.Add(rr.transform);
 
-			GameObject wheelFL = Game.Find("SATSUMA(557kg, 248)/FL/AckerFL/wheelFL");
-			GameObject wheelRL = Game.Find("SATSUMA(557kg, 248)/RL/wheelRL");
-			GameObject wheelFR = Game.Find("SATSUMA(557kg, 248)/FR/AckerFR/wheelFR");
-			GameObject wheelRR = Game.Find("SATSUMA(557kg, 248)/RR/wheelRR");
+			GameObject wheelFL = Cache.Find("SATSUMA(557kg, 248)/FL/AckerFL/wheelFL");
+			GameObject wheelRL = Cache.Find("SATSUMA(557kg, 248)/RL/wheelRL");
+			GameObject wheelFR = Cache.Find("SATSUMA(557kg, 248)/FR/AckerFR/wheelFR");
+			GameObject wheelRR = Cache.Find("SATSUMA(557kg, 248)/RR/wheelRR");
 			wheels.Add(wheelFL.GetComponent<Wheel>());
 			wheels.Add(wheelRL.GetComponent<Wheel>());
 			wheels.Add(wheelFR.GetComponent<Wheel>());

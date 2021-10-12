@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MscModApi.Caching;
 using Tools;
 using UnityEngine;
 using static DonnerTech_ECU_Mod.SmartEngineModule_Logic;
@@ -24,7 +25,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			this.needle = needle;
 			needleUsed = true;
 
-			GameObject odometer = Game.Find("dashboard meters(Clone)/Gauges/Odometer");
+			GameObject odometer = Cache.Find("dashboard meters(Clone)/Gauges/Odometer");
 			PlayMakerFSM odometerFSM = odometer.GetComponentInChildren<PlayMakerFSM>();
 			this.odometerKM = odometerFSM.FsmVariables.FindFsmInt("OdometerReading");
 		}

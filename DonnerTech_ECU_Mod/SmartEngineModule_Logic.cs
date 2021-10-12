@@ -2,6 +2,7 @@
 using MSCLoader;
 using System;
 using MscModApi;
+using MscModApi.Caching;
 using MscModApi.Parts;
 using Tools;
 using UnityEngine;
@@ -50,7 +51,7 @@ namespace DonnerTech_ECU_Mod
 			CarH.drivetrain.maxRPM = 8500;
 			twoStepRpm.Value = 6500;
 
-			modulesFsm = Game.Find(mod.ID).AddComponent<PlayMakerFSM>();
+			modulesFsm = Cache.Find(mod.ID).AddComponent<PlayMakerFSM>();
 			modulesFsm.FsmName = "Modules";
 
 			modulesFsm.FsmVariables.BoolVariables = new FsmBool[]

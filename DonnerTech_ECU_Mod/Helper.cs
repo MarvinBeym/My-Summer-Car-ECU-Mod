@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 
 using HutongGames.PlayMaker;
-
+using MscModApi.Caching;
 
 
 namespace Tools
@@ -21,7 +21,7 @@ namespace Tools
 		{
 			if (dashButtonAudioSource == null)
 			{
-				dashButtonAudioSource = Game.Find("dash_button").GetComponent<AudioSource>();
+				dashButtonAudioSource = Cache.Find("dash_button").GetComponent<AudioSource>();
 			}
 
 			if (dashButtonAudioSource != null)

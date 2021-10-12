@@ -7,6 +7,7 @@ using HutongGames.PlayMaker;
 using DonnerTech_ECU_Mod.fuelsystem;
 using System;
 using MSCLoader;
+using MscModApi.Caching;
 using Tools;
 
 namespace DonnerTech_ECU_Mod

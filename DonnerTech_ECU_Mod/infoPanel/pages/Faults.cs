@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MscModApi.Caching;
 using Tools;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public Faults(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
 		{
-			PlayMakerFSM mechanicalWear = Game.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear")
+			PlayMakerFSM mechanicalWear = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear")
 				.GetComponent<PlayMakerFSM>();
 
 			wearAlternator = mechanicalWear.FsmVariables.FindFsmFloat("WearAlternator");
@@ -45,8 +46,8 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			wearPiston4 = mechanicalWear.FsmVariables.FindFsmFloat("WearPiston4");
 			wearWaterpump = mechanicalWear.FsmVariables.FindFsmFloat("WearWaterpump");
 
-			PlayMakerFSM headlightBulbLeftFSM = Game.Find("HeadlightBulbLeft").GetComponent<PlayMakerFSM>();
-			PlayMakerFSM headlightBulbRightFSM = Game.Find("HeadlightBulbRight").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM headlightBulbLeftFSM = Cache.Find("HeadlightBulbLeft").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM headlightBulbRightFSM = Cache.Find("HeadlightBulbRight").GetComponent<PlayMakerFSM>();
 			wearHeadlightBulbLeft = headlightBulbLeftFSM.FsmVariables.FindFsmFloat("Wear");
 			wearHeadlightBulbRight = headlightBulbRightFSM.FsmVariables.FindFsmFloat("Wear");
 		}

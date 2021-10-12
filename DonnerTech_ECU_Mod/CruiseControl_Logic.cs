@@ -3,6 +3,7 @@ using UnityEngine;
 using HutongGames.PlayMaker;
 
 using System;
+using MscModApi.Caching;
 using MscModApi.Tools;
 using Tools;
 

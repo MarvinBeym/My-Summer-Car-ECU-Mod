@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MscModApi.Caching;
 using Tools;
 using UnityEngine;
 
@@ -42,7 +43,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public Page4(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
 		{
-			PlayMakerFSM rockershaftFSM = Game.Find("RockerShaft").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM rockershaftFSM = Cache.Find("RockerShaft").GetComponent<PlayMakerFSM>();
 			cylinder1exhaust = rockershaftFSM.FsmVariables.FindFsmFloat("cyl1exhaust");
 			cylinder2exhaust = rockershaftFSM.FsmVariables.FindFsmFloat("cyl2exhaust");
 			cylinder3exhaust = rockershaftFSM.FsmVariables.FindFsmFloat("cyl3exhaust");
@@ -53,7 +54,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			cylinder3intake = rockershaftFSM.FsmVariables.FindFsmFloat("cyl3intake");
 			cylinder4intake = rockershaftFSM.FsmVariables.FindFsmFloat("cyl4intake");
 
-			PlayMakerFSM raceCarbFSM = Game.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM raceCarbFSM = Cache.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
 			raceCarb_installed = raceCarbFSM.FsmVariables.FindFsmBool("Installed");
 			raceCarbAdjustAverage = raceCarbFSM.FsmVariables.FindFsmFloat("AdjustAverage");
 			raceCarbAdjust1 = raceCarbFSM.FsmVariables.FindFsmFloat("Adjust1");
@@ -61,11 +62,11 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			raceCarbAdjust3 = raceCarbFSM.FsmVariables.FindFsmFloat("Adjust3");
 			raceCarbAdjust4 = raceCarbFSM.FsmVariables.FindFsmFloat("Adjust4");
 
-			PlayMakerFSM twinCarbFSM = Game.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM twinCarbFSM = Cache.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
 			twinCarb_installed = twinCarbFSM.FsmVariables.FindFsmBool("Installed");
 			twinCarbAdjust = twinCarbFSM.FsmVariables.FindFsmFloat("IdleAdjust");
 
-			PlayMakerFSM carbFSM = Game.Find("Carburator").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM carbFSM = Cache.Find("Carburator").GetComponent<PlayMakerFSM>();
 			carb_installed = carbFSM.FsmVariables.FindFsmBool("Installed");
 			carbAdjust = carbFSM.FsmVariables.FindFsmFloat("IdleAdjust");
 		}

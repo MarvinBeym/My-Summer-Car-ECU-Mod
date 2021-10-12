@@ -56,6 +56,7 @@
     </Reference>
     <Reference Include="MscModApi">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\MscModApi.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -82,9 +83,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\My Summer Car Modding\CarHelper.cs">
-      <Link>CarHelper.cs</Link>
-    </Compile>
     <Compile Include="..\..\..\My Summer Car Modding\Extension.cs">
       <Link>Extension.cs</Link>
     </Compile>
@@ -123,7 +121,6 @@
     </Compile>
     <Compile Include="CruiseControl_Logic.cs" />
     <Compile Include="fuelsystem\Chip.cs" />
-    <Compile Include="Game.cs" />
     <Compile Include="fuelsystem\ChipProgrammer.cs" />
     <Compile Include="fuelsystem\ChipSave.cs" />
     <Compile Include="fuelsystem\FloatForce.cs" />

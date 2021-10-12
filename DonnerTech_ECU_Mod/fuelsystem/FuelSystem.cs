@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MscModApi;
+using MscModApi.Caching;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -89,31 +90,31 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			chip_programmer = new ChipProgrammer(mod, this);
 
-			PlayMakerFSM distributor = Game.Find("Distributor").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM distributor = Cache.Find("Distributor").GetComponent<PlayMakerFSM>();
 
-			PlayMakerFSM carb = Game.Find("Carburator").GetComponent<PlayMakerFSM>();
-			PlayMakerFSM twinCarb = Game.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
-			PlayMakerFSM raceCarb = Game.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
-			//PlayMakerFSM fuelStrainer = Game.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM carb = Cache.Find("Carburator").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM twinCarb = Cache.Find("Twin Carburators").GetComponent<PlayMakerFSM>();
+			PlayMakerFSM raceCarb = Cache.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
+			//PlayMakerFSM fuelStrainer = Cache.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
 
 			originalPartsSave = Helper.LoadSaveOrReturnNew<OriginalPartsSave>(mod,
 				Helper.CombinePaths(new string[]
 					{ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile}));
 
-			allOriginalParts.Add(new OriginalPart("Electrics", "pivot_electrics", Game.Find("Electrics"),
+			allOriginalParts.Add(new OriginalPart("Electrics", "pivot_electrics", Cache.Find("Electrics"),
 				originalPartsSave.electrics_position, originalPartsSave.electrics_rotation,
 				originalPartsSave.electrics_installed));
-			allOriginalParts.Add(new OriginalPart("Distributor", "pivot_distributor", Game.Find("Distributor"),
+			allOriginalParts.Add(new OriginalPart("Distributor", "pivot_distributor", Cache.Find("Distributor"),
 				originalPartsSave.distributor_position, originalPartsSave.distributor_rotation,
 				originalPartsSave.distributor_installed));
 			allOriginalParts.Add(new OriginalPart("Racing Carburators", "pivot_carburator",
-				Game.Find("Racing Carburators"), originalPartsSave.racingCarb_position,
+				Cache.Find("Racing Carburators"), originalPartsSave.racingCarb_position,
 				originalPartsSave.racingCarb_rotation, originalPartsSave.racingCarb_installed));
-			allOriginalParts.Add(new OriginalPart("Fuelpump", "pivot_fuel pump", Game.Find("Fuelpump"),
+			allOriginalParts.Add(new OriginalPart("Fuelpump", "pivot_fuel pump", Cache.Find("Fuelpump"),
 				originalPartsSave.fuelPump_position, originalPartsSave.fuelPump_rotation,
 				originalPartsSave.fuelPump_installed));
 
-			//fuelStrainer_gameObject = Game.Find("fuel strainer(Clone)");
+			//fuelStrainer_gameObject = Cache.Find("fuel strainer(Clone)");
 			//fuelStrainer_detach = GetDetachFsmBool(fuelStrainer_gameObject);
 			//fuelStrainer_trigger = distributor.FsmVariables.FindFsmGameObject("Trigger").Value;
 			//fuelStrainer_installed = distributor.FsmVariables.FindFsmBool("Installed");
@@ -162,10 +163,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			allParts.Add(fuel_injection_manifold_part);
 			allParts.Add(electric_fuel_pump_part);
 
-			//electricsReplacement = new ReplacementPart(Game.Find("Electrics"), allParts);
-			//distributorReplacement = new ReplacementPart(Game.Find("Distributor"), allParts);
-			racingCarbReplacement = new ReplacementPart(Game.Find("Racing Carburators"), allParts.ToArray());
-			//fuelPumpReplacement = new ReplacementPart(Game.Find("Fuelpump"), allParts);
+			//electricsReplacement = new ReplacementPart(Cache.Find("Electrics"), allParts);
+			//distributorReplacement = new ReplacementPart(Cache.Find("Distributor"), allParts);
+			racingCarbReplacement = new ReplacementPart(Cache.Find("Racing Carburators"), allParts.ToArray());
+			//fuelPumpReplacement = new ReplacementPart(Cache.Find("Fuelpump"), allParts);
 			
 			fuel_system_logic = mod.smart_engine_module_part.AddWhenInstalledMono<FuelSystemLogic>();
 			fuel_system_logic.Init(this, mod);

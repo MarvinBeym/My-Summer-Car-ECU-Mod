@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using MscModApi.Caching;
 using MscModApi.Tools;
 using Tools;
 using UnityEngine;
@@ -109,7 +110,7 @@ namespace DonnerTech_ECU_Mod
 		{
 			try
 			{
-				turnSignals = Game.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
+				turnSignals = Cache.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
 				PlayMakerFSM blinkers = null;
 				PlayMakerFSM[] turnSignalComps = turnSignals.GetComponents<PlayMakerFSM>();
 				foreach (PlayMakerFSM turnSignalComp in turnSignalComps)
@@ -130,7 +131,7 @@ namespace DonnerTech_ECU_Mod
 
 			try
 			{
-				GameObject powerON = Game.Find("SATSUMA(557kg, 248)/Electricity/PowerON");
+				GameObject powerON = Cache.Find("SATSUMA(557kg, 248)/Electricity/PowerON");
 				for (int i = 0; i < powerON.transform.childCount; i++)
 				{
 					GameObject tmp = powerON.transform.GetChild(i).gameObject;
@@ -152,7 +153,7 @@ namespace DonnerTech_ECU_Mod
 
 			rainIntensity = PlayMakerGlobals.Instance.Variables.FindFsmFloat("RainIntensity");
 			GameObject buttonWipers =
-				Game.Find(
+				Cache.Find(
 					"SATSUMA(557kg, 248)/Dashboard/pivot_dashboard/dashboard(Clone)/pivot_meters/dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers");
 			PlayMakerFSM[] buttonWipersFSMs = buttonWipers.GetComponents<PlayMakerFSM>();
 			foreach (PlayMakerFSM buttonWiperFSM in buttonWipersFSMs)
@@ -164,8 +165,8 @@ namespace DonnerTech_ECU_Mod
 				}
 			}
 
-			FsmHook.FsmInject(Game.Find("StreetLights"), "Day", new Action(delegate() { isNight = false; }));
-			FsmHook.FsmInject(Game.Find("StreetLights"), "Night", new Action(delegate() { isNight = true; }));
+			FsmHook.FsmInject(Cache.Find("StreetLights"), "Day", new Action(delegate() { isNight = false; }));
+			FsmHook.FsmInject(Cache.Find("StreetLights"), "Night", new Action(delegate() { isNight = true; }));
 		}
 
 		private void LoadECU_PanelImageOverride()
@@ -611,7 +612,7 @@ namespace DonnerTech_ECU_Mod
 
 			if (blinkerLeft == null)
 			{
-				blinkerLeft = Game.Find("BlinkLeft");
+				blinkerLeft = Cache.Find("BlinkLeft");
 			}
 			else
 			{
@@ -620,7 +621,7 @@ namespace DonnerTech_ECU_Mod
 
 			if (blinkerRight == null)
 			{
-				blinkerRight = Game.Find("BlinkRight");
+				blinkerRight = Cache.Find("BlinkRight");
 			}
 			else
 			{
