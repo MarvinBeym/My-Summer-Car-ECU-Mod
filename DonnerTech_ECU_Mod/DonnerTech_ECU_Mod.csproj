@@ -92,9 +92,6 @@
     <Compile Include="..\..\..\My Summer Car Modding\gui\GuiDebugInfo.cs">
       <Link>gui\GuiDebugInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\Logger.cs">
-      <Link>Logger.cs</Link>
-    </Compile>
     <Compile Include="..\..\..\My Summer Car Modding\shop\Box.cs">
       <Link>shop\Box.cs</Link>
     </Compile>

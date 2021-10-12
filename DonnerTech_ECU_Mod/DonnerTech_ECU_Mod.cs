@@ -257,7 +257,6 @@ namespace DonnerTech_ECU_Mod
 		public override void OnLoad()
 		{
 			ModConsole.Print(Name + $" [v{Version}");
-			Tools.Logger.InitLogger(this, logger_saveFile, 100);
 
 			turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
 			guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 310 - 310 : Screen.width - 310, 50, 300,
@@ -317,7 +316,7 @@ namespace DonnerTech_ECU_Mod
 			}
 			catch (Exception ex)
 			{
-				Tools.Logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
+				Logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
 			}
 
 			GameObject fuel_injector = (assetBundle.LoadAsset("fuel_injector.prefab") as GameObject);
