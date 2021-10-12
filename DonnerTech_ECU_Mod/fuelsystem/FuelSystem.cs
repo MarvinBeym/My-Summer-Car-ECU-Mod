@@ -1,16 +1,16 @@
-﻿using HutongGames.PlayMaker;
-using ModApi;
-using ModApi.Attachable;
+﻿using System.Linq;
+using HutongGames.PlayMaker;
+using MscModApi.Parts;
 using MSCLoader;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MscPartApi;
+using MscModApi;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
-using Part = MscPartApi.Part;
+using MscModApi.Parts.ReplacePart;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
 {
@@ -162,7 +162,11 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			allParts.Add(fuel_injection_manifold_part);
 			allParts.Add(electric_fuel_pump_part);
 
-
+			//electricsReplacement = new ReplacementPart(Game.Find("Electrics"), allParts);
+			//distributorReplacement = new ReplacementPart(Game.Find("Distributor"), allParts);
+			racingCarbReplacement = new ReplacementPart(Game.Find("Racing Carburators"), allParts.ToArray());
+			//fuelPumpReplacement = new ReplacementPart(Game.Find("Fuelpump"), allParts);
+			
 			fuel_system_logic = mod.smart_engine_module_part.AddWhenInstalledMono<FuelSystemLogic>();
 			fuel_system_logic.Init(this, mod);
 
@@ -178,6 +182,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		}
 
 		public bool allInstalled_applied = false;
+		private ReplacementPart electricsReplacement;
+		private ReplacementPart distributorReplacement;
+		private ReplacementPart racingCarbReplacement;
+		private ReplacementPart fuelPumpReplacement;
 
 		public void Handle()
 		{

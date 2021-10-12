@@ -1,11 +1,10 @@
-﻿using ModApi.Attachable;
+﻿using UnityEngine;
 using MSCLoader;
-using ScrewablePartAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
+using MscModApi.Parts;
 
 namespace DonnerTech_ECU_Mod.infoPanel
 {
@@ -15,10 +14,10 @@ namespace DonnerTech_ECU_Mod.infoPanel
 		private DonnerTech_ECU_Mod mod;
 
 		private bool workaroundChildDisableDone = false;
-		public MscPartApi.Part part;
+		public Part part;
 		public InfoPanel_Logic logic;
 
-		public InfoPanel(DonnerTech_ECU_Mod mod, MscPartApi.Part part, AssetBundle assetBundle)
+		public InfoPanel(DonnerTech_ECU_Mod mod, Part part, AssetBundle assetBundle)
 		{
 			this.mod = mod;
 			this.part = part;
@@ -66,7 +65,7 @@ namespace DonnerTech_ECU_Mod.infoPanel
 
 
 					SpriteRenderer[] spriteRenderers = part.gameObject.GetComponentsInChildren<SpriteRenderer>(true);
-					foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+					foreach (var spriteRenderer in spriteRenderers)
 					{
 						spriteRenderer.enabled = false;
 					}

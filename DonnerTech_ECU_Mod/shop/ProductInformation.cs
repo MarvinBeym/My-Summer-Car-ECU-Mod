@@ -1,5 +1,6 @@
 ﻿using ModsShop;
-using MscPartApi;
+using MscModApi;
+using MscModApi.Parts;
 using UnityEngine;
 
 namespace ModShop

@@ -1,9 +1,9 @@
 ﻿using MSCLoader;
 using UnityEngine;
 using HutongGames.PlayMaker;
-using ScrewablePartAPI;
+
 using System;
-using ModApi;
+using MscModApi.Tools;
 using Tools;
 
 namespace DonnerTech_ECU_Mod
@@ -143,7 +143,7 @@ namespace DonnerTech_ECU_Mod
 
 						if (foundObject)
 						{
-							ModClient.guiInteract(guiText);
+							UserInteraction.GuiInteraction(guiText);
 							if (Helper.UseButtonDown)
 							{
 								actionToPerform.Invoke();

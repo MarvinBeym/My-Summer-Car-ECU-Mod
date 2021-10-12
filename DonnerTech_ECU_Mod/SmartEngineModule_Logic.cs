@@ -1,7 +1,8 @@
 ﻿using HutongGames.PlayMaker;
 using MSCLoader;
 using System;
-using MscPartApi;
+using MscModApi;
+using MscModApi.Parts;
 using Tools;
 using UnityEngine;
 

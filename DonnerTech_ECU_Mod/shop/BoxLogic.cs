@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
-using ModApi;
+
 using MSCLoader;
 using System.Linq;
-using MscPartApi;
+using MscModApi;
+using MscModApi.Parts;
+using MscModApi.Tools;
 using Tools;
 
 
@@ -25,7 +27,7 @@ namespace ModShop
 		{
 			if (Helper.DetectRaycastHitObject(this.gameObject) && box.spawnedCounter < parts.Length)
 			{
-				ModClient.guiInteraction = string.Format("Press [{0}] to {1}", cInput.GetText("Use"), actionToDisplay);
+				UserInteraction.GuiInteraction(string.Format("Press [{0}] to {1}", cInput.GetText("Use"), actionToDisplay));
 				if (Helper.UseButtonDown)
 				{
 					Part part = parts[box.spawnedCounter];

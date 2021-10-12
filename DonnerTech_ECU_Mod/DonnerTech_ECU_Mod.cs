@@ -4,19 +4,16 @@ using System.IO;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.infoPanel;
 using HutongGames.PlayMaker;
-using ModApi.Attachable;
 using ModShop;
 using ModsShop;
 using MSCLoader;
-using MscPartApi;
-using ScrewablePartAPI;
-using ScrewablePartAPI.V2;
+using MscModApi;
+using MscModApi.Parts;
 using Tools;
 using Tools.gui;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using Part = MscPartApi.Part;
-using Screw = MscPartApi.Screw;
+using Screw = MscModApi.Screw;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -87,7 +84,7 @@ namespace DonnerTech_ECU_Mod
 		 *  Performance improvement
 		 *  Added copyright notice to mod settings
 		 *  Remove BugReporter
-		 *  Change to using MscPartApi instead of ModApi & ScrewablePartApi
+		 *  Change to using MscModApi instead of ModApi & ScrewablePartApi
 		 *  
 		 */
 		/* BUGS/Need to fix
@@ -247,7 +244,7 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnNewGame()
 		{
-			MscPartApi.MscPartApi.NewGameCleanUp(this, parts_saveFile);
+			MscModApi.MscModApi.NewGameCleanUp(this, parts_saveFile);
 
 			fuel_system.chips.ForEach(delegate(Chip chip)
 			{
@@ -258,7 +255,7 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnLoad()
 		{
-			ModConsole.Print(Name + $" [v{Version} | Screwable v{ScrewablePart.apiVersion}] started loading");
+			ModConsole.Print(Name + $" [v{Version}");
 			Logger.InitLogger(this, logger_saveFile, 100);
 
 			turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
@@ -429,9 +426,6 @@ namespace DonnerTech_ECU_Mod
 			electric_fuel_pump_part.AddPostUninstallAction(DisassembleFuelInjectionPump);
 			electric_fuel_pump_part.transform.FindChild("fuelLine-1").GetComponent<Renderer>().enabled = true;
 			electric_fuel_pump_part.transform.FindChild("fuelLine-2").GetComponent<Renderer>().enabled = true;
-
-			string screwSavePath = Path.Combine(ModLoader.GetModSettingsFolder(this), screwableV2_saveFile);
-			ScrewablePartV2BaseInfo baseInfo = new ScrewablePartV2BaseInfo(screwSavePath, true);
 
 			fuel_injectors_box = new Box("fuel_injector", "Fuel Injector", fuel_injectors_box_gameObject, fuel_injector,
 				4, fuel_injection_manifold_part,
@@ -641,7 +635,7 @@ namespace DonnerTech_ECU_Mod
 
 			playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
 
-			ModConsole.Print(Name + $" [v{Version} | Screwable v{ScrewablePart.apiVersion}] finished loading");
+			ModConsole.Print(Name + $" [v{Version}");
 		}
 
 		public void SetReverseCameraEnabled(bool enabled)
@@ -679,7 +673,6 @@ namespace DonnerTech_ECU_Mod
 		public override void ModSettings()
 		{
 			Settings.HideResetAllButton(this);
-			ScrewablePart.ScrewablePartApiSettingsShowSize(this);
 			Settings.AddHeader(this, "DEBUG");
 			Settings.AddCheckBox(this, debugGuiSetting);
 			Settings.AddButton(this, resetPosSetting, "Reset uninstalled part location");

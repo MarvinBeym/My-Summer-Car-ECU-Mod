@@ -2,7 +2,7 @@
 using DonnerTech_ECU_Mod.infoPanel;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
-using ModApi;
+
 using MSCLoader;
 using System;
 using System.Collections;
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using MscModApi.Tools;
 using Tools;
 using UnityEngine;
 
@@ -489,7 +490,7 @@ namespace DonnerTech_ECU_Mod
 
 						if (foundObject)
 						{
-							ModClient.guiInteract(guiText);
+							UserInteraction.GuiInteraction(guiText);
 							if (Helper.UseButtonDown || Helper.LeftMouseDown)
 							{
 								page.Pressed_Display_Value(valueToPass, gameObjectHit);
@@ -519,7 +520,7 @@ namespace DonnerTech_ECU_Mod
 							return;
 						}
 
-						ModClient.guiInteract(gameObjectHit.name.Replace("button", "").Replace("Arrow", ""));
+						UserInteraction.GuiInteraction(gameObjectHit.name.Replace("button", "").Replace("Arrow", ""));
 						if (Helper.UseButtonDown || Helper.LeftMouseDown)
 						{
 							actionToPerform.Invoke();

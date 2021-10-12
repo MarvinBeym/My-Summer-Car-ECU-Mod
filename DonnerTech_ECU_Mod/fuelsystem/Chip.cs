@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MscPartApi;
+using MscModApi;
+using MscModApi.Parts;
 using Tools;
 
 namespace DonnerTech_ECU_Mod.fuelsystem

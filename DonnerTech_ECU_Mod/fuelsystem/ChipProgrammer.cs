@@ -1,11 +1,13 @@
 ﻿using HutongGames.PlayMaker;
-using ModApi;
+
 using MSCLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MscPartApi;
+using MscModApi;
+using MscModApi.Parts;
+using MscModApi.Tools;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -242,7 +244,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 						if (Vector3.Distance(mod.chip_programmer_part.transform.position,
 							itemInHand.transform.position) <= 0.075f)
 						{
-							ModClient.guiInteract("insert chip", GuiInteractSymbolEnum.Assemble);
+							UserInteraction.GuiInteraction(UserInteraction.Type.Assemble, "Insert chip");
 							if (Helper.LeftMouseDown)
 							{
 								for (int index = 0; index < fuelSystem.chips.Count; index++)
@@ -274,7 +276,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 						"Press [RIGHT MOUSE] to {2}",
 						cInput.GetText("Use"), "open programmer", "remove chip"
 					);
-					ModClient.guiInteraction = guiText;
+
+					UserInteraction.GuiInteraction(guiText);
 					if (Helper.RightMouseDown)
 					{
 						for (int index = 0; index < fuelSystem.chips.Count; index++)

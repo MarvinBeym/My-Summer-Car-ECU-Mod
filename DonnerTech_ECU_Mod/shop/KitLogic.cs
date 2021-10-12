@@ -1,6 +1,8 @@
-﻿using ModApi;
+﻿
 using MSCLoader;
-using MscPartApi;
+using MscModApi;
+using MscModApi.Parts;
+using MscModApi.Tools;
 using Tools;
 using UnityEngine;
 
@@ -30,8 +32,13 @@ namespace ModShop
 				{
 					if (gameObjectHit.name == this.gameObject.name)
 					{
-						ModClient.guiInteraction = string.Format("Press [{0}] to {1}", cInput.GetText("Use"),
-							"Unpack " + kit.parts[kit.spawnedCounter].gameObject.name.Replace("(Clone)", ""));
+						UserInteraction.GuiInteraction(
+							string.Format(
+								"Press [{0}] to {1}",
+								cInput.GetText("Use"), 
+								"Unpack " + kit.parts[kit.spawnedCounter].gameObject.name.Replace("(Clone)", "")
+								)
+							);
 						if (Helper.UseButtonDown)
 						{
 							Part part = kit.parts[kit.spawnedCounter];

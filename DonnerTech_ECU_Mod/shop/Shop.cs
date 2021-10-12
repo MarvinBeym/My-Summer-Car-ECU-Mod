@@ -1,7 +1,8 @@
 ﻿using ModsShop;
 using MSCLoader;
-using MscPartApi;
+using MscModApi;
 using System.Collections.Generic;
+using MscModApi.Parts;
 using UnityEngine;
 
 

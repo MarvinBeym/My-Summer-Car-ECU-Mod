@@ -45,10 +45,6 @@
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="modapi_v0120-alpha">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\modapi_v0120-alpha.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="ModsShop, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\ModsShop.dll</HintPath>
@@ -58,9 +54,8 @@
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MscPartApi">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\MscPartApi.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="MscModApi">
+      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\MscModApi.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -69,10 +64,6 @@
     </Reference>
     <Reference Include="PlayMaker">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ScrewablePartAPI">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\ScrewablePartAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
