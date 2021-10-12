@@ -83,9 +83,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\My Summer Car Modding\Extension.cs">
-      <Link>Extension.cs</Link>
-    </Compile>
     <Compile Include="..\..\..\My Summer Car Modding\gui\GuiDebug.cs">
       <Link>gui\GuiDebug.cs</Link>
     </Compile>

@@ -23,10 +23,5 @@ namespace Tools
 		{
 			return value ? onText : offText;
 		}
-
-		public static GameObject FindChild(this GameObject gameObject, string childName)
-		{
-			return gameObject.transform.FindChild(childName).gameObject;
-		}
 	}
 }
