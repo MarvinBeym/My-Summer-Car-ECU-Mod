@@ -55,7 +55,7 @@ namespace DonnerTech_ECU_Mod
 					for (int index = 0; index < fuel_system.chips.Count; index++)
 					{
 						var chip = fuel_system.chips[index];
-						if (chip.part.IsInstalled() && chip.chipSave.chipProgrammed)
+						if (chip.IsInstalled() && chip.chipSave.chipProgrammed)
 						{
 							fuelMap = chip.chipSave.map;
 							startAssistEnabled = chip.chipSave.startAssistEnabled;

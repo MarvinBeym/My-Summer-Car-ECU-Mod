@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DonnerTech_ECU_Mod.Parts;
 using MscModApi;
 using MscModApi.Caching;
 using UnityEngine;
@@ -55,7 +56,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		public FsmFloat racingCarb_adjustAverage;
 		public FsmFloat racingCarb_tolerance;
 
-		public List<Chip> chips = new List<Chip>();
+		public List<ChipPart> chips = new List<ChipPart>();
 
 		public bool fuel_injection_manifold_applied = false;
 
@@ -133,19 +134,19 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			foreach (var chip in chips)
 			{
-				chip.part.AddPostInstallAction(delegate
+				chip.AddPostInstallAction(delegate
 				{
-					foreach (var chipPart in chips.Where(chipPart => !chipPart.part.IsInstalled() && !chipPart.part.IsInstallBlocked()))
+					foreach (var chipPart in chips.Where(chipPart => !chipPart.IsInstalled() && !chipPart.IsInstallBlocked()))
 					{
-						chipPart.part.BlockInstall(true);
+						chipPart.BlockInstall(true);
 					}
 				});
 
-				chip.part.AddPostUninstallAction(delegate
+				chip.AddPostUninstallAction(delegate
 				{
-					foreach (var chipPart in chips.Where(chipPart => chipPart.part.IsInstallBlocked()))
+					foreach (var chipPart in chips.Where(chipPart => chipPart.IsInstallBlocked()))
 					{
-						chipPart.part.BlockInstall(false);
+						chipPart.BlockInstall(false);
 					}
 				});
 			}
@@ -273,58 +274,29 @@ bool allInstalled_tmp = allInstalled;
 			*/
 		}
 
-		public void SaveChips()
-		{
-			chips.ForEach(delegate(Chip chip) { chip.SaveFuelMap(mod); });
-		}
-
 		public void LoadChips()
 		{
-			string fuel_system_savePath = Helper.CombinePathsAndCreateIfNotExists(ModLoader.GetModSettingsFolder(mod), "fuelSystem", "chips");
+			var chipsSavePath = Helper.CombinePathsAndCreateIfNotExists(ModLoader.GetModSettingsFolder(mod), "fuelMaps");
 
-			string[] saveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*_saveFile.json");
-			string[] mapSaveFiles = ChipSave.LoadSaveFiles(fuel_system_savePath, "chip*.fuelmap");
-
-			if (saveFiles.Length != mapSaveFiles.Length)
+			string[] chipSaveFiles = ChipSave.LoadSaveFiles(chipsSavePath, "chip_*_saveFile.json");
+			ChipPart.counter = 0;
+			foreach (var saveFilePath in chipSaveFiles)
 			{
-				Logger.New("Chip part save and map save do not match. Atleast one or more files are missing.",
-					$"save files found: {saveFiles.Length} | chip map files found: {mapSaveFiles.Length}");
-				return;
-			}
+				var fileName = saveFilePath.Replace($"{chipsSavePath}\\", "");
+				var id = fileName.Replace("_saveFile.json", "");
 
-			for (int i = 0; i < saveFiles.Length; i++)
-			{
-				string saveFullPath = saveFiles[i];
-				string mapFullPath = mapSaveFiles[i];
-
-				string saveFile = Helper.CombinePaths(new string[]
-					{"fuelSystem", "chips", Path.GetFileName(saveFullPath)});
-				string mapSaveFile = Helper.CombinePaths(new string[]
-					{"fuelSystem", "chips", Path.GetFileName(mapFullPath)});
-
-				GameObject chip_object = GameObject.Instantiate(mod.chip);
-
-				chip_object.SetNameLayerTag("Chip" + i);
-
-				ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, mapSaveFile);
-
-				Part chipPart = new Part($"chip_{i}", $"Chip{i}", chip_object, mod.smart_engine_module_part,
-					mod.chip_installRotation, mod.chip_installRotation, partBaseInfo);
-				Chip chip = new Chip(chipPart);
-
-				chipPart.AddPreUninstallAction(delegate { fuel_system_logic.fuelMap = null; });
-
-				chip.chipSave = chipSave;
-				chip.mapSaveFile = mapSaveFile;
-
-				chips.Add(chip);
+				ChipPart chipPart = new ChipPart(
+					id,
+					$"Chip {ChipPart.counter + 1}",
+					mod.smart_engine_module_part,
+					mod.partBaseInfo);
+				chips.Add(chipPart);
 			}
 		}
 
 		public void Save()
 		{
 			chip_programmer.Save();
-			SaveChips();
 			SaveOriginals();
 		}
 	}

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.Parts;
 using MscModApi;
 using MscModApi.Parts;
 using MscModApi.Tools;
@@ -34,7 +35,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		private InputField input_sparkAngle;
 		private bool chipInstalledOnProgrammer = false;
-		private Chip chipOnProgrammer = null;
+		private ChipPart chipOnProgrammer = null;
 
 		private RaycastHit hit;
 
@@ -145,11 +146,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			{
 				for (int index = 0; index < fuelSystem.chips.Count; index++)
 				{
-					Chip chip = fuelSystem.chips[index];
-					Part part = chip.part;
+					ChipPart chip = fuelSystem.chips[index];
 					if (chip.chipInstalledOnProgrammer)
 					{
-						part.SetActive(true);
+						chip.SetActive(true);
 						chip_programmer_chip.SetActive(false);
 						chipInstalledOnProgrammer = false;
 						chipOnProgrammer = null;
@@ -171,7 +171,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 						SetProgrammerUIStatus(false);
 						Vector3 chip_programmer_position = mod.chip_programmer_part.transform.position;
-						part.SetPosition(new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f,
+						chip.SetPosition(new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f,
 							chip_programmer_position.z));
 						break;
 					}
@@ -249,10 +249,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 							{
 								for (int index = 0; index < fuelSystem.chips.Count; index++)
 								{
-									Chip chip = fuelSystem.chips[index];
-									if (chip.part.gameObject.name == itemInHand.name)
+									ChipPart chip = fuelSystem.chips[index];
+									if (chip.gameObject.name == itemInHand.name)
 									{
-										chip.part.SetActive(false);
+										chip.SetActive(false);
 										chip_programmer_chip.SetActive(true);
 										chipInstalledOnProgrammer = true;
 										chip.chipInstalledOnProgrammer = true;
@@ -282,11 +282,11 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					{
 						for (int index = 0; index < fuelSystem.chips.Count; index++)
 						{
-							Chip chip = fuelSystem.chips[index];
+							ChipPart chip = fuelSystem.chips[index];
 							if (chip.chipInstalledOnProgrammer)
 							{
 								SetProgrammerUIStatus(false);
-								chip.part.SetActive(true);
+								chip.SetActive(true);
 								chip_programmer_chip.SetActive(false);
 								chipInstalledOnProgrammer = false;
 								chip.chipInstalledOnProgrammer = false;
@@ -294,7 +294,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 								chipOnProgrammer = null;
 								Vector3 chip_programmer_position =
 									mod.chip_programmer_part.gameObject.transform.position;
-								chip.part.SetPosition(new Vector3(chip_programmer_position.x,
+								chip.SetPosition(new Vector3(chip_programmer_position.x,
 									chip_programmer_position.y + 0.05f, chip_programmer_position.z));
 								break;
 							}
@@ -349,15 +349,15 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		{
 			for (int index = 0; index < fuelSystem.chips.Count; index++)
 			{
-				Chip chip = fuelSystem.chips[index];
+				ChipPart chip = fuelSystem.chips[index];
 				if (chip.chipInstalledOnProgrammer)
 				{
-					chip.part.SetActive(true);
+					chip.SetActive(true);
 					chip_programmer_chip.SetActive(false);
 					chip.chipInstalledOnProgrammer = false;
 
 					Vector3 chip_programmer_position = mod.chip_programmer_part.gameObject.transform.position;
-					chip.part.SetPosition(new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f,
+					chip.SetPosition(new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f,
 						chip_programmer_position.z));
 					break;
 				}

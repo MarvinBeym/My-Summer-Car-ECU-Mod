@@ -14,7 +14,6 @@ using MscModApi.Shopping;
 using MscModApi.Tools;
 using Tools.gui;
 using UnityEngine;
-using ChipSave = DonnerTech_ECU_Mod.fuelsystem.ChipSave;
 using Object = UnityEngine.Object;
 
 namespace DonnerTech_ECU_Mod
@@ -159,6 +158,7 @@ namespace DonnerTech_ECU_Mod
 		public Part esp_module_part;
 		public Part tcs_module_part;
 		public Part cable_harness_part;
+		internal PartBaseInfo partBaseInfo;
 		public Part mounting_plate_part;
 
 		public Part smart_engine_module_part;
@@ -175,7 +175,6 @@ namespace DonnerTech_ECU_Mod
 		public static GameObject fuel_injectors_box_gameObject;
 		public static GameObject throttle_bodies_box_gameObject;
 
-		public GameObject chip;
 		public Part chip_programmer_part;
 
 		public MeshRenderer wires_injectors_pumps;
@@ -209,9 +208,6 @@ namespace DonnerTech_ECU_Mod
 		public Vector3 tcs_module_installLocation = new Vector3(-0.03f, 0.0235f, -0.154f);
 		public Vector3 cable_harness_installLocation = new Vector3(-0.117f, 0.0102f, -0.024f);
 		public Vector3 mounting_plate_installLocation = new Vector3(0.3115f, -0.276f, -0.0393f);
-
-		public Vector3 chip_installLocation = new Vector3(0.008f, 0.001f, -0.058f);
-		public Vector3 chip_installRotation = new Vector3(0, 90, -90);
 
 		private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
 		private Settings resetPosSetting = new Settings("resetPos", "Reset", Helper.WorkAroundAction);
@@ -247,9 +243,11 @@ namespace DonnerTech_ECU_Mod
 		{
 			MscModApi.MscModApi.NewGameCleanUp(this, parts_saveFile);
 
+			/*
 			fuel_system.chips.ForEach(delegate (Chip chip) {
 				SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.mapSaveFile);
 			});
+			*/
 			SaveLoad.SerializeSaveFile<Dictionary<string, bool>>(this, null, modsShop_saveFile);
 		}
 
@@ -311,8 +309,7 @@ namespace DonnerTech_ECU_Mod
 				GameObject.Instantiate((assetBundle.LoadAsset("throttle_bodies_box.prefab") as GameObject));
 
 
-			chip = GameObject.Instantiate((assetBundle.LoadAsset("chip.prefab") as GameObject));
-			chip.SetActive(false);
+			ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
 
 			GameObject wires_injectors_pumps_gameObject =
 				GameObject.Instantiate((assetBundle.LoadAsset("wires_injectors_pumps.prefab") as GameObject));
@@ -330,12 +327,11 @@ namespace DonnerTech_ECU_Mod
 
 			fuel_injectors_box_gameObject.SetNameLayerTag("Fuel Injectors(Clone)");
 			throttle_bodies_box_gameObject.SetNameLayerTag("Throttle Bodies(Clone)");
-			chip.SetNameLayerTag("Chip");
 			wires_injectors_pumps_gameObject.SetNameLayerTag("wires_injectors_pumps");
 			wires_sparkPlugs1_gameObject.SetNameLayerTag("wires_sparkPlugs1");
 			wires_sparkPlugs2_gameObject.SetNameLayerTag("wires_sparkPlugs2");
 
-			PartBaseInfo partBaseInfo = new PartBaseInfo(this, assetBundle, parts_saveFile);
+			partBaseInfo = new PartBaseInfo(this, assetBundle, parts_saveFile);
 
 			mounting_plate_part = new Part("mounting_plate",
 				"ECU Mounting Plate", CarH.satsuma,
@@ -591,10 +587,7 @@ namespace DonnerTech_ECU_Mod
 					ChipPart chipPart = new ChipPart(
 						$"chip_{ChipPart.counter}",
 						$"Chip {ChipPart.counter + 1}",
-						chipGameObject,
 						smart_engine_module_part,
-						chip_installLocation,
-						chip_installRotation,
 						partBaseInfo
 						);
 					chipPart.SetDefaultPosition(shopSpawnLocation);
@@ -659,8 +652,8 @@ namespace DonnerTech_ECU_Mod
 		public void DisassembleSmartEngineModule()
 		{
 			for (int i = 0; i < fuel_system.chips.Count; i++) {
-				if (fuel_system.chips[i].part.IsInstalled()) {
-					fuel_system.chips[i].part.Uninstall();
+				if (fuel_system.chips[i].IsInstalled()) {
+					fuel_system.chips[i].Uninstall();
 				}
 			}
 		}
@@ -694,7 +687,6 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnSave()
 		{
-			fuel_system.SaveChips();
 			fuel_system.Save();
 		}
 

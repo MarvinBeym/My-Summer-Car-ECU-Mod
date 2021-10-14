@@ -1,9 +1,19 @@
-﻿using MscModApi.Parts;
+﻿using System.IO;
+using MscModApi.Parts;
 
 namespace DonnerTech_ECU_Mod.Parts
 {
-	public class ChipSave : PartSave
+	public class ChipSave
 	{
-		public bool test = false;
+		public float sparkAngle = 20.0f;
+
+		public bool chipProgrammed = false;
+		public bool startAssistEnabled = false;
+		public float[,] map = null;
+
+		public static string[] LoadSaveFiles(string savePath, string filenaming)
+		{
+			return Directory.GetFiles(savePath, filenaming, SearchOption.AllDirectories);
+		}
 	}
 }

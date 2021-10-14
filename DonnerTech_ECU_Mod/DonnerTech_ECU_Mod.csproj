@@ -100,9 +100,7 @@
       <Link>shop\KitLogic.cs</Link>
     </Compile>
     <Compile Include="CruiseControl_Logic.cs" />
-    <Compile Include="fuelsystem\Chip.cs" />
     <Compile Include="fuelsystem\ChipProgrammer.cs" />
-    <Compile Include="fuelsystem\ChipSave.cs" />
     <Compile Include="fuelsystem\FloatForce.cs" />
     <Compile Include="fuelsystem\FuelSystem.cs" />
     <Compile Include="fuelsystem\FuelSystemLogic.cs" />
