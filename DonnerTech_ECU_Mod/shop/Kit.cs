@@ -1,4 +1,5 @@
-﻿using MSCLoader;
+﻿using System.Linq;
+using MSCLoader;
 using MscModApi;
 using MscModApi.Parts;
 using UnityEngine;
@@ -12,15 +13,13 @@ namespace ModShop
 		public Part[] parts;
 		private KitLogic logic;
 		public int spawnedCounter = 0;
-		public bool bought;
 
 		public Kit(Mod mod, GameObject kitBox, Part[] parts)
 		{
 			this.mod = mod;
 			this.kitBox = kitBox;
 			this.parts = parts;
-			bought = parts[0].GetBought();
-			if (!bought)
+			if (!parts[0].IsBought())
 			{
 				foreach (Part part in parts)
 				{
@@ -35,7 +34,7 @@ namespace ModShop
 
 		public void CheckUnpackedOnSave()
 		{
-			if (parts[0].GetBought())
+			if (parts[0].IsBought())
 			{
 				if (spawnedCounter < parts.Length)
 				{
@@ -53,6 +52,11 @@ namespace ModShop
 				kitBox.transform.position = new Vector3(0, 0, 0);
 				kitBox.transform.localPosition = new Vector3(0, 0, 0);
 			}
+		}
+
+		public bool IsBought()
+		{
+			return parts.All(part => part.IsBought());
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.infoPanel;
+using DonnerTech_ECU_Mod.Parts;
 using HutongGames.PlayMaker;
 using ModShop;
 using MSCLoader;
@@ -13,10 +14,8 @@ using MscModApi.Shopping;
 using MscModApi.Tools;
 using Tools.gui;
 using UnityEngine;
+using ChipSave = DonnerTech_ECU_Mod.fuelsystem.ChipSave;
 using Object = UnityEngine.Object;
-using Screw = MscModApi.Screw;
-using Shop = ModShop.Shop;
-using ShopItem = ModsShop.ShopItem;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -211,6 +210,9 @@ namespace DonnerTech_ECU_Mod
 		public Vector3 cable_harness_installLocation = new Vector3(-0.117f, 0.0102f, -0.024f);
 		public Vector3 mounting_plate_installLocation = new Vector3(0.3115f, -0.276f, -0.0393f);
 
+		public Vector3 chip_installLocation = new Vector3(0.008f, 0.001f, -0.058f);
+		public Vector3 chip_installRotation = new Vector3(0, 90, -90);
+
 		private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
 		private Settings resetPosSetting = new Settings("resetPos", "Reset", Helper.WorkAroundAction);
 
@@ -245,8 +247,7 @@ namespace DonnerTech_ECU_Mod
 		{
 			MscModApi.MscModApi.NewGameCleanUp(this, parts_saveFile);
 
-			fuel_system.chips.ForEach(delegate(Chip chip)
-			{
+			fuel_system.chips.ForEach(delegate (Chip chip) {
 				SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.mapSaveFile);
 			});
 			SaveLoad.SerializeSaveFile<Dictionary<string, bool>>(this, null, modsShop_saveFile);
@@ -279,8 +280,7 @@ namespace DonnerTech_ECU_Mod
 			Keybind.Add(this, plus);
 			Keybind.Add(this, minus);
 
-			if ((bool) enableAirrideInfoPanelPage.Value)
-			{
+			if ((bool) enableAirrideInfoPanelPage.Value) {
 				Keybind.AddHeader(this, "Airride Keybinds");
 				Keybind.Add(this, highestKeybind);
 				Keybind.Add(this, lowestKeybind);
@@ -296,12 +296,9 @@ namespace DonnerTech_ECU_Mod
 
 			originalGearRatios = CarH.drivetrain.gearRatios;
 
-			try
-			{
+			try {
 				partsBuySave = Helper.LoadSaveOrReturnNew<Dictionary<string, bool>>(this, modsShop_saveFile);
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				Logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
 			}
 
@@ -426,8 +423,7 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(30, 0, 0),
 					new Vector3(30, 0, 0),
 				}, partsList);
-			foreach (var part in fuel_injectors_box.parts)
-			{
+			foreach (var part in fuel_injectors_box.parts) {
 				part.AddPreSaveAction(fuel_injectors_box.CheckUnpackedOnSave);
 			}
 
@@ -468,11 +464,11 @@ namespace DonnerTech_ECU_Mod
 			wires_sparkPlugs2_gameObject.transform.localPosition = new Vector3(0.105f, 0.233f, 0.97f); //Temp
 
 			wires_injectors_pumps_gameObject.transform.localRotation =
-				new Quaternion {eulerAngles = new Vector3(0, 0, 0)}; //Temp
+				new Quaternion { eulerAngles = new Vector3(0, 0, 0) }; //Temp
 			wires_sparkPlugs1_gameObject.transform.localRotation =
-				new Quaternion {eulerAngles = new Vector3(90, 0, 0)}; //Temp
+				new Quaternion { eulerAngles = new Vector3(90, 0, 0) }; //Temp
 			wires_sparkPlugs2_gameObject.transform.localRotation =
-				new Quaternion {eulerAngles = new Vector3(0, 180, 0)}; //Temp
+				new Quaternion { eulerAngles = new Vector3(0, 180, 0) }; //Temp
 
 			wires_injectors_pumps.enabled = false;
 			wires_sparkPlugs1.enabled = false;
@@ -569,68 +565,79 @@ namespace DonnerTech_ECU_Mod
 
 			var shopBaseInfo = new ShopBaseInfo(this, assetBundle);
 
-			MscModApi.Shopping.Shop.Add(
-				shopBaseInfo, 
-				MscModApi.Shopping.Shop.ShopLocation.Fleetari,
-				new MscModApi.Shopping.ShopItem("ABS Module", 800, MscModApi.Shopping.Shop.SpawnLocation.Fleetari.Counter, abs_module_part, "abs-module_productImage.png"));
-			MscModApi.Shopping.Shop.Add(
-				shopBaseInfo,
-				MscModApi.Shopping.Shop.ShopLocation.Fleetari,
-				new MscModApi.Shopping.ShopItem("Programmable chip", 500, MscModApi.Shopping.Shop.SpawnLocation.Fleetari.Counter, delegate
-				{
-					ModConsole.Print("instanziate part");
-				}, "chip_productImage.png"));
-			if (Cache.Find("Shop for mods") != null)
+			Vector3 shopSpawnLocation = Shop.SpawnLocation.Fleetari.Counter;
+
+			var chipGameObject = assetBundle.LoadAsset("chip.prefab") as GameObject;
+
+			Shop.Add(shopBaseInfo, Shop.ShopLocation.Fleetari, new ShopItem[]
 			{
-				ShopItem modsShop = Cache.Find("Shop for mods").GetComponent<ShopItem>();
-
-				List<ProductInformation> shopItems = new List<ProductInformation>
+				new ShopItem("ABS Module", 800, shopSpawnLocation, abs_module_part, "abs-module_productImage.png"),
+				new ShopItem("ESP Module", 1200, shopSpawnLocation, esp_module_part, "esp-module_productImage.png"),
+				new ShopItem("TCS Module", 1800, shopSpawnLocation, tcs_module_part, "tcs-module_productImage.png"),
+				new ShopItem("ECU Cable Harness", 300, shopSpawnLocation, cable_harness_part, "cable-harness_productImage.png"),
+				new ShopItem("ECU Mounting Plate", 100, shopSpawnLocation, mounting_plate_part, "mounting-plate_productImage.png"),
+				new ShopItem("Smart Engine Module ECU", 4600, shopSpawnLocation, smart_engine_module_part, "smart-engine-module_productImage.png"),
+				new ShopItem("Cruise Control Panel with Controller", 2000, shopSpawnLocation, cruise_control_panel_part, "cruise-control_productImage.png"),
+				new ShopItem("ECU Info Panel", 4000, shopSpawnLocation, info_panel.part, "info-panel_productImage.png"),
+				new ShopItem("Rain & Light Sensorboard", 1000, shopSpawnLocation, rain_light_sensorboard_part, "rain-light-sensorboard_productImage.png"),
+				new ShopItem("Reverse Camera", 1500, shopSpawnLocation, reverse_camera_part, "reverse-camera_productImage.png"),
+				new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuel_pump_cover_part, "fuel-pump-cover-plate_productImage.png"),
+				new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuel_injection_manifold_part, "fuel-injection-manifold_productImage.png"),
+				new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuel_rail_part, "fuel-rail_productImage.png"),
+				new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chip_programmer_part, "chip-programmer_productImage.png"),
+				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electric_fuel_pump_part, "electric-fuel-pump_productImage.png"),
+				new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
 				{
-					new ProductInformation(abs_module_part, "ABS Module", 800, "abs-module_productImage.png"),
-					new ProductInformation(esp_module_part, "ESP Module", 1200, "esp-module_productImage.png"),
-					new ProductInformation(tcs_module_part, "TCS Module", 1800, "tcs-module_productImage.png"),
-					new ProductInformation(cable_harness_part, "ECU Cable Harness", 300,
-						"cable-harness_productImage.png"),
-					new ProductInformation(mounting_plate_part, "ECU Mounting Plate", 100,
-						"mounting-plate_productImage.png"),
-					new ProductInformation(smart_engine_module_part, "Smart Engine Module ECU", 4600,
-						"smart-engine-module_productImage.png"),
-					new ProductInformation(cruise_control_panel_part, "Cruise Control Panel with Controller", 2000,
-						"cruise-control_productImage.png"),
-					new ProductInformation(info_panel.part, "ECU Info Panel", 4000, "info-panel_productImage.png"),
-					new ProductInformation(rain_light_sensorboard_part, "Rain & Light Sensorboard", 1000,
-						"rain-light-sensorboard_productImage.png"),
-					new ProductInformation(reverse_camera_part, "Reverse Camera", 1500,
-						"reverse-camera_productImage.png"),
+					ChipPart chipPart = new ChipPart(
+						$"chip_{ChipPart.counter}",
+						$"Chip {ChipPart.counter + 1}",
+						chipGameObject,
+						smart_engine_module_part,
+						chip_installLocation,
+						chip_installRotation,
+						partBaseInfo
+						);
+					chipPart.SetDefaultPosition(shopSpawnLocation);
+					chipPart.SetBought(true);
+					chipPart.ResetToDefault();
 
-					new ProductInformation(fuel_injectors_box, "Fuel Injectors", 800,
-						"fuel-injectors-box_productImage.png"),
-					new ProductInformation(throttle_bodies_box, "Throttle Bodies", 1200,
-						"throttle-bodies-box_productImage.png"),
+				}, "chip_productImage.png"),
+			});
 
-					new ProductInformation(fuel_pump_cover_part, "Fuel Pump Cover", 120,
-						"fuel-pump-cover-plate_productImage.png"),
-					new ProductInformation(fuel_injection_manifold_part, "Fuel Injection Manifold", 1600,
-						"fuel-injection-manifold_productImage.png"),
-					new ProductInformation(fuel_rail_part, "Fuel Rail", 375, "fuel-rail_productImage.png"),
-					new ProductInformation(chip_programmer_part, "Chip Programmer", 3799,
-						"chip-programmer_productImage.png"),
-					new ProductInformation(electric_fuel_pump_part, "Electric Fuel Pump", 500,
-						"electric-fuel-pump_productImage.png"),
-				};
-				Shop shop = new Shop(this, modsShop, assetBundle, shopItems);
-				shop.SetupShopItems();
-			}
-			else
-			{
-				ModUI.ShowMessage(
-					"You need to install ModsShop by piotrulos for this mod\n" +
-					"Please close the game and install the mod\n" +
-					"There should have been a ModsShop.dll and unity3d file (inside Assets) inside the archive of this mod",
-					"Installation of ModsShop (by piotrulos) needed");
+			if (!fuel_injectors_box.IsBought()) {
+				Shop.Add(
+					shopBaseInfo,
+					Shop.ShopLocation.Fleetari,
+					new ShopItem("Fuel Injectors", 800, shopSpawnLocation, delegate
+					{
+						fuel_injectors_box.box.transform.position = shopSpawnLocation;
+						fuel_injectors_box.box.SetActive(true);
+						foreach (var part in fuel_injectors_box.parts) {
+							part.SetActive(false);
+							part.SetBought(true);
+							part.SetDefaultPosition(shopSpawnLocation);
+							part.ResetToDefault();
+						}
+					}, "fuel-injectors-box_productImage.png"));
 			}
 
-			MscModApi.Shopping.Shop.Open(MscModApi.Shopping.Shop.ShopLocation.Fleetari);
+			if (!throttle_bodies_box.IsBought()) {
+				Shop.Add(
+					shopBaseInfo,
+					Shop.ShopLocation.Fleetari,
+					new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, delegate {
+						throttle_bodies_box.box.transform.position = shopSpawnLocation;
+						throttle_bodies_box.box.SetActive(true);
+						foreach (var part in throttle_bodies_box.parts) {
+							part.SetActive(false);
+							part.SetBought(true);
+							part.SetDefaultPosition(shopSpawnLocation);
+							part.ResetToDefault();
+						}
+					}, "throttle-bodies-box_productImage.png"));
+			}
+
+			Shop.Open(Shop.ShopLocation.Fleetari);
 
 			fuel_system = new FuelSystem(this, partBaseInfo, fuel_injectors_box.parts, throttle_bodies_box.parts);
 
@@ -651,10 +658,8 @@ namespace DonnerTech_ECU_Mod
 
 		public void DisassembleSmartEngineModule()
 		{
-			for (int i = 0; i < fuel_system.chips.Count; i++)
-			{
-				if (fuel_system.chips[i].part.IsInstalled())
-				{
+			for (int i = 0; i < fuel_system.chips.Count; i++) {
+				if (fuel_system.chips[i].part.IsInstalled()) {
 					fuel_system.chips[i].part.Uninstall();
 				}
 			}
@@ -677,12 +682,12 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddHeader(this, "", Color.clear);
 
 			Settings.AddText(this, "New Gear ratios + 5th & 6th gear\n" +
-			                       "1.Gear: " + newGearRatio[2] + "\n" +
-			                       "2.Gear: " + newGearRatio[3] + "\n" +
-			                       "3.Gear: " + newGearRatio[4] + "\n" +
-			                       "4.Gear: " + newGearRatio[5] + "\n" +
-			                       "5.Gear: " + newGearRatio[6] + "\n" +
-			                       "6.Gear: " + newGearRatio[7]
+								   "1.Gear: " + newGearRatio[2] + "\n" +
+								   "2.Gear: " + newGearRatio[3] + "\n" +
+								   "3.Gear: " + newGearRatio[4] + "\n" +
+								   "4.Gear: " + newGearRatio[5] + "\n" +
+								   "5.Gear: " + newGearRatio[6] + "\n" +
+								   "6.Gear: " + newGearRatio[7]
 			);
 			Settings.AddText(this, "Copyright © Marvin Beym 2020-2021");
 		}
@@ -696,8 +701,7 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnGUI()
 		{
-			if ((bool) debugGuiSetting.Value)
-			{
+			if ((bool) debugGuiSetting.Value) {
 				guiDebug.Handle(new[]
 				{
 					new GuiDebugInfo("Cruise control", "true = Good"),
@@ -733,28 +737,21 @@ namespace DonnerTech_ECU_Mod
 
 		private void PosReset()
 		{
-			try
-			{
-				foreach (var part in partsList)
-				{
-					if (!part.IsInstalled())
-					{
+			try {
+				foreach (var part in partsList) {
+					if (!part.IsInstalled()) {
 						part.ResetToDefault();
 					}
 				}
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				ModConsole.Error(ex.Message);
 			}
 		}
 
 		private void ToggleSixGears()
 		{
-			if (toggleSixGears.Value is bool value)
-			{
-				if (value)
-				{
+			if (toggleSixGears.Value is bool value) {
+				if (value) {
 					CarH.drivetrain.gearRatios = newGearRatio;
 					return;
 				}
@@ -770,10 +767,8 @@ namespace DonnerTech_ECU_Mod
 
 		private void ToggleAWD()
 		{
-			if (toggleAWD.Value is bool value)
-			{
-				if (value)
-				{
+			if (toggleAWD.Value is bool value) {
+				if (value) {
 					CarH.drivetrain.SetTransmission(Drivetrain.Transmissions.AWD);
 					return;
 				}

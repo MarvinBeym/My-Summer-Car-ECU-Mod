@@ -59,8 +59,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		public bool fuel_injection_manifold_applied = false;
 
-		public Vector3 chip_installLocation = new Vector3(0.008f, 0.001f, -0.058f);
-		public Vector3 chip_installRotation = new Vector3(0, 90, -90);
 		private PartBaseInfo partBaseInfo;
 		public DonnerTech_ECU_Mod mod;
 
@@ -311,7 +309,7 @@ bool allInstalled_tmp = allInstalled;
 				ChipSave chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, mapSaveFile);
 
 				Part chipPart = new Part($"chip_{i}", $"Chip{i}", chip_object, mod.smart_engine_module_part,
-					chip_installRotation, chip_installRotation, partBaseInfo);
+					mod.chip_installRotation, mod.chip_installRotation, partBaseInfo);
 				Chip chip = new Chip(chipPart);
 
 				chipPart.AddPreUninstallAction(delegate { fuel_system_logic.fuelMap = null; });

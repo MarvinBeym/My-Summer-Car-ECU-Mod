@@ -50,16 +50,5 @@ namespace ModShop
 			this.parts = parts;
 			this.actionToDisplay = actionToDisplay;
 		}
-
-		public void CheckBoxPosReset(bool boughtBox)
-		{
-			if (boughtBox)
-			{
-				if (!parts.Any(part => part.IsInstalled() || part.gameObject.activeSelf))
-				{
-					this.gameObject.transform.position = ModsShop.FleetariSpawnLocation.desk;
-				}
-			}
-		}
 	}
 }

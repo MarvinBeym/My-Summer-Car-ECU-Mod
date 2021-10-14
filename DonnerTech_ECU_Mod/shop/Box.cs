@@ -13,7 +13,6 @@ namespace ModShop
 	public class Box
 	{
 		public GameObject box;
-		public bool bought;
 		public int spawnedCounter = 0;
 		public Part[] parts;
 		public BoxLogic logic;
@@ -38,16 +37,11 @@ namespace ModShop
 					$"{partId}_{i}", partName + " " + iOffset, part_gameObject,
 					parent, installLocations[i], installRotations[i], partBaseInfo);
 
-				if (!parts[i].GetBought())
+				if (!parts[i].IsBought())
 				{
 					parts[i].Uninstall();
-					parts[i].gameObject.SetActive(false);
+					parts[i].SetActive(false);
 				}
-			}
-
-			if (parts.Any(part => part.GetBought()))
-			{
-				this.bought = true;
 			}
 
 			logic = box.AddComponent<BoxLogic>();
@@ -60,7 +54,7 @@ namespace ModShop
 
 		public void CheckUnpackedOnSave()
 		{
-			if (!checkedUnpacked && parts[0].GetBought())
+			if (!checkedUnpacked && parts[0].IsBought())
 			{
 				checkedUnpacked = true;
 				if (spawnedCounter < parts.Length)
@@ -85,6 +79,11 @@ namespace ModShop
 			{
 				part.AddScrews(screws, overrideScale, overrideSize);
 			}
+		}
+
+		public bool IsBought()
+		{
+			return parts.All(part => part.IsBought());
 		}
 	}
 }

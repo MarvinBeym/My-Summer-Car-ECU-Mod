@@ -45,11 +45,6 @@
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ModsShop, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\ModsShop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="MSCLoader">
       <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
       <Private>False</Private>
@@ -104,12 +99,6 @@
     <Compile Include="..\..\..\My Summer Car Modding\shop\KitLogic.cs">
       <Link>shop\KitLogic.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\shop\ProductInformation.cs">
-      <Link>shop\ProductInformation.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\shop\Shop.cs">
-      <Link>shop\Shop.cs</Link>
-    </Compile>
     <Compile Include="CruiseControl_Logic.cs" />
     <Compile Include="fuelsystem\Chip.cs" />
     <Compile Include="fuelsystem\ChipProgrammer.cs" />
@@ -130,16 +119,17 @@
     <Compile Include="infoPanel\pages\Faults.cs" />
     <Compile Include="infoPanel\pages\Main.cs" />
     <Compile Include="infoPanel\pages\Modules.cs" />
-    <Compile Include="ProductBought.cs" />
     <Compile Include="Airride_Logic.cs" />
     <Compile Include="InfoPanel_Logic.cs" />
+    <Compile Include="Parts\ChipPart.cs" />
+    <Compile Include="Parts\ChipSave.cs" />
     <Compile Include="ReverseCamera_Logic.cs" />
     <Compile Include="SmartEngineModule_Logic.cs" />
-    <Compile Include="PartBuySave.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="timers\Timer.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
