@@ -5,16 +5,18 @@ using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.infoPanel;
 using HutongGames.PlayMaker;
 using ModShop;
-using ModsShop;
 using MSCLoader;
 using MscModApi;
 using MscModApi.Caching;
 using MscModApi.Parts;
+using MscModApi.Shopping;
 using MscModApi.Tools;
 using Tools.gui;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Screw = MscModApi.Screw;
+using Shop = ModShop.Shop;
+using ShopItem = ModsShop.ShopItem;
 
 namespace DonnerTech_ECU_Mod
 {
@@ -565,6 +567,19 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(0f, -0.04f, 0.01f), new Vector3(0, 180, 0)),
 				}, 0.6f, 8);
 
+			var shopBaseInfo = new ShopBaseInfo(this, assetBundle);
+
+			MscModApi.Shopping.Shop.Add(
+				shopBaseInfo, 
+				MscModApi.Shopping.Shop.ShopLocation.Fleetari,
+				new MscModApi.Shopping.ShopItem("ABS Module", 800, MscModApi.Shopping.Shop.SpawnLocation.Fleetari.Counter, abs_module_part, "abs-module_productImage.png"));
+			MscModApi.Shopping.Shop.Add(
+				shopBaseInfo,
+				MscModApi.Shopping.Shop.ShopLocation.Fleetari,
+				new MscModApi.Shopping.ShopItem("Programmable chip", 500, MscModApi.Shopping.Shop.SpawnLocation.Fleetari.Counter, delegate
+				{
+					ModConsole.Print("instanziate part");
+				}, "chip_productImage.png"));
 			if (Cache.Find("Shop for mods") != null)
 			{
 				ShopItem modsShop = Cache.Find("Shop for mods").GetComponent<ShopItem>();
@@ -614,6 +629,8 @@ namespace DonnerTech_ECU_Mod
 					"There should have been a ModsShop.dll and unity3d file (inside Assets) inside the archive of this mod",
 					"Installation of ModsShop (by piotrulos) needed");
 			}
+
+			MscModApi.Shopping.Shop.Open(MscModApi.Shopping.Shop.ShopLocation.Fleetari);
 
 			fuel_system = new FuelSystem(this, partBaseInfo, fuel_injectors_box.parts, throttle_bodies_box.parts);
 
