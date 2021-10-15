@@ -126,9 +126,6 @@ namespace DonnerTech_ECU_Mod
 		public Keybind plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
 		public Keybind minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
 
-		//Files
-		private const string parts_saveFile = "parts_saveFile.json";
-
 		//FuelSystem
 		public FuelSystem fuel_system;
 
@@ -233,7 +230,7 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnNewGame()
 		{
-			MscModApi.MscModApi.NewGameCleanUp(this, parts_saveFile);
+			MscModApi.MscModApi.NewGameCleanUp(this);
 
 			/*
 			fuel_system.chips.ForEach(delegate (Chip chip) {
@@ -281,19 +278,19 @@ namespace DonnerTech_ECU_Mod
 
 			originalGearRatios = CarH.drivetrain.gearRatios;
 
-			GameObject fuel_injector = (assetBundle.LoadAsset("fuel_injector.prefab") as GameObject);
-			GameObject throttle_body = (assetBundle.LoadAsset("throttle_body.prefab") as GameObject);
+			var fuel_injector = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
+			var throttle_body = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
 
-			var fuel_injectors_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset("fuel_injectors_box.prefab") as GameObject));
-			var throttle_bodies_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset("throttle_bodies_box.prefab") as GameObject));
+			var fuel_injectors_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("fuel_injectors_box.prefab")));
+			var throttle_bodies_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("throttle_bodies_box.prefab")));
 			ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
 
-			GameObject wires_injectors_pumps_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset("wires_injectors_pumps.prefab") as GameObject));
-			GameObject wires_sparkPlugs1_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset("wires_sparkPlugs_1.prefab") as GameObject));
-			GameObject wires_sparkPlugs2_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset("wires_sparkPlugs_2.prefab") as GameObject));
+			var wires_injectors_pumps_gameObject =
+				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("wires_injectors_pumps.prefab")));
+			var wires_sparkPlugs1_gameObject =
+				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("wires_sparkPlugs_1.prefab")));
+			var wires_sparkPlugs2_gameObject =
+				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("wires_sparkPlugs_2.prefab")));
 
 			wires_injectors_pumps = wires_injectors_pumps_gameObject.transform.FindChild("default")
 				.GetComponent<MeshRenderer>();
@@ -308,7 +305,7 @@ namespace DonnerTech_ECU_Mod
 			wires_sparkPlugs1_gameObject.SetNameLayerTag("wires_sparkPlugs1");
 			wires_sparkPlugs2_gameObject.SetNameLayerTag("wires_sparkPlugs2");
 
-			partBaseInfo = new PartBaseInfo(this, assetBundle, parts_saveFile, partsList);
+			partBaseInfo = new PartBaseInfo(this, assetBundle, partsList);
 
 			mounting_plate_part = new Part("mounting_plate",
 				"ECU Mounting Plate", CarH.satsuma,
@@ -537,9 +534,7 @@ namespace DonnerTech_ECU_Mod
 
 			var shopBaseInfo = new ShopBaseInfo(this, assetBundle);
 
-			Vector3 shopSpawnLocation = Shop.SpawnLocation.Fleetari.Counter;
-
-			var chipGameObject = assetBundle.LoadAsset("chip.prefab") as GameObject;
+			var shopSpawnLocation = Shop.SpawnLocation.Fleetari.Counter;
 
 			Shop.Add(shopBaseInfo, Shop.ShopLocation.Fleetari, new ShopItem[]
 			{
@@ -560,7 +555,7 @@ namespace DonnerTech_ECU_Mod
 				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electric_fuel_pump_part, "electric-fuel-pump_productImage.png"),
 				new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
 				{
-					ChipPart chipPart = new ChipPart(
+					var chipPart = new ChipPart(
 						$"chip_{ChipPart.counter}",
 						$"Chip {ChipPart.counter + 1}",
 						smart_engine_module_part,

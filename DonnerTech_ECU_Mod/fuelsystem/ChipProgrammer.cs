@@ -50,7 +50,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			itemPivot = PlayMakerGlobals.Instance.Variables.FindFsmGameObject("ItemPivot");
 
 			programmer_ui_gameObject =
-				GameObject.Instantiate((mod.assetBundle.LoadAsset("ui_interface.prefab") as GameObject));
+				GameObject.Instantiate((mod.assetBundle.LoadAsset<GameObject>("ui_interface.prefab")));
 			programmer_ui_gameObject.name = "FuelSystem_Programmer_UI_GameObject";
 			programmer_ui = programmer_ui_gameObject.GetComponent<Canvas>();
 			programmer_ui.name = "FuelSystem_Programmer_UI";

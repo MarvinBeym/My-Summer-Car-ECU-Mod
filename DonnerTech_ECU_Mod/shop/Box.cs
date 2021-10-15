@@ -21,7 +21,7 @@ namespace ModShop
 		private bool checkedUnpacked = false;
 
 		public Box(string partId, string partName, GameObject box, GameObject part_gameObject, int numberOfParts,
-			Part parent, Vector3[] installLocations, Vector3[] installRotations, List<Part> partsList,
+			Part parent, Vector3[] installLocations, Vector3[] installRotations,
 			bool dontCollideOnRigid = true)
 		{
 			var partBaseInfo = parent.partBaseInfo;
@@ -47,10 +47,6 @@ namespace ModShop
 
 			logic = box.AddComponent<BoxLogic>();
 			logic.Init(parts, "Unpack " + partName, this);
-			foreach (Part part in parts)
-			{
-				partsList.Add(part);
-			}
 		}
 
 		public void CheckUnpackedOnSave()
