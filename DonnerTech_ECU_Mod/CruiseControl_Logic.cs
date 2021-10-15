@@ -22,7 +22,7 @@ namespace DonnerTech_ECU_Mod
 			mod.smart_engine_module_part.IsFixed() &&
 			mod.cable_harness_part.IsFixed() &&
 			mod.mounting_plate_part.IsFixed() &&
-			mod.fuel_system.allInstalled
+			mod.fuel_system.IsFixed()
 		);
 
 		private RaycastHit hit;

@@ -16,87 +16,54 @@ namespace DonnerTech_ECU_Mod
 	{
 		private DonnerTech_ECU_Mod mod;
 		private FuelSystem fuel_system;
+		private Transform[] throttleBodyValves;
 		private bool startAssistEnabled = false;
 
 		public float[,] fuelMap;
 
-		private Transform throttle_body1_valve;
-		private Transform throttle_body2_valve;
-		private Transform throttle_body3_valve;
-		private Transform throttle_body4_valve;
-
-		// Use this for initialization
-		void Start()
+		void LateUpdate()
 		{
-			throttle_body1_valve = fuel_system.throttle_body1_part.transform.FindChild("Butterfly-Valve");
-			throttle_body2_valve = fuel_system.throttle_body2_part.transform.FindChild("Butterfly-Valve");
-			throttle_body3_valve = fuel_system.throttle_body3_part.transform.FindChild("Butterfly-Valve");
-			throttle_body4_valve = fuel_system.throttle_body4_part.transform.FindChild("Butterfly-Valve");
-		}
-
-
-		void Update()
-		{
-			if (CarH.hasPower)
+			if (CarH.hasPower && fuel_system.IsFixed())
 			{
-				if (
-					(bool) mod.settingThrottleBodieTurning.Value
-					&& fuel_system.throttle_body1_part.IsFixed()
-					&& fuel_system.throttle_body2_part.IsFixed()
-					&& fuel_system.throttle_body3_part.IsFixed()
-					&& fuel_system.throttle_body4_part.IsFixed()
-				)
+				if ((bool) mod.settingThrottleBodieTurning.Value)
 				{
 					HandleThrottleBodyMovement();
 				}
 
-				if (fuel_system.fuelInjectionParts.AreAllNewFixed() && mod.smart_engine_module_part.IsFixed())
-				{
-					for (int index = 0; index < fuel_system.chips.Count; index++)
-					{
-						var chip = fuel_system.chips[index];
-						if (chip.IsInstalled() && chip.chipSave.chipProgrammed)
-						{
-							fuelMap = chip.chipSave.map;
-							startAssistEnabled = chip.chipSave.startAssistEnabled;
-							fuel_system.distributor_sparkAngle.Value = chip.chipSave.sparkAngle;
-							break;
-						}
+				for (int index = 0; index < fuel_system.chips.Count; index++) {
+					var chip = fuel_system.chips[index];
+					if (chip.IsInstalled() && chip.chipSave.chipProgrammed) {
+						fuelMap = chip.chipSave.map;
+						startAssistEnabled = chip.chipSave.startAssistEnabled;
+						fuel_system.distributor_sparkAngle.Value = chip.chipSave.sparkAngle;
+						break;
 					}
+				}
 
-					if (startAssistEnabled)
-					{
-						if (CarH.drivetrain.differentialSpeed < 15 &&
-						    (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0))
-						{
-							CarH.drivetrain.canStall = false;
-						}
-						else
-						{
-							CarH.drivetrain.canStall = true;
-						}
+				if (startAssistEnabled) {
+					if (CarH.drivetrain.differentialSpeed < 15 &&
+					    (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0)) {
+						CarH.drivetrain.canStall = false;
+					} else {
+						CarH.drivetrain.canStall = true;
 					}
+				}
 
-					if (fuelMap != null && CarH.running)
-					{
-						int mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
-						int mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
-						fuel_system.racingCarb_adjustAverage.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
-					}
+				if (fuelMap != null && CarH.running) {
+					int mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
+					int mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
+					fuel_system.airFuelMixture.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
 				}
 			}
 		}
 
 		private void HandleThrottleBodyMovement()
 		{
-			throttle_body1_valve.localRotation = new Quaternion
-				{eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0)};
-			throttle_body2_valve.localRotation = new Quaternion
-				{eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0)};
-			throttle_body3_valve.localRotation = new Quaternion
-				{eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0)};
-			throttle_body4_valve.localRotation = new Quaternion
-				{eulerAngles = new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0)};
+			foreach (var throttleBodyValve in throttleBodyValves)
+			{
+				throttleBodyValve.localRotation =
+					Quaternion.Euler(new Vector3(Mathf.Clamp(CarH.axisCarController.throttle * 4, 0, 1) * -90, 0, 0));
+			}
 		}
 
 		private int GetThrottleIndex(int throttle)
@@ -179,6 +146,11 @@ namespace DonnerTech_ECU_Mod
 		{
 			this.mod = mod;
 			this.fuel_system = fuel_system;
+			throttleBodyValves = new Transform[fuel_system.throttleBodyParts.Length];
+			for (var i = 0; i < fuel_system.throttleBodyParts.Length; i++)
+			{
+				throttleBodyValves[i] = fuel_system.throttleBodyParts[i].transform.FindChild("Butterfly-Valve");
+			}
 		}
 	}
 }

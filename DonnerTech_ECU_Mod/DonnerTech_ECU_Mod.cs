@@ -632,7 +632,7 @@ namespace DonnerTech_ECU_Mod
 
 			Shop.Open(Shop.ShopLocation.Fleetari);
 
-			fuel_system = new FuelSystem(this, partBaseInfo, fuel_injectors_box.parts, throttle_bodies_box.parts);
+			fuel_system = new FuelSystem(this, fuel_injectors_box.parts, throttle_bodies_box.parts);
 
 			assetBundle.Unload(false);
 			screwableassetBundle.Unload(false);

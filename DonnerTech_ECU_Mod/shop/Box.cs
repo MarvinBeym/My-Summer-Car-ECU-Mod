@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MscModApi.Parts;
+using MscModApi.Tools;
 using UnityEngine;
 
 
@@ -77,7 +78,7 @@ namespace ModShop
 		{
 			foreach (var part in parts)
 			{
-				part.AddScrews(screws, overrideScale, overrideSize);
+				part.AddScrews(screws.CloneToNew(), overrideScale, overrideSize);
 			}
 		}
 
