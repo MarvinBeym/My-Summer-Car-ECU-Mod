@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.infoPanel;
 using DonnerTech_ECU_Mod.Parts;
@@ -104,7 +105,6 @@ namespace DonnerTech_ECU_Mod
 		public override bool UseAssetsFolder => true;
 
 		public AssetBundle assetBundle;
-		public AssetBundle screwableassetBundle;
 		public GuiDebug guiDebug;
 		public bool turboModInstalled;
 
@@ -124,14 +124,8 @@ namespace DonnerTech_ECU_Mod
 		public Keybind plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
 		public Keybind minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
 
-		//Saves
-		public Dictionary<string, bool> partsBuySave;
-
 		//Files
 		private const string parts_saveFile = "parts_saveFile.json";
-		private const string logger_saveFile = "ecu_mod_logs.txt";
-		private const string modsShop_saveFile = "mod_shop_saveFile.json";
-		private const string screwableV2_saveFile = "screwableV2_saveFile.json";
 
 		//FuelSystem
 		public FuelSystem fuel_system;
@@ -151,16 +145,13 @@ namespace DonnerTech_ECU_Mod
 		public Box fuel_injectors_box;
 		public Box throttle_bodies_box;
 
-		private int setCruiseControlSpeed;
-		private bool cruiseControlModuleEnabled;
-
-		private static string modAssetsFolder;
+		internal PartBaseInfo partBaseInfo;
 
 		public Part abs_module_part;
 		public Part esp_module_part;
 		public Part tcs_module_part;
+
 		public Part cable_harness_part;
-		internal PartBaseInfo partBaseInfo;
 		public Part mounting_plate_part;
 
 		public Part smart_engine_module_part;
@@ -174,8 +165,6 @@ namespace DonnerTech_ECU_Mod
 		public Part fuel_injection_manifold_part;
 		public Part fuel_rail_part;
 		public Part electric_fuel_pump_part;
-		public static GameObject fuel_injectors_box_gameObject;
-		public static GameObject throttle_bodies_box_gameObject;
 
 		public Part chip_programmer_part;
 
@@ -214,8 +203,8 @@ namespace DonnerTech_ECU_Mod
 		private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
 		private Settings resetPosSetting = new Settings("resetPos", "Reset", Helper.WorkAroundAction);
 
-		public Settings settingThrottleBodieTurning =
-			new Settings("settingThrottleBodieTurning", "Throttle body valve rotation", true);
+		public Settings settingThrottleBodyValveRotation =
+			new Settings("settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
 
 		private Settings toggleSixGears =
 			new Settings("toggleSixGears", "SixGears Mod (with gear ratio changes)", false);
@@ -250,7 +239,6 @@ namespace DonnerTech_ECU_Mod
 				SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.mapSaveFile);
 			});
 			*/
-			SaveLoad.SerializeSaveFile<Dictionary<string, bool>>(this, null, modsShop_saveFile);
 		}
 
 		public override void OnLoad()
@@ -270,7 +258,6 @@ namespace DonnerTech_ECU_Mod
 			toggleSixGears.DoAction = ToggleSixGears;
 
 			assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
-			screwableassetBundle = Helper.LoadAssetBundle(this, "screwableapi.unity3d");
 
 			Keybind.AddHeader(this, "ECU-Panel Keybinds");
 			Keybind.Add(this, arrowUp);
@@ -292,25 +279,13 @@ namespace DonnerTech_ECU_Mod
 			ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
 			ecu_mod_gameObject.name = ID;
 
-			modAssetsFolder = ModLoader.GetModAssetsFolder(this);
-
 			originalGearRatios = CarH.drivetrain.gearRatios;
-
-			try {
-				partsBuySave = Helper.LoadSaveOrReturnNew<Dictionary<string, bool>>(this, modsShop_saveFile);
-			} catch (Exception ex) {
-				Logger.New("Error while trying to deserialize save file", "Please check paths to save files", ex);
-			}
 
 			GameObject fuel_injector = (assetBundle.LoadAsset("fuel_injector.prefab") as GameObject);
 			GameObject throttle_body = (assetBundle.LoadAsset("throttle_body.prefab") as GameObject);
 
-			fuel_injectors_box_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset("fuel_injectors_box.prefab") as GameObject));
-			throttle_bodies_box_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset("throttle_bodies_box.prefab") as GameObject));
-
-
+			var fuel_injectors_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset("fuel_injectors_box.prefab") as GameObject));
+			var throttle_bodies_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset("throttle_bodies_box.prefab") as GameObject));
 			ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
 
 			GameObject wires_injectors_pumps_gameObject =
@@ -637,11 +612,8 @@ namespace DonnerTech_ECU_Mod
 			fuel_system = new FuelSystem(this, fuel_injectors_box.parts, throttle_bodies_box.parts);
 
 			assetBundle.Unload(false);
-			screwableassetBundle.Unload(false);
 			Object.Destroy(fuel_injector);
 			Object.Destroy(throttle_body);
-
-			playerCurrentVehicle = FsmVariables.GlobalVariables.FindFsmString("PlayerCurrentVehicle");
 
 			ModConsole.Print(Name + $" [v{Version}");
 		}
@@ -673,7 +645,7 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddCheckBox(this, toggleSmoothInput);
 			Settings.AddText(this,
 				"This will make throttle input increase over time\n !Dont enable when using controller or any other analog input method!");
-			Settings.AddCheckBox(this, settingThrottleBodieTurning);
+			Settings.AddCheckBox(this, settingThrottleBodyValveRotation);
 			Settings.AddHeader(this, "", Color.clear);
 
 			Settings.AddText(this, "New Gear ratios + 5th & 6th gear\n" +
@@ -703,7 +675,6 @@ namespace DonnerTech_ECU_Mod
 					new GuiDebugInfo("Cruise control", "Gear not R", (CarH.drivetrain.gear != 0).ToString()),
 					new GuiDebugInfo("Cruise control", "cruise panel installed",
 						cruise_control_panel_part.IsInstalled().ToString()),
-					new GuiDebugInfo("Cruise control", "cruise control enabled", cruiseControlModuleEnabled.ToString()),
 					new GuiDebugInfo("Cruise control", "mounting plate installed",
 						mounting_plate_part.IsFixed().ToString()),
 					new GuiDebugInfo("Cruise control", "smart engine module installed",
@@ -716,7 +687,6 @@ namespace DonnerTech_ECU_Mod
 					new GuiDebugInfo("Cruise control", "clutch not pressed", (!cInput.GetKey("Clutch")).ToString()),
 					new GuiDebugInfo("Cruise control", "handbrake not pressed",
 						(CarH.carController.handbrakeInput <= 0f).ToString()),
-					new GuiDebugInfo("Cruise control", "set cruise control speed", setCruiseControlSpeed.ToString()),
 					new GuiDebugInfo("Cruise control", "car electricity on", CarH.hasPower.ToString()),
 					new GuiDebugInfo("Cruise control", "current speed", CarH.drivetrain.differentialSpeed.ToString()),
 				});
@@ -731,11 +701,11 @@ namespace DonnerTech_ECU_Mod
 
 		private void PosReset()
 		{
-			try {
-				foreach (var part in partsList) {
-					if (!part.IsInstalled()) {
-						part.ResetToDefault();
-					}
+			try
+			{
+				foreach (var part in partsList.Where(part => !part.IsInstalled()))
+				{
+					part.ResetToDefault();
 				}
 			} catch (Exception ex) {
 				ModConsole.Error(ex.Message);

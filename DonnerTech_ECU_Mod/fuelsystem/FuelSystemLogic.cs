@@ -25,7 +25,7 @@ namespace DonnerTech_ECU_Mod
 		{
 			if (CarH.hasPower && fuel_system.IsFixed())
 			{
-				if ((bool) mod.settingThrottleBodieTurning.Value)
+				if ((bool) mod.settingThrottleBodyValveRotation.Value)
 				{
 					HandleThrottleBodyMovement();
 				}
