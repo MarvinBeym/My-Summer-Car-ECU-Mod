@@ -86,6 +86,8 @@ namespace DonnerTech_ECU_Mod
 		 *  Added copyright notice to mod settings
 		 *  Remove BugReporter
 		 *  Change to using MscModApi instead of ModApi & ScrewablePartApi
+		 *  Replace ModsShop with MscModApi Shop
+		 *  Fuel injection now actually uses air/fuel ratio in the programmer
 		 *  
 		 */
 		/* BUGS/Need to fix
