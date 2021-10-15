@@ -6,6 +6,7 @@ using System.Linq;
 using HutongGames.PlayMaker;
 using DonnerTech_ECU_Mod.fuelsystem;
 using System;
+using DonnerTech_ECU_Mod.Parts;
 using MSCLoader;
 using MscModApi.Caching;
 
@@ -17,9 +18,8 @@ namespace DonnerTech_ECU_Mod
 		private DonnerTech_ECU_Mod mod;
 		private FuelSystem fuel_system;
 		private Transform[] throttleBodyValves;
-		private bool startAssistEnabled = false;
 
-		public float[,] fuelMap;
+		internal ChipPart installedChip = null;
 
 		void LateUpdate()
 		{
@@ -30,30 +30,19 @@ namespace DonnerTech_ECU_Mod
 					HandleThrottleBodyMovement();
 				}
 
-				for (int index = 0; index < fuel_system.chips.Count; index++) {
-					var chip = fuel_system.chips[index];
-					if (chip.IsInstalled() && chip.chipSave.chipProgrammed) {
-						fuelMap = chip.chipSave.map;
-						startAssistEnabled = chip.chipSave.startAssistEnabled;
-						fuel_system.distributor_sparkAngle.Value = chip.chipSave.sparkAngle;
-						break;
-					}
-				}
+				if (installedChip == null) return;
 
-				if (startAssistEnabled) {
-					if (CarH.drivetrain.differentialSpeed < 15 &&
-					    (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0)) {
+				if (installedChip.IsStartAssistEnabled()) {
+					if (CarH.drivetrain.differentialSpeed < 15 && (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0)) {
 						CarH.drivetrain.canStall = false;
 					} else {
 						CarH.drivetrain.canStall = true;
 					}
 				}
 
-				if (fuelMap != null && CarH.running) {
-					int mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
-					int mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
-					fuel_system.airFuelMixture.Value = fuelMap[mapThrottleIndex, mapRpmIndex];
-				}
+				var mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
+				var mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
+				fuel_system.airFuelMixture.Value = installedChip.GetFuelMap()[mapThrottleIndex, mapRpmIndex];
 			}
 		}
 

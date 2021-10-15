@@ -191,10 +191,18 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 						&& mod.smart_engine_module_part.IsFixed()
 						&& chips.Any(chip => chip.IsInstalled())
 						);
+					if (chipPart.IsProgrammed())
+					{
+						fuel_system_logic.installedChip = chipPart;
+						distributor_sparkAngle.Value = chipPart.GetSparkAngle();
+					}
+
+					
 				});
 				chipPart.AddPostUninstallAction(delegate
 				{
 					fuelInjectionParts.SetFakedInstallStatus(false);
+					fuel_system_logic.installedChip = null;
 				});
 				chips.Add(chipPart);
 			}

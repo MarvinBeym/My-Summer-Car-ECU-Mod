@@ -7,7 +7,7 @@ namespace DonnerTech_ECU_Mod.Parts
 	{
 		public float sparkAngle = 20.0f;
 
-		public bool chipProgrammed = false;
+		public bool programmed = false;
 		public bool startAssistEnabled = false;
 		public float[,] map = null;
 
