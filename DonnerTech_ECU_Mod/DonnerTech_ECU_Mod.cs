@@ -89,6 +89,8 @@ namespace DonnerTech_ECU_Mod
 		 *  Change to using MscModApi instead of ModApi & ScrewablePartApi
 		 *  Replace ModsShop with MscModApi Shop
 		 *  Fuel injection now actually uses air/fuel ratio in the programmer
+		 *  Remove smooth input option from settings
+		 *  Fix parts no longer resetting
 		 *  
 		 */
 		/* BUGS/Need to fix
@@ -110,7 +112,7 @@ namespace DonnerTech_ECU_Mod
 
 		public GameObject ecu_mod_gameObject;
 
-		internal static List<Part> partsList = new List<Part>();
+		internal static List<Part> partsList { get; set; }= new List<Part>();
 
 		//Keybinds
 		public Keybind highestKeybind = new Keybind("airride_highest", "Airride Highest", KeyCode.LeftArrow);
@@ -213,7 +215,6 @@ namespace DonnerTech_ECU_Mod
 			"Enable airride info panel page & airride logic (Has to be enabled/disabled before load)", false);
 
 		private Settings toggleAWD = new Settings("toggleAWD", "All Wheel Drive (AWD)", false);
-		private Settings toggleSmoothInput = new Settings("toggleSmoothInput", "Smooth throttle input", false);
 
 		private static float[] originalGearRatios;
 
@@ -254,7 +255,6 @@ namespace DonnerTech_ECU_Mod
 
 			resetPosSetting.DoAction = PosReset;
 			toggleAWD.DoAction = ToggleAWD;
-			toggleSmoothInput.DoAction = ToggleSmoothInput;
 			toggleSixGears.DoAction = ToggleSixGears;
 
 			assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
@@ -308,7 +308,7 @@ namespace DonnerTech_ECU_Mod
 			wires_sparkPlugs1_gameObject.SetNameLayerTag("wires_sparkPlugs1");
 			wires_sparkPlugs2_gameObject.SetNameLayerTag("wires_sparkPlugs2");
 
-			partBaseInfo = new PartBaseInfo(this, assetBundle, parts_saveFile);
+			partBaseInfo = new PartBaseInfo(this, assetBundle, parts_saveFile, partsList);
 
 			mounting_plate_part = new Part("mounting_plate",
 				"ECU Mounting Plate", CarH.satsuma,
@@ -330,7 +330,6 @@ namespace DonnerTech_ECU_Mod
 				"Smart Engine ECU", mounting_plate_part,
 				smart_engine_module_installLocation, new Vector3(0, 0, 0), partBaseInfo);
 
-			smart_engine_module_part.AddPostUninstallAction(DisassembleSmartEngineModule);
 			smart_engine_module_logic = smart_engine_module_part.AddWhenInstalledMono<SmartEngineModule_Logic>();
 			smart_engine_module_logic.Init(smart_engine_module_part, abs_module_part, esp_module_part, tcs_module_part);
 
@@ -395,7 +394,7 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(30, 0, 0),
 					new Vector3(30, 0, 0),
 					new Vector3(30, 0, 0),
-				}, partsList);
+				});
 			foreach (var part in fuel_injectors_box.parts) {
 				part.AddPreSaveAction(fuel_injectors_box.CheckUnpackedOnSave);
 			}
@@ -415,7 +414,7 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(-40, 0, 0),
 					new Vector3(-40, 0, 0),
 					new Vector3(-40, 0, 0),
-				}, partsList);
+				});
 			foreach (var part in throttle_bodies_box.parts) {
 				part.AddPreSaveAction(throttle_bodies_box.CheckUnpackedOnSave);
 			}
@@ -607,8 +606,6 @@ namespace DonnerTech_ECU_Mod
 					}, "throttle-bodies-box_productImage.png"));
 			}
 
-			Shop.Open(Shop.ShopLocation.Fleetari);
-
 			fuel_system = new FuelSystem(this, fuel_injectors_box.parts, throttle_bodies_box.parts);
 
 			assetBundle.Unload(false);
@@ -623,15 +620,6 @@ namespace DonnerTech_ECU_Mod
 			reverse_camera_logic.SetReverseCameraEnabled(enabled);
 		}
 
-		public void DisassembleSmartEngineModule()
-		{
-			for (int i = 0; i < fuel_system.chips.Count; i++) {
-				if (fuel_system.chips[i].IsInstalled()) {
-					fuel_system.chips[i].Uninstall();
-				}
-			}
-		}
-
 		public override void ModSettings()
 		{
 			Settings.HideResetAllButton(this);
@@ -642,9 +630,6 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddCheckBox(this, enableAirrideInfoPanelPage);
 			Settings.AddCheckBox(this, toggleSixGears);
 			Settings.AddCheckBox(this, toggleAWD);
-			Settings.AddCheckBox(this, toggleSmoothInput);
-			Settings.AddText(this,
-				"This will make throttle input increase over time\n !Dont enable when using controller or any other analog input method!");
 			Settings.AddCheckBox(this, settingThrottleBodyValveRotation);
 			Settings.AddHeader(this, "", Color.clear);
 
@@ -722,11 +707,6 @@ namespace DonnerTech_ECU_Mod
 			}
 
 			CarH.drivetrain.gearRatios = originalGearRatios;
-		}
-
-		private void ToggleSmoothInput()
-		{
-			CarH.axisCarController.smoothInput = !CarH.axisCarController.smoothInput;
 		}
 
 		private void ToggleAWD()
