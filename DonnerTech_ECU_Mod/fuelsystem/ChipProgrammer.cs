@@ -38,7 +38,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		private ChipPart chipOnProgrammer = null;
 
 		private RaycastHit hit;
-
+		
 		public Keybind programmer_ui_open = new Keybind("programmer_ui_open", "Open/Close", KeyCode.Keypad0);
 
 		public ChipProgrammer(DonnerTech_ECU_Mod mod, FuelSystem fuelSystem)

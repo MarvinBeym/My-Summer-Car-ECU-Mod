@@ -209,7 +209,7 @@ namespace DonnerTech_ECU_Mod
 			new Settings("toggleSixGears", "SixGears Mod (with gear ratio changes)", false);
 
 		public Settings enableAirrideInfoPanelPage = new Settings("enableAirrideInfoPanelPage",
-			"Enable airride info panel page & airride logic (Has to be enabled/disabled before load)", false);
+			"Enable Airride (enabled/disabled before load)", false);
 
 		private Settings toggleAWD = new Settings("toggleAWD", "All Wheel Drive (AWD)", false);
 

@@ -75,25 +75,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			allParts.Add(mod.mounting_plate_part);
 			allParts.Add(mod.cable_harness_part);
 
-			foreach (var chip in chips)
-			{
-				chip.AddPostInstallAction(delegate
-				{
-					foreach (var chipPart in chips.Where(chipPart => !chipPart.IsInstalled() && !chipPart.IsInstallBlocked()))
-					{
-						chipPart.BlockInstall(true);
-					}
-				});
-
-				chip.AddPostUninstallAction(delegate
-				{
-					foreach (var chipPart in chips.Where(chipPart => chipPart.IsInstallBlocked()))
-					{
-						chipPart.BlockInstall(false);
-					}
-				});
-			}
-
 			fuelInjectionParts = new ReplacementPart(new []
 			{
 				new OldPart(Cache.Find("Electrics")),
@@ -113,14 +94,31 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			fuel_system_logic.Init(this, mod);
 
 			LoadChips();
-		}
 
+			foreach (var chip in chips) {
+				chip.AddPostInstallAction(delegate {
+					foreach (var chipPart in chips.Where(chipPart => !chipPart.IsInstalled() && !chipPart.IsInstallBlocked())) {
+						chipPart.BlockInstall(true);
+					}
+				});
+
+				chip.AddPostUninstallAction(delegate {
+					foreach (var chipPart in chips.Where(chipPart => chipPart.IsInstallBlocked())) {
+						chipPart.BlockInstall(false);
+					}
+				});
+			}
+		}
+		
 		internal void FuelInjectionInstalled()
 		{
-			fuelInjectionParts.SetFakedInstallStatus(fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.IsInstalled()));
-			mod.wires_injectors_pumps.enabled = true;
-			mod.wires_sparkPlugs1.enabled = true;
-			mod.wires_sparkPlugs2.enabled = true;
+			if (fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.IsInstalled()))
+			{
+				fuelInjectionParts.SetFakedInstallStatus(true);
+				mod.wires_injectors_pumps.enabled = true;
+				mod.wires_sparkPlugs1.enabled = true;
+				mod.wires_sparkPlugs2.enabled = true;
+			}
 		}
 
 		internal void FuelInjectionUninstalled()
@@ -192,12 +190,11 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					$"Chip {ChipPart.counter + 1}",
 					mod.smart_engine_module_part,
 					mod.partBaseInfo);
+				chips.Add(chipPart);
+
 				chipPart.AddPostInstallAction(delegate
 				{
-					fuelInjectionParts.SetFakedInstallStatus(
-						fuelInjectionParts.AreAllNewFixed()
-						&& chips.Any(chip => chip.IsInstalled())
-						);
+					FuelInjectionInstalled();
 					if (chipPart.IsProgrammed())
 					{
 						fuel_system_logic.installedChip = chipPart;
@@ -207,10 +204,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				});
 				chipPart.AddPostUninstallAction(delegate
 				{
-					fuelInjectionParts.SetFakedInstallStatus(false);
+					FuelInjectionUninstalled();
 					fuel_system_logic.installedChip = null;
 				});
-				chips.Add(chipPart);
+				
 			}
 		}
 

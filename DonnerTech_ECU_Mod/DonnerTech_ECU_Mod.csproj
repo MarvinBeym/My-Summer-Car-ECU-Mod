@@ -141,6 +141,7 @@ cd "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods"
 call "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\debug.bat"
 ) ELSE (
 copy "$(TargetPath)" "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods" /y
+copy "$(TargetPath)" "M:\My Summer Car Modding\Mods\ECU-Mod\Current version" /y
 )</PostBuildEvent>
   </PropertyGroup>
   <Target Name="CopyLinkedFiles" BeforeTargets="Build">

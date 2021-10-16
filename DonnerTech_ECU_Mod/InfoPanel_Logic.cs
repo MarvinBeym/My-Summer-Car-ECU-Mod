@@ -173,31 +173,31 @@ namespace DonnerTech_ECU_Mod
 		private void LoadECU_PanelImageOverride()
 		{
 			handbrakeSprite = Helper.LoadNewSprite(handbrakeSprite,
-				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "handbrake_icon.png"));
+				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE_handbrake_icon.png"));
 			ecu_InfoPanel_Handbrake.sprite = handbrakeSprite;
 
 			blinkerLeftSprite = Helper.LoadNewSprite(blinkerLeftSprite,
-				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_left_icon.png"));
+				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE_blinker_left_icon.png"));
 			ecu_InfoPanel_IndicatorLeft.sprite = blinkerLeftSprite;
 
 			blinkerRightSprite = Helper.LoadNewSprite(blinkerRightSprite,
-				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "blinker_right_icon.png"));
+				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE_blinker_right_icon.png"));
 			ecu_InfoPanel_IndicatorRight.sprite = blinkerRightSprite;
 
 			lowBeamSprite = Helper.LoadNewSprite(lowBeamSprite,
-				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "low_beam_icon.png"));
+				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE_low_beam_icon.png"));
 			ecu_InfoPanel_LowBeam.sprite = lowBeamSprite;
 
 			highBeamSprite = Helper.LoadNewSprite(highBeamSprite,
-				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "high_beam_icon.png"));
+				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE_high_beam_icon.png"));
 			ecu_InfoPanel_HighBeam.sprite = highBeamSprite;
 
 			needleSprite = Helper.LoadNewSprite(needleSprite,
-				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "needle_icon.png"));
+				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE_needle_icon.png"));
 			ecu_InfoPanel_Needle.sprite = needleSprite;
 
 			turbineWheelSprite = Helper.LoadNewSprite(turbineWheelSprite,
-				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE" + "_" + "turbine_icon.png"));
+				Path.Combine(ModLoader.GetModAssetsFolder(mod), "OVERRIDE_turbine_icon.png"));
 			ecu_InfoPanel_TurboWheel.sprite = turbineWheelSprite;
 		}
 
@@ -799,10 +799,14 @@ namespace DonnerTech_ECU_Mod
 				new Modules("modules_page", ecu_InfoPanel_NeedleObject, infoPanelBaseInfo),
 				new Faults("faults_page", infoPanelBaseInfo),
 				new Faults2("faults2_page", infoPanelBaseInfo),
-				new Turbocharger("turbocharger_page", ecu_InfoPanel_TurboWheelObject, infoPanelBaseInfo),
 				new Assistance("assistance_page", infoPanelBaseInfo),
 			};
 
+
+			if (mod.turboModInstalled)
+			{
+				pages.Add(new Turbocharger("turbocharger_page", ecu_InfoPanel_TurboWheelObject, infoPanelBaseInfo));
+			}
 
 			if ((bool) mod.enableAirrideInfoPanelPage.Value)
 			{
