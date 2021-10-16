@@ -68,6 +68,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			allParts.Add(fuel_pump_cover_part);
 			allParts.Add(fuel_injection_manifold_part);
 			allParts.Add(electric_fuel_pump_part);
+			allParts.Add(mod.smart_engine_module_part);
+			allParts.Add(mod.mounting_plate_part);
 
 			foreach (var chip in chips)
 			{
@@ -102,7 +104,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			fuelInjectionParts.AddInstalledAction(ReplacementPart.ActionType.AllInstalled, ReplacementPart.PartType.NewPart,
 				delegate
 				{
-					fuelInjectionParts.SetFakedInstallStatus(mod.smart_engine_module_part.IsFixed() && chips.Any(chip => chip.IsInstalled()));
+					fuelInjectionParts.SetFakedInstallStatus(chips.Any(chip => chip.IsInstalled()));
 					mod.wires_injectors_pumps.enabled = true;
 					mod.wires_sparkPlugs1.enabled = true;
 					mod.wires_sparkPlugs2.enabled = true;
@@ -188,7 +190,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				{
 					fuelInjectionParts.SetFakedInstallStatus(
 						fuelInjectionParts.AreAllNewFixed(true)
-						&& mod.smart_engine_module_part.IsFixed()
 						&& chips.Any(chip => chip.IsInstalled())
 						);
 					if (chipPart.IsProgrammed())
