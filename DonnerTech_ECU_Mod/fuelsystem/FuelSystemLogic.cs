@@ -23,7 +23,7 @@ namespace DonnerTech_ECU_Mod
 
 		void LateUpdate()
 		{
-			if (CarH.hasPower && fuel_system.IsFixed())
+			if (CarH.running && fuel_system.IsFixed())
 			{
 				if ((bool) mod.settingThrottleBodyValveRotation.Value)
 				{
@@ -43,6 +43,8 @@ namespace DonnerTech_ECU_Mod
 				var mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
 				var mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
 				fuel_system.airFuelMixture.Value = installedChip.GetFuelMap()[mapThrottleIndex, mapRpmIndex];
+				fuel_system.racingCarb_adjustAverage.Value = fuel_system.racingCarb_idealSetting.Value;
+				fuel_system.distributor_sparkAngle.Value = installedChip.GetSparkAngle();
 			}
 		}
 

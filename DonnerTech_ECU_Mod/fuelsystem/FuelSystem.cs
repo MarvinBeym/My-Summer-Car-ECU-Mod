@@ -27,6 +27,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		public List<Part> allParts = new List<Part>();
 
 		public FsmFloat distributor_sparkAngle;
+		public FsmFloat racingCarb_adjustAverage;
+		public FsmFloat racingCarb_idealSetting;
 
 		public FsmFloat airFuelMixture;
 		internal Part[] fuelInjectorParts;
@@ -48,8 +50,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			//PlayMakerFSM fuelStrainer = Cache.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
 
 			distributor_sparkAngle = distributor.FsmVariables.FindFsmFloat("SparkAngle");
-
-
+			PlayMakerFSM raceCarb = Cache.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
+			racingCarb_adjustAverage = raceCarb.FsmVariables.FindFsmFloat("AdjustAverage");
+			racingCarb_idealSetting = raceCarb.FsmVariables.FindFsmFloat("IdealSetting");
 			airFuelMixture = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/Engine/Fuel").FindFsm("Mixture").FsmVariables.FindFsmFloat("AirFuelMixture");
 
 			this.fuelInjectorParts = fuelInjectorParts;
@@ -70,6 +73,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			allParts.Add(electric_fuel_pump_part);
 			allParts.Add(mod.smart_engine_module_part);
 			allParts.Add(mod.mounting_plate_part);
+			allParts.Add(mod.cable_harness_part);
 
 			foreach (var chip in chips)
 			{
@@ -101,28 +105,30 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			}, allParts.ToArray());
 
-			fuelInjectionParts.AddInstalledAction(ReplacementPart.ActionType.AllInstalled, ReplacementPart.PartType.NewPart,
-				delegate
-				{
-					fuelInjectionParts.SetFakedInstallStatus(chips.Any(chip => chip.IsInstalled()));
-					mod.wires_injectors_pumps.enabled = true;
-					mod.wires_sparkPlugs1.enabled = true;
-					mod.wires_sparkPlugs2.enabled = true;
-				});
-			fuelInjectionParts.AddInstalledAction(ReplacementPart.ActionType.AnyUninstalled,
-				ReplacementPart.PartType.NewPart,
-				delegate
-				{
-					fuelInjectionParts.SetFakedInstallStatus(false);
-					mod.wires_injectors_pumps.enabled = false;
-					mod.wires_sparkPlugs1.enabled = false;
-					mod.wires_sparkPlugs2.enabled = false;
-				});
+			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AllFixed, ReplacementPart.PartType.NewPart, FuelInjectionInstalled);
+			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUninstalled, ReplacementPart.PartType.NewPart, FuelInjectionUninstalled);
+			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUnfixed, ReplacementPart.PartType.NewPart, FuelInjectionUninstalled);
 
 			fuel_system_logic = mod.smart_engine_module_part.AddWhenInstalledMono<FuelSystemLogic>();
 			fuel_system_logic.Init(this, mod);
 
 			LoadChips();
+		}
+
+		internal void FuelInjectionInstalled()
+		{
+			fuelInjectionParts.SetFakedInstallStatus(fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.IsInstalled()));
+			mod.wires_injectors_pumps.enabled = true;
+			mod.wires_sparkPlugs1.enabled = true;
+			mod.wires_sparkPlugs2.enabled = true;
+		}
+
+		internal void FuelInjectionUninstalled()
+		{
+			fuelInjectionParts.SetFakedInstallStatus(false);
+			mod.wires_injectors_pumps.enabled = false;
+			mod.wires_sparkPlugs1.enabled = false;
+			mod.wires_sparkPlugs2.enabled = false;
 		}
 
 		public void Handle()
@@ -189,13 +195,12 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				chipPart.AddPostInstallAction(delegate
 				{
 					fuelInjectionParts.SetFakedInstallStatus(
-						fuelInjectionParts.AreAllNewFixed(true)
+						fuelInjectionParts.AreAllNewFixed()
 						&& chips.Any(chip => chip.IsInstalled())
 						);
 					if (chipPart.IsProgrammed())
 					{
 						fuel_system_logic.installedChip = chipPart;
-						distributor_sparkAngle.Value = chipPart.GetSparkAngle();
 					}
 
 					
