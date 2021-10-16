@@ -91,6 +91,7 @@ namespace DonnerTech_ECU_Mod
 		 *  Fuel injection now actually uses air/fuel ratio in the programmer
 		 *  Remove smooth input option from settings
 		 *  Fix parts no longer resetting
+		 *	Fix new game clean-up
 		 *  
 		 */
 		/* BUGS/Need to fix
@@ -228,7 +229,9 @@ namespace DonnerTech_ECU_Mod
 		public override void OnNewGame()
 		{
 			MscModApi.MscModApi.NewGameCleanUp(this);
-
+			foreach (var file in Directory.GetFiles(ModLoader.GetModSettingsFolder(this), "chip_*_saveFile.json", SearchOption.AllDirectories)) {
+				File.Delete(file);
+			}
 			/*
 			fuel_system.chips.ForEach(delegate (Chip chip) {
 				SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.mapSaveFile);
@@ -239,7 +242,7 @@ namespace DonnerTech_ECU_Mod
 		public override void OnLoad()
 		{
 			ModConsole.Print(Name + $" [v{Version}");
-
+			//MscModApi.MscModApi.EnableScrewPlacementForAllParts(this);
 			turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
 			guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 310 - 310 : Screen.width - 310, 50, 300,
 				"ECU MOD DEBUG", new[]
@@ -340,6 +343,10 @@ namespace DonnerTech_ECU_Mod
 			info_panel_part = new Part("info_panel",
 				"Info Panel", Cache.Find("dashboard(Clone)"),
 				info_panel_installLocation, new Vector3(0, 180, 180), partBaseInfo);
+			info_panel_part.AddPostInstallAction(delegate
+			{
+				info_panel_part.gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+			});
 			info_panel = new InfoPanel(this, info_panel_part, assetBundle);
 
 			rain_light_sensorboard_part = new Part("rain_light_sensorboard",
@@ -416,8 +423,8 @@ namespace DonnerTech_ECU_Mod
 			throttle_bodies_box.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0.016f, -0.016f, -0.011f), new Vector3(0, 0, 0)),
-					new Screw(new Vector3(-0.016f, 0.016f, -0.011f), new Vector3(0, 0, 0)),
+					new Screw(new Vector3(0.016f, -0.016f, 0.0020f), new Vector3(0, 0, 0)),
+					new Screw(new Vector3(-0.016f, 0.016f, 0.0020f), new Vector3(0, 0, 0)),
 				}, 0.6f, 8);
 
 
@@ -443,90 +450,90 @@ namespace DonnerTech_ECU_Mod
 			abs_module_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0.0558f, -0.0025f, -0.0525f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.0558f, -0.0025f, 0.0525f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.0558f, -0.0025f, 0.0525f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.0558f, -0.0025f, -0.0525f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.0558f, 0.0115f, -0.0525f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.0558f, 0.0115f, 0.0525f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.0558f, 0.0115f, 0.0525f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.0558f, 0.0115f, -0.0525f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
 			esp_module_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0.09f, -0.002f, -0.052f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.09f, -0.002f, 0.0528f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.092f, -0.002f, 0.0528f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.092f, -0.002f, -0.052f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.09f,0.0120f, -0.052f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.09f,0.0120f, 0.0528f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.092f,0.0120f, 0.0528f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.092f,0.0120f, -0.052f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
 			tcs_module_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0.0388f, 0.002f, -0.0418f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.0388f, 0.002f, 0.0422f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.0382f, 0.002f, 0.0422f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.0382f, 0.002f, -0.0418f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.0388f, 0.0150f, -0.0418f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.0388f, 0.0150f, 0.0422f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.0382f, 0.0150f, 0.0422f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.0382f, 0.0150f, -0.0418f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
 			smart_engine_module_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(-0.028f, -0.003f, 0.039f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.049f, -0.003f, 0.039f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.049f, -0.003f, -0.0625f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.028f, -0.003f, -0.0625f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.028f, 0.01f, 0.039f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.049f, 0.01f, 0.039f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.049f, 0.01f, -0.0625f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.028f, 0.01f, -0.0625f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
 			mounting_plate_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(-0.1240f, 0.0180f, 0.0040f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.1240f, 0.0180f, 0.2070f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.0020f, 0.0180f, 0.2070f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.1280f, 0.0180f, 0.2070f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.1240f, 0.0180f, -0.2000f), new Vector3(-90, 0, 0))
+					new Screw(new Vector3(-0.1240f, 0.018f, 0.0040f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.1240f, 0.018f, 0.2070f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.0020f, 0.018f, 0.2070f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.1280f, 0.018f, 0.2070f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.1240f, 0.018f, -0.2000f), new Vector3(-90, 0, 0))
 				}, 1.2f, 12);
 
 			rain_light_sensorboard_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0.078f, 0.0055f, 0f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.078f, 0.0055f, 0f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.078f, 0.0185f, 0f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.078f, 0.0185f, 0f), new Vector3(-90, 0, 0)),
 				}, 0.5f, 8);
 
 			info_panel_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0f, -0.025f, -0.067f), new Vector3(180, 0, 0)),
+					new Screw(new Vector3(0f, -0.025f, -0.082f), new Vector3(180, 0, 0)),
 				}, 0.8f, 8);
-
+			info_panel_part.EnableScrewPlacementMode();
 			reverse_camera_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0f, -0.015f, 0.0055f), new Vector3(0, 0, 0)),
+					new Screw(new Vector3(0f, -0.015f, 0.0185f), new Vector3(0, 0, 0)),
 				}, 0.5f, 5);
 
-
+			
 			fuel_pump_cover_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(-0.02f, 0.003f, -0.009f), new Vector3(0, 180, 0), Screw.Type.Nut),
-					new Screw(new Vector3(0.018f, 0.003f, -0.009f), new Vector3(0, 180, 0), Screw.Type.Nut),
+					new Screw(new Vector3(-0.02f, 0.003f, -0.0230f), new Vector3(0, 180, 0), Screw.Type.Nut),
+					new Screw(new Vector3(0.018f, 0.003f, -0.0230f), new Vector3(0, 180, 0), Screw.Type.Nut),
 				}, 0.6f, 7);
 
 			fuel_injection_manifold_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0.0875f, -0.001f, -0.0105f), new Vector3(0, 0, 0), Screw.Type.Nut),
-					new Screw(new Vector3(0.053f, -0.043f, -0.0105f), new Vector3(0, 0, 0), Screw.Type.Nut),
-					new Screw(new Vector3(-0.051f, -0.043f, -0.0105f), new Vector3(0, 0, 0), Screw.Type.Nut),
-					new Screw(new Vector3(-0.0865f, -0.001f, -0.0105f), new Vector3(0, 0, 0), Screw.Type.Nut),
+					new Screw(new Vector3(0.0875f, -0.001f, 0.0025f), new Vector3(0, 0, 0), Screw.Type.Nut),
+					new Screw(new Vector3(0.053f, -0.043f, 0.0025f), new Vector3(0, 0, 0), Screw.Type.Nut),
+					new Screw(new Vector3(-0.051f, -0.043f, 0.0025f), new Vector3(0, 0, 0), Screw.Type.Nut),
+					new Screw(new Vector3(-0.0865f, -0.001f, 0.0025f), new Vector3(0, 0, 0), Screw.Type.Nut),
 				}, 0.6f, 8);
 
 			electric_fuel_pump_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0f, 0.04f, 0.01f), new Vector3(0, 180, 0)),
-					new Screw(new Vector3(0f, -0.04f, 0.01f), new Vector3(0, 180, 0)),
+					new Screw(new Vector3(0f, 0.04f, -0.0030f), new Vector3(0, 180, 0)),
+					new Screw(new Vector3(0f, -0.04f, -0.0030f), new Vector3(0, 180, 0)),
 				}, 0.6f, 8);
 
 			var shopBaseInfo = new ShopBaseInfo(this, assetBundle);
