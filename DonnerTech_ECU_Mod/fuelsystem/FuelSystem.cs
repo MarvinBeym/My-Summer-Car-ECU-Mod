@@ -16,6 +16,7 @@ using MscModApi.Tools;
 using Tools;
 using Helper = MscModApi.Tools.Helper;
 using MscModApi.Parts.ReplacementPart;
+using MscModApi.Shopping;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
 {
@@ -191,6 +192,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					mod.smart_engine_module_part,
 					mod.partBaseInfo);
 				chips.Add(chipPart);
+				chipPart.SetDefaultPosition(Shop.SpawnLocation.Fleetari.Counter);
 
 				chipPart.AddPostInstallAction(delegate
 				{

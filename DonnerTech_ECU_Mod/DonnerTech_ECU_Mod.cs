@@ -77,7 +77,7 @@ namespace DonnerTech_ECU_Mod
 		 *  Save all information in single file/object
 		 */
 
-		/*  Changelog (v1.5.3)
+		/*  Changelog (v1.5.4)
 		 *  
 		 */
 		/* BUGS/Need to fix
@@ -87,9 +87,9 @@ namespace DonnerTech_ECU_Mod
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
-		public override string Version => "1.5.2"; //Version
+		public override string Version => "1.5.3"; //Version
 		public override bool UseAssetsFolder => true;
-
+		
 		public AssetBundle assetBundle;
 		public GuiDebug guiDebug;
 		public bool turboModInstalled;
@@ -184,7 +184,7 @@ namespace DonnerTech_ECU_Mod
 		public Vector3 mounting_plate_installLocation = new Vector3(0.3115f, -0.276f, -0.0393f);
 
 		private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
-		private Settings resetPosSetting = new Settings("resetPos", "Reset", Helper.WorkAroundAction);
+		private Settings resetPosSetting = new Settings("resetPos", "Reset Part position", Helper.WorkAroundAction);
 
 		public Settings settingThrottleBodyValveRotation =
 			new Settings("settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
@@ -381,7 +381,7 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(30, 0, 0),
 					new Vector3(30, 0, 0),
 					new Vector3(30, 0, 0),
-				});
+				}, Shop.SpawnLocation.Fleetari.Counter);
 			foreach (var part in fuel_injectors_box.parts) {
 				part.AddPreSaveAction(fuel_injectors_box.CheckUnpackedOnSave);
 			}
@@ -401,7 +401,7 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(-40, 0, 0),
 					new Vector3(-40, 0, 0),
 					new Vector3(-40, 0, 0),
-				});
+				}, Shop.SpawnLocation.Fleetari.Counter);
 			foreach (var part in throttle_bodies_box.parts) {
 				part.AddPreSaveAction(throttle_bodies_box.CheckUnpackedOnSave);
 			}
@@ -568,7 +568,6 @@ namespace DonnerTech_ECU_Mod
 						foreach (var part in fuel_injectors_box.parts) {
 							part.SetActive(false);
 							part.SetBought(true);
-							part.SetDefaultPosition(shopSpawnLocation);
 							part.ResetToDefault();
 						}
 					}, "fuel-injectors-box_productImage.png", false));
@@ -584,7 +583,6 @@ namespace DonnerTech_ECU_Mod
 						foreach (var part in throttle_bodies_box.parts) {
 							part.SetActive(false);
 							part.SetBought(true);
-							part.SetDefaultPosition(shopSpawnLocation);
 							part.ResetToDefault();
 						}
 					}, "throttle-bodies-box_productImage.png", false));
@@ -672,10 +670,10 @@ namespace DonnerTech_ECU_Mod
 		{
 			try
 			{
-				foreach (var part in partsList.Where(part => !part.IsInstalled()))
+				partsList.ForEach(delegate(Part part)
 				{
 					part.ResetToDefault();
-				}
+				});
 			} catch (Exception ex) {
 				ModConsole.Error(ex.Message);
 			}

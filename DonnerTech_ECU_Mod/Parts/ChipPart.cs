@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using MSCLoader;
 using MscModApi.Parts;
 using MscModApi.Tools;
@@ -26,12 +27,13 @@ namespace DonnerTech_ECU_Mod.Parts
 
 		public override void CustomSaveLoading(Mod mod, string saveFileName)
 		{
-			chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, Helper.CombinePathsAndCreateIfNotExists("fuelMaps", saveFileName));
+			chipSave = Helper.LoadSaveOrReturnNew<ChipSave>(mod, Helper.CombinePaths("fuelMaps", saveFileName));
 		}
 
 		public override void CustomSaveSaving(Mod mod, string saveFileName)
 		{
-			SaveLoad.SerializeSaveFile<ChipSave>(mod, chipSave, Helper.CombinePathsAndCreateIfNotExists("fuelMaps", saveFileName));
+			Directory.CreateDirectory(Helper.CombinePaths(ModLoader.GetModSettingsFolder(mod), "fuelMaps"));
+			SaveLoad.SerializeSaveFile<ChipSave>(mod, chipSave, Helper.CombinePaths("fuelMaps", saveFileName));
 		}
 
 		public float[,] GetFuelMap()

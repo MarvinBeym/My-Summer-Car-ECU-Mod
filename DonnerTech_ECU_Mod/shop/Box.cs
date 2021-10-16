@@ -21,7 +21,7 @@ namespace ModShop
 		private bool checkedUnpacked = false;
 
 		public Box(string partId, string partName, GameObject box, GameObject part_gameObject, int numberOfParts,
-			Part parent, Vector3[] installLocations, Vector3[] installRotations,
+			Part parent, Vector3[] installLocations, Vector3[] installRotations, Vector3 defaultPosition,
 			bool dontCollideOnRigid = true)
 		{
 			var partBaseInfo = parent.partBaseInfo;
@@ -37,7 +37,7 @@ namespace ModShop
 				parts[i] = new Part(
 					$"{partId}_{i}", partName + " " + iOffset, part_gameObject,
 					parent, installLocations[i], installRotations[i], partBaseInfo);
-
+				parts[i].SetDefaultPosition(defaultPosition);
 				if (!parts[i].IsBought())
 				{
 					parts[i].Uninstall();
