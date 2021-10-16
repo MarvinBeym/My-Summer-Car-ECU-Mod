@@ -77,21 +77,7 @@ namespace DonnerTech_ECU_Mod
 		 *  Save all information in single file/object
 		 */
 
-		/*  Changelog (v1.5.0)
-		 *  Improved debug gui
-		 *  Massive code refactoring
-		 *  Code improvement
-		 *  Code improvement
-		 *  Loading time improvement
-		 *  Performance improvement
-		 *  Added copyright notice to mod settings
-		 *  Remove BugReporter
-		 *  Change to using MscModApi instead of ModApi & ScrewablePartApi
-		 *  Replace ModsShop with MscModApi Shop
-		 *  Fuel injection now actually uses air/fuel ratio in the programmer
-		 *  Remove smooth input option from settings
-		 *  Fix parts no longer resetting
-		 *	Fix new game clean-up
+		/*  Changelog (v1.5.2)
 		 *  
 		 */
 		/* BUGS/Need to fix
@@ -101,7 +87,7 @@ namespace DonnerTech_ECU_Mod
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
-		public override string Version => "1.5.0"; //Version
+		public override string Version => "1.5.1"; //Version
 		public override bool UseAssetsFolder => true;
 
 		public AssetBundle assetBundle;
@@ -585,7 +571,7 @@ namespace DonnerTech_ECU_Mod
 							part.SetDefaultPosition(shopSpawnLocation);
 							part.ResetToDefault();
 						}
-					}, "fuel-injectors-box_productImage.png"));
+					}, "fuel-injectors-box_productImage.png", false));
 			}
 
 			if (!throttle_bodies_box.IsBought()) {
@@ -601,7 +587,7 @@ namespace DonnerTech_ECU_Mod
 							part.SetDefaultPosition(shopSpawnLocation);
 							part.ResetToDefault();
 						}
-					}, "throttle-bodies-box_productImage.png"));
+					}, "throttle-bodies-box_productImage.png", false));
 			}
 
 			fuel_system = new FuelSystem(this, fuel_injectors_box.parts, throttle_bodies_box.parts);
