@@ -77,7 +77,7 @@ namespace DonnerTech_ECU_Mod
 		 *  Save all information in single file/object
 		 */
 
-		/*  Changelog (v1.4.12)
+		/*  Changelog (v1.5.0)
 		 *  Improved debug gui
 		 *  Massive code refactoring
 		 *  Code improvement
@@ -94,16 +94,13 @@ namespace DonnerTech_ECU_Mod
 		 *  
 		 */
 		/* BUGS/Need to fix
-		 * WARNING: both twincarb and fuel injection manifold can be installed (twincarb und carb trigger shold be disabled when anyInstalled
-		 * Racing Carb bleibt installiert nachdem ein teil vom fuel injection entfernt wird. *Bis manifold entfernt wird
-
 		 * ECU mod: add ERRor to display if something is wrong
 		 */
 #endif
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
-		public override string Version => "1.4.11"; //Version
+		public override string Version => "1.5.0"; //Version
 		public override bool UseAssetsFolder => true;
 
 		public AssetBundle assetBundle;
