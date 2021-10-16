@@ -492,7 +492,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(0.1280f, 0.018f, 0.2070f), new Vector3(-90, 0, 0)),
 					new Screw(new Vector3(-0.1240f, 0.018f, -0.2000f), new Vector3(-90, 0, 0))
 				}, 1.2f, 12);
-
+			
 			rain_light_sensorboard_part.AddScrews(
 				new[]
 				{
@@ -505,7 +505,6 @@ namespace DonnerTech_ECU_Mod
 				{
 					new Screw(new Vector3(0f, -0.025f, -0.082f), new Vector3(180, 0, 0)),
 				}, 0.8f, 8);
-			info_panel_part.EnableScrewPlacementMode();
 			reverse_camera_part.AddScrews(
 				new[]
 				{
