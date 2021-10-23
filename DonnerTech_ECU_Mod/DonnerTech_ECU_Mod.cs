@@ -77,7 +77,7 @@ namespace DonnerTech_ECU_Mod
 		 *  Save all information in single file/object
 		 */
 
-		/*  Changelog (v1.5.4)
+		/*  Changelog (v1.5.5)
 		 *  
 		 */
 		/* BUGS/Need to fix
@@ -87,7 +87,7 @@ namespace DonnerTech_ECU_Mod
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
-		public override string Version => "1.5.3"; //Version
+		public override string Version => "1.5.4"; //Version
 		public override bool UseAssetsFolder => true;
 		
 		public AssetBundle assetBundle;

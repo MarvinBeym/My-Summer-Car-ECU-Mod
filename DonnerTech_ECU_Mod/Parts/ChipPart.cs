@@ -101,5 +101,10 @@ namespace DonnerTech_ECU_Mod.Parts
 		{
 			chipSave.startAssistEnabled = enabled;
 		}
+
+		internal bool InUse()
+		{
+			return IsInstalled() && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null;
+		}
 	}
 }

@@ -15,7 +15,7 @@ using MscModApi.Parts.ReplacePart;
 using MscModApi.Tools;
 using Tools;
 using Helper = MscModApi.Tools.Helper;
-using MscModApi.Parts.ReplacementPart;
+using MscModApi.Parts.ReplacePart;
 using MscModApi.Shopping;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
@@ -24,8 +24,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 	{
 		public FuelSystemLogic fuel_system_logic;
 		public ChipProgrammer chip_programmer;
-
-		public List<Part> allParts = new List<Part>();
 
 		public FsmFloat distributor_sparkAngle;
 		public FsmFloat racingCarb_adjustAverage;
@@ -59,33 +57,33 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			this.fuelInjectorParts = fuelInjectorParts;
 			this.throttleBodyParts = throttleBodyParts;
 
-			var fuel_rail_part = mod.fuel_rail_part;
-			var fuel_pump_cover_part = mod.fuel_pump_cover_part;
-			var fuel_injection_manifold_part = mod.fuel_injection_manifold_part;
-
-			var electric_fuel_pump_part = mod.electric_fuel_pump_part;
-
-			allParts.AddRange(fuelInjectorParts);
-			allParts.AddRange(throttleBodyParts);
-
-			allParts.Add(fuel_rail_part);
-			allParts.Add(fuel_pump_cover_part);
-			allParts.Add(fuel_injection_manifold_part);
-			allParts.Add(electric_fuel_pump_part);
-			allParts.Add(mod.smart_engine_module_part);
-			allParts.Add(mod.mounting_plate_part);
-			allParts.Add(mod.cable_harness_part);
-
-			fuelInjectionParts = new ReplacementPart(new []
-			{
-				new OldPart(Cache.Find("Electrics")),
-				new OldPart(Cache.Find("Distributor")),
-				new OldPart(Cache.Find("Racing Carburators")),
-				new OldPart(Cache.Find("Fuelpump")),
-				new OldPart(Cache.Find("Carburator"), false),
-				new OldPart(Cache.Find("Twin Carburators"), false)
-
-			}, allParts.ToArray());
+			fuelInjectionParts = new ReplacementPart(
+				new [] {
+					new OldPart(Cache.Find("Electrics")),
+					new OldPart(Cache.Find("Distributor")),
+					new OldPart(Cache.Find("Racing Carburators")),
+					new OldPart(Cache.Find("Fuelpump")),
+					new OldPart(Cache.Find("Carburator"), false),
+					new OldPart(Cache.Find("Twin Carburators"), false)
+				}, 
+				new [] 
+				{
+					new NewPart(fuelInjectorParts[0]),
+					new NewPart(fuelInjectorParts[1]),
+					new NewPart(fuelInjectorParts[2]),
+					new NewPart(fuelInjectorParts[3]),
+					new NewPart(throttleBodyParts[0]),
+					new NewPart(throttleBodyParts[1]),
+					new NewPart(throttleBodyParts[2]),
+					new NewPart(throttleBodyParts[3]),
+					new NewPart(mod.fuel_rail_part),
+					new NewPart(mod.fuel_pump_cover_part),
+					new NewPart(mod.fuel_injection_manifold_part),
+					new NewPart(mod.electric_fuel_pump_part),
+					new NewPart(mod.smart_engine_module_part, true),
+					new NewPart(mod.mounting_plate_part, true),
+					new NewPart(mod.cable_harness_part, true),
+		});
 
 			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AllFixed, ReplacementPart.PartType.NewPart, FuelInjectionInstalled);
 			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUninstalled, ReplacementPart.PartType.NewPart, FuelInjectionUninstalled);
@@ -113,12 +111,16 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		
 		internal void FuelInjectionInstalled()
 		{
-			if (fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.IsInstalled()))
+			if (fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.InUse()))
 			{
 				fuelInjectionParts.SetFakedInstallStatus(true);
 				mod.wires_injectors_pumps.enabled = true;
 				mod.wires_sparkPlugs1.enabled = true;
 				mod.wires_sparkPlugs2.enabled = true;
+			}
+			else
+			{
+				FuelInjectionUninstalled();
 			}
 		}
 
@@ -221,7 +223,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		internal bool IsFixed()
 		{
-			return fuelInjectionParts.AreAllNewFixed(true) && chips.Any(chip => chip.IsInstalled());
+			return fuelInjectionParts.AreAllNewFixed(true) && chips.Any(chip => chip.InUse());
 		}
 	}
 }
