@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using DonnerTech_ECU_Mod.Parts;
 using MscModApi;
+using MscModApi.Caching;
 using MscModApi.Parts;
 using MscModApi.Tools;
 using Tools;
@@ -20,6 +21,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		public DonnerTech_ECU_Mod mod;
 		public FuelSystem fuelSystem;
 		public Canvas programmer_ui;
+		private FsmBool playerStop;
+		private GameObject optionsMenu;
 		private GameObject programmer_ui_gameObject;
 
 		private Toggle cb_startAssistEnabled;
@@ -31,6 +34,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		private GameObject chip_programmer_chip;
 		private FsmGameObject itemPivot;
+		private FsmBool playerInMenu;
 		private bool startAssistEnabled = false;
 
 		private InputField input_sparkAngle;
@@ -48,6 +52,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			this.fuelSystem = fuelSystem;
 			itemPivot = PlayMakerGlobals.Instance.Variables.FindFsmGameObject("ItemPivot");
+
+			playerInMenu = FsmVariables.GlobalVariables.FindFsmBool("PlayerInMenu");
+			playerStop = FsmVariables.GlobalVariables.FindFsmBool("PlayerStop");
+			optionsMenu = Cache.Find("Systems").FindChild("OptionsMenu");
 
 			programmer_ui_gameObject =
 				GameObject.Instantiate((mod.assetBundle.LoadAsset<GameObject>("ui_interface.prefab")));
@@ -332,12 +340,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				}
 			}
 		}
-
+		
 		private void SetProgrammerUIStatus(bool status)
 		{
-			FsmVariables.GlobalVariables.FindFsmBool("PlayerInMenu").Value = status;
-			FsmVariables.GlobalVariables.FindFsmBool("PlayerStop").Value = status;
-			FsmVariables.GlobalVariables.FindFsmBool("PlayerSeated").Value = status;
+			playerInMenu.Value = status;
+			playerStop.Value = status;
+			optionsMenu.SetActive(false);
+
 			programmer_ui.enabled = status;
 			if (status)
 			{
