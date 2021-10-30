@@ -38,12 +38,7 @@ namespace DonnerTech_ECU_Mod.Parts
 
 		public float[,] GetFuelMap()
 		{
-			if (IsProgrammed())
-			{
-				return chipSave.map;
-			}
-
-			return null;
+			return chipSave.map;
 		}
 
 		public float GetFuelMapValue(int throttleIndex, int rpmIndex)
@@ -104,7 +99,7 @@ namespace DonnerTech_ECU_Mod.Parts
 
 		internal bool InUse()
 		{
-			return IsInstalled() && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null;
+			return IsInstalled() && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null && IsProgrammed();
 		}
 	}
 }
