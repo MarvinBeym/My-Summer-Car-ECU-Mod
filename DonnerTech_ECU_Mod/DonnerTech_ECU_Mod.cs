@@ -75,13 +75,14 @@ namespace DonnerTech_ECU_Mod
 		 *  (not possible) Wrong-way driving warning
 		 *  Save state of modules and load them
 		 *  Save all information in single file/object
-		 */
-
-		/*  Changelog (v1.5.7)
-		 *  
-		 */
-		/* BUGS/Need to fix
+		 *
+		 *
+		 *
+		 * BUGS/Need to fix
 		 * ECU mod: add ERRor to display if something is wrong
+		 */
+		/* Changelog (v1.5.7)
+		 * Fixed started loading & finished loading console message
 		 */
 #endif
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
@@ -227,7 +228,7 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnLoad()
 		{
-			ModConsole.Print(Name + $" [v{Version}");
+			ModConsole.Print($"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] started loading</color>");
 			//MscModApi.MscModApi.EnableScrewPlacementForAllParts(this);
 			turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
 			guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 310 - 310 : Screen.width - 310, 50, 300,
@@ -595,7 +596,7 @@ namespace DonnerTech_ECU_Mod
 			Object.Destroy(fuel_injector);
 			Object.Destroy(throttle_body);
 
-			ModConsole.Print(Name + $" [v{Version}");
+			ModConsole.Print($"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] finished loading</color>");
 		}
 
 		public void SetReverseCameraEnabled(bool enabled)
