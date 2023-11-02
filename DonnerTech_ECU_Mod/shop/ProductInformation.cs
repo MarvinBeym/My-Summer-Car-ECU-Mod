@@ -27,7 +27,7 @@ namespace ModShop
 			this.productName = productName;
 			this.price = price;
 			this.iconName = iconName;
-			this.bought = kit.bought;
+			this.bought = kit.IsBought();
 		}
 
 		public ProductInformation(Box box, string productName, float price, string iconName)
@@ -37,7 +37,7 @@ namespace ModShop
 			this.productName = productName;
 			this.price = price;
 			this.iconName = iconName;
-			this.bought = box.bought;
+			this.bought = box.IsBought();
 		}
 
 		public ProductInformation(Part part, string productName, float price, string iconName)
@@ -48,7 +48,7 @@ namespace ModShop
 			this.productName = productName;
 			this.price = price;
 			this.iconName = iconName;
-			this.bought = part.GetBought();
+			this.bought = part.IsBought();
 		}
 	}
 }

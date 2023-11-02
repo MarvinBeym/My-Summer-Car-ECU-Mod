@@ -4,18 +4,18 @@ using MscModApi;
 using System.Collections.Generic;
 using MscModApi.Parts;
 using UnityEngine;
-
+using MscModApi.Shopping;
 
 namespace ModShop
 {
 	class Shop
 	{
 		private Mod mod;
-		private ShopItem modsShopItem;
+		private ModsShop.ShopItem modsShopItem;
 		private AssetBundle assetBundle;
 		private List<ProductInformation> shopItems;
 
-		public Shop(Mod mod, ShopItem modsShopItem, AssetBundle assetBundle, List<ProductInformation> shopItems)
+		public Shop(Mod mod, ModsShop.ShopItem modsShopItem, AssetBundle assetBundle, List<ProductInformation> shopItems)
 		{
 			this.mod = mod;
 			this.modsShopItem = modsShopItem;

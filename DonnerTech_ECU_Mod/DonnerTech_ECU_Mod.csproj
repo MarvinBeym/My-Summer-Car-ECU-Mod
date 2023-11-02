@@ -11,7 +11,8 @@
     <AssemblyName>DonnerTech_ECU_Mod</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,33 +34,38 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Assembly-UnityScript-firstpass">
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\Assembly-UnityScript-firstpass.dll</HintPath>
+    </Reference>
     <Reference Include="cInput">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\cInput.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\cInput.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Ionic.Zip">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\Ionic.Zip.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="ModsShop">
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\Mods\ModsShop.dll</HintPath>
     </Reference>
     <Reference Include="MSCLoader">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MscModApi">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\MscModApi.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\MSCLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PlayMaker">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\PlayMaker.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -69,36 +75,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>S:\Spiele\Steam\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>G:\Steamapp\steamapps\common\My Summer Car\mysummercar_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\My Summer Car Modding\gui\GuiDebug.cs">
-      <Link>gui\GuiDebug.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\gui\GuiDebugElement.cs">
-      <Link>gui\GuiDebugElement.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\gui\GuiDebugInfo.cs">
-      <Link>gui\GuiDebugInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\shop\Box.cs">
-      <Link>shop\Box.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\shop\BoxLogic.cs">
-      <Link>shop\BoxLogic.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\shop\Kit.cs">
-      <Link>shop\Kit.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\My Summer Car Modding\shop\KitLogic.cs">
-      <Link>shop\KitLogic.cs</Link>
-    </Compile>
     <Compile Include="CruiseControl_Logic.cs" />
     <Compile Include="fuelsystem\ChipProgrammer.cs" />
     <Compile Include="fuelsystem\FloatForce.cs" />
@@ -107,6 +92,9 @@
     <Compile Include="fuelsystem\OriginalPart.cs" />
     <Compile Include="fuelsystem\OriginalPartsSave.cs" />
     <Compile Include="fuelsystem\SparkAngleInputForce.cs" />
+    <Compile Include="gui\GuiDebug.cs" />
+    <Compile Include="gui\GuiDebugElement.cs" />
+    <Compile Include="gui\GuiDebugInfo.cs" />
     <Compile Include="infoPanel\InfoPanel.cs" />
     <Compile Include="infoPanel\InfoPanelPage.cs" />
     <Compile Include="infoPanel\pages\Assistance.cs" />
@@ -119,9 +107,38 @@
     <Compile Include="infoPanel\pages\Modules.cs" />
     <Compile Include="Airride_Logic.cs" />
     <Compile Include="InfoPanel_Logic.cs" />
+    <Compile Include="MscModApi\Caching\Cache.cs" />
+    <Compile Include="MscModApi\Caching\CarH.cs" />
+    <Compile Include="MscModApi\Caching\Game.cs" />
+    <Compile Include="MscModApi\Parts\Part.cs" />
+    <Compile Include="MscModApi\Parts\PartBaseInfo.cs" />
+    <Compile Include="MscModApi\Parts\PartSave.cs" />
+    <Compile Include="MscModApi\Parts\ReplacePart\NewPart.cs" />
+    <Compile Include="MscModApi\Parts\ReplacePart\OldPart.cs" />
+    <Compile Include="MscModApi\Parts\ReplacePart\ReplacementPart.cs" />
+    <Compile Include="MscModApi\Parts\Screw.cs" />
+    <Compile Include="MscModApi\Shopping\ModItem.cs" />
+    <Compile Include="MscModApi\Shopping\Shop.cs" />
+    <Compile Include="MscModApi\Shopping\ShopBaseInfo.cs" />
+    <Compile Include="MscModApi\Shopping\ShopInterface.cs" />
+    <Compile Include="MscModApi\Shopping\ShopItem.cs" />
+    <Compile Include="MscModApi\Tool.cs" />
+    <Compile Include="MscModApi\Tools\Extensions.cs" />
+    <Compile Include="MscModApi\Tools\Helper.cs" />
+    <Compile Include="MscModApi\Tools\Logger.cs" />
+    <Compile Include="MscModApi\Tools\ScrewPlacementAssist.cs" />
+    <Compile Include="MscModApi\Tools\UserInteraction.cs" />
+    <Compile Include="MscModApi\Trigger\Trigger.cs" />
+    <Compile Include="MscModApi\Trigger\TriggerWrapper.cs" />
     <Compile Include="Parts\ChipPart.cs" />
     <Compile Include="Parts\ChipSave.cs" />
     <Compile Include="ReverseCamera_Logic.cs" />
+    <Compile Include="shop\Box.cs" />
+    <Compile Include="shop\BoxLogic.cs" />
+    <Compile Include="shop\Kit.cs" />
+    <Compile Include="shop\KitLogic.cs" />
+    <Compile Include="shop\ProductInformation.cs" />
+    <Compile Include="shop\Shop.cs" />
     <Compile Include="SmartEngineModule_Logic.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -134,15 +151,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)" == "Debug" (
-copy "$(TargetPath)" "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods" /y
-copy "$(TargetDir)$(TargetName).pdb" "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods" /y
-cd "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods"
-call "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods\debug.bat"
-) ELSE (
-copy "$(TargetPath)" "S:\Spiele\Steam\steamapps\common\My Summer Car\Mods" /y
-copy "$(TargetPath)" "M:\My Summer Car Modding\Mods\ECU-Mod\Current version" /y
-)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Target Name="CopyLinkedFiles" BeforeTargets="Build">
     <Copy SourceFiles="%(Compile.Identity)" DestinationFiles="%(Compile.Link)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Condition="'%(Compile.Link)'&#xD;&#xA;	!= ''" />
