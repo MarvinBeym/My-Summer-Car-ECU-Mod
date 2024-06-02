@@ -99,7 +99,8 @@ namespace DonnerTech_ECU_Mod.Parts
 
 		internal bool InUse()
 		{
-			return IsInstalled() && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null && IsProgrammed();
+			return IsInstalled() && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null &&
+			       IsProgrammed();
 		}
 	}
 }

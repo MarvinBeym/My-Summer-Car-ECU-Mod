@@ -90,14 +90,14 @@ namespace DonnerTech_ECU_Mod
 		public override string Author => "DonnerPlays"; //Your Username
 		public override string Version => "1.5.7"; //Version
 		public override bool UseAssetsFolder => true;
-		
+
 		public AssetBundle assetBundle;
 		public GuiDebug guiDebug;
 		public bool turboModInstalled;
 
 		public GameObject ecu_mod_gameObject;
 
-		internal static List<Part> partsList { get; set; }= new List<Part>();
+		internal static List<Part> partsList { get; set; } = new List<Part>();
 
 		//Keybinds
 		public Keybind highestKeybind = new Keybind("airride_highest", "Airride Highest", KeyCode.LeftArrow);
@@ -216,7 +216,9 @@ namespace DonnerTech_ECU_Mod
 		public override void OnNewGame()
 		{
 			MscModApi.MscModApi.NewGameCleanUp(this);
-			foreach (var file in Directory.GetFiles(ModLoader.GetModSettingsFolder(this), "chip_*_saveFile.json", SearchOption.AllDirectories)) {
+			foreach (var file in Directory.GetFiles(ModLoader.GetModSettingsFolder(this), "chip_*_saveFile.json",
+				         SearchOption.AllDirectories))
+			{
 				File.Delete(file);
 			}
 			/*
@@ -228,7 +230,8 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnLoad()
 		{
-			ModConsole.Print($"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] started loading</color>");
+			ModConsole.Print(
+				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] started loading</color>");
 			//MscModApi.MscModApi.EnableScrewPlacementForAllParts(this);
 			turboModInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
 			guiDebug = new GuiDebug(turboModInstalled ? Screen.width - 310 - 310 : Screen.width - 310, 50, 300,
@@ -251,7 +254,8 @@ namespace DonnerTech_ECU_Mod
 			Keybind.Add(this, plus);
 			Keybind.Add(this, minus);
 
-			if ((bool) enableAirrideInfoPanelPage.Value) {
+			if ((bool) enableAirrideInfoPanelPage.Value)
+			{
 				Keybind.AddHeader(this, "Airride Keybinds");
 				Keybind.Add(this, highestKeybind);
 				Keybind.Add(this, lowestKeybind);
@@ -268,8 +272,10 @@ namespace DonnerTech_ECU_Mod
 			var fuel_injector = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
 			var throttle_body = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
 
-			var fuel_injectors_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("fuel_injectors_box.prefab")));
-			var throttle_bodies_box_gameObject = GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("throttle_bodies_box.prefab")));
+			var fuel_injectors_box_gameObject =
+				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("fuel_injectors_box.prefab")));
+			var throttle_bodies_box_gameObject =
+				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("throttle_bodies_box.prefab")));
 			ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
 
 			var wires_injectors_pumps_gameObject =
@@ -301,7 +307,7 @@ namespace DonnerTech_ECU_Mod
 			abs_module_part = new Part("abs_module",
 				"ABS Module", mounting_plate_part,
 				abs_module_installLocation, new Vector3(0, 0, 0), partBaseInfo);
-			
+
 			esp_module_part = new Part("esp_module",
 				"ESP Module", mounting_plate_part,
 				esp_module_installLocation, new Vector3(0, 0, 0), partBaseInfo);
@@ -383,7 +389,8 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(30, 0, 0),
 					new Vector3(30, 0, 0),
 				}, Shop.SpawnLocation.Fleetari.Counter);
-			foreach (var part in fuel_injectors_box.parts) {
+			foreach (var part in fuel_injectors_box.parts)
+			{
 				part.AddPreSaveAction(fuel_injectors_box.CheckUnpackedOnSave);
 			}
 
@@ -403,7 +410,8 @@ namespace DonnerTech_ECU_Mod
 					new Vector3(-40, 0, 0),
 					new Vector3(-40, 0, 0),
 				}, Shop.SpawnLocation.Fleetari.Counter);
-			foreach (var part in throttle_bodies_box.parts) {
+			foreach (var part in throttle_bodies_box.parts)
+			{
 				part.AddPreSaveAction(throttle_bodies_box.CheckUnpackedOnSave);
 			}
 
@@ -446,10 +454,10 @@ namespace DonnerTech_ECU_Mod
 			esp_module_part.AddScrews(
 				new[]
 				{
-					new Screw(new Vector3(0.09f,0.0120f, -0.052f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(0.09f,0.0120f, 0.0528f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.092f,0.0120f, 0.0528f), new Vector3(-90, 0, 0)),
-					new Screw(new Vector3(-0.092f,0.0120f, -0.052f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.09f, 0.0120f, -0.052f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(0.09f, 0.0120f, 0.0528f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.092f, 0.0120f, 0.0528f), new Vector3(-90, 0, 0)),
+					new Screw(new Vector3(-0.092f, 0.0120f, -0.052f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
 			tcs_module_part.AddScrews(
@@ -479,7 +487,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(0.1280f, 0.018f, 0.2070f), new Vector3(-90, 0, 0)),
 					new Screw(new Vector3(-0.1240f, 0.018f, -0.2000f), new Vector3(-90, 0, 0))
 				}, 1.2f, 12);
-			
+
 			rain_light_sensorboard_part.AddScrews(
 				new[]
 				{
@@ -498,7 +506,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(0f, -0.015f, 0.0185f), new Vector3(0, 0, 0)),
 				}, 0.5f, 5);
 
-			
+
 			fuel_pump_cover_part.AddScrews(
 				new[]
 				{
@@ -531,18 +539,28 @@ namespace DonnerTech_ECU_Mod
 				new ShopItem("ABS Module", 800, shopSpawnLocation, abs_module_part, "abs-module_productImage.png"),
 				new ShopItem("ESP Module", 1200, shopSpawnLocation, esp_module_part, "esp-module_productImage.png"),
 				new ShopItem("TCS Module", 1800, shopSpawnLocation, tcs_module_part, "tcs-module_productImage.png"),
-				new ShopItem("ECU Cable Harness", 300, shopSpawnLocation, cable_harness_part, "cable-harness_productImage.png"),
-				new ShopItem("ECU Mounting Plate", 100, shopSpawnLocation, mounting_plate_part, "mounting-plate_productImage.png"),
-				new ShopItem("Smart Engine Module ECU", 4600, shopSpawnLocation, smart_engine_module_part, "smart-engine-module_productImage.png"),
-				new ShopItem("Cruise Control Panel with Controller", 2000, shopSpawnLocation, cruise_control_panel_part, "cruise-control_productImage.png"),
+				new ShopItem("ECU Cable Harness", 300, shopSpawnLocation, cable_harness_part,
+					"cable-harness_productImage.png"),
+				new ShopItem("ECU Mounting Plate", 100, shopSpawnLocation, mounting_plate_part,
+					"mounting-plate_productImage.png"),
+				new ShopItem("Smart Engine Module ECU", 4600, shopSpawnLocation, smart_engine_module_part,
+					"smart-engine-module_productImage.png"),
+				new ShopItem("Cruise Control Panel with Controller", 2000, shopSpawnLocation, cruise_control_panel_part,
+					"cruise-control_productImage.png"),
 				new ShopItem("ECU Info Panel", 4000, shopSpawnLocation, info_panel.part, "info-panel_productImage.png"),
-				new ShopItem("Rain & Light Sensorboard", 1000, shopSpawnLocation, rain_light_sensorboard_part, "rain-light-sensorboard_productImage.png"),
-				new ShopItem("Reverse Camera", 1500, shopSpawnLocation, reverse_camera_part, "reverse-camera_productImage.png"),
-				new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuel_pump_cover_part, "fuel-pump-cover-plate_productImage.png"),
-				new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuel_injection_manifold_part, "fuel-injection-manifold_productImage.png"),
+				new ShopItem("Rain & Light Sensorboard", 1000, shopSpawnLocation, rain_light_sensorboard_part,
+					"rain-light-sensorboard_productImage.png"),
+				new ShopItem("Reverse Camera", 1500, shopSpawnLocation, reverse_camera_part,
+					"reverse-camera_productImage.png"),
+				new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuel_pump_cover_part,
+					"fuel-pump-cover-plate_productImage.png"),
+				new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuel_injection_manifold_part,
+					"fuel-injection-manifold_productImage.png"),
 				new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuel_rail_part, "fuel-rail_productImage.png"),
-				new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chip_programmer_part, "chip-programmer_productImage.png"),
-				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electric_fuel_pump_part, "electric-fuel-pump_productImage.png"),
+				new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chip_programmer_part,
+					"chip-programmer_productImage.png"),
+				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electric_fuel_pump_part,
+					"electric-fuel-pump_productImage.png"),
 				new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
 				{
 					var chipPart = new ChipPart(
@@ -550,16 +568,16 @@ namespace DonnerTech_ECU_Mod
 						$"Chip {ChipPart.counter + 1}",
 						smart_engine_module_part,
 						partBaseInfo
-						);
+					);
 					chipPart.SetDefaultPosition(shopSpawnLocation);
 					chipPart.SetBought(true);
 					chipPart.ResetToDefault();
 					fuel_system.chips.Add(chipPart);
-
 				}, "chip_productImage.png"),
 			});
 
-			if (!fuel_injectors_box.IsBought()) {
+			if (!fuel_injectors_box.IsBought())
+			{
 				Shop.Add(
 					shopBaseInfo,
 					Shop.ShopLocation.Fleetari,
@@ -567,7 +585,8 @@ namespace DonnerTech_ECU_Mod
 					{
 						fuel_injectors_box.box.transform.position = shopSpawnLocation;
 						fuel_injectors_box.box.SetActive(true);
-						foreach (var part in fuel_injectors_box.parts) {
+						foreach (var part in fuel_injectors_box.parts)
+						{
 							part.SetActive(false);
 							part.SetBought(true);
 							part.ResetToDefault();
@@ -575,14 +594,17 @@ namespace DonnerTech_ECU_Mod
 					}, "fuel-injectors-box_productImage.png", false));
 			}
 
-			if (!throttle_bodies_box.IsBought()) {
+			if (!throttle_bodies_box.IsBought())
+			{
 				Shop.Add(
 					shopBaseInfo,
 					Shop.ShopLocation.Fleetari,
-					new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, delegate {
+					new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, delegate
+					{
 						throttle_bodies_box.box.transform.position = shopSpawnLocation;
 						throttle_bodies_box.box.SetActive(true);
-						foreach (var part in throttle_bodies_box.parts) {
+						foreach (var part in throttle_bodies_box.parts)
+						{
 							part.SetActive(false);
 							part.SetBought(true);
 							part.ResetToDefault();
@@ -596,7 +618,8 @@ namespace DonnerTech_ECU_Mod
 			Object.Destroy(fuel_injector);
 			Object.Destroy(throttle_body);
 
-			ModConsole.Print($"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] finished loading</color>");
+			ModConsole.Print(
+				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] finished loading</color>");
 		}
 
 		public void SetReverseCameraEnabled(bool enabled)
@@ -618,12 +641,12 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddHeader(this, "", Color.clear);
 
 			Settings.AddText(this, "New Gear ratios + 5th & 6th gear\n" +
-								   "1.Gear: " + newGearRatio[2] + "\n" +
-								   "2.Gear: " + newGearRatio[3] + "\n" +
-								   "3.Gear: " + newGearRatio[4] + "\n" +
-								   "4.Gear: " + newGearRatio[5] + "\n" +
-								   "5.Gear: " + newGearRatio[6] + "\n" +
-								   "6.Gear: " + newGearRatio[7]
+			                       "1.Gear: " + newGearRatio[2] + "\n" +
+			                       "2.Gear: " + newGearRatio[3] + "\n" +
+			                       "3.Gear: " + newGearRatio[4] + "\n" +
+			                       "4.Gear: " + newGearRatio[5] + "\n" +
+			                       "5.Gear: " + newGearRatio[6] + "\n" +
+			                       "6.Gear: " + newGearRatio[7]
 			);
 			Settings.AddText(this, "Copyright © Marvin Beym 2020-2021");
 		}
@@ -636,7 +659,8 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnGUI()
 		{
-			if ((bool) debugGuiSetting.Value) {
+			if ((bool) debugGuiSetting.Value)
+			{
 				guiDebug.Handle(new[]
 				{
 					new GuiDebugInfo("Cruise control", "true = Good"),
@@ -672,19 +696,20 @@ namespace DonnerTech_ECU_Mod
 		{
 			try
 			{
-				partsList.ForEach(delegate(Part part)
-				{
-					part.ResetToDefault();
-				});
-			} catch (Exception ex) {
+				partsList.ForEach(delegate(Part part) { part.ResetToDefault(); });
+			}
+			catch (Exception ex)
+			{
 				ModConsole.Error(ex.Message);
 			}
 		}
 
 		private void ToggleSixGears()
 		{
-			if (toggleSixGears.Value is bool value) {
-				if (value) {
+			if (toggleSixGears.Value is bool value)
+			{
+				if (value)
+				{
 					CarH.drivetrain.gearRatios = newGearRatio;
 					return;
 				}
@@ -695,8 +720,10 @@ namespace DonnerTech_ECU_Mod
 
 		private void ToggleAWD()
 		{
-			if (toggleAWD.Value is bool value) {
-				if (value) {
+			if (toggleAWD.Value is bool value)
+			{
+				if (value)
+				{
 					CarH.drivetrain.SetTransmission(Drivetrain.Transmissions.AWD);
 					return;
 				}

@@ -32,10 +32,15 @@ namespace DonnerTech_ECU_Mod
 
 				if (installedChip == null) return;
 
-				if (installedChip.IsStartAssistEnabled()) {
-					if (CarH.drivetrain.differentialSpeed < 15 && (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0)) {
+				if (installedChip.IsStartAssistEnabled())
+				{
+					if (CarH.drivetrain.differentialSpeed < 15 &&
+					    (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0))
+					{
 						CarH.drivetrain.canStall = false;
-					} else {
+					}
+					else
+					{
 						CarH.drivetrain.canStall = true;
 					}
 				}

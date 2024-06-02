@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 using MSCLoader;
 using System.Linq;
 using MscModApi;
@@ -26,7 +25,8 @@ namespace ModShop
 		{
 			if (gameObject.IsLookingAt() && box.spawnedCounter < parts.Length)
 			{
-				UserInteraction.GuiInteraction(string.Format("Press [{0}] to {1}", cInput.GetText("Use"), actionToDisplay));
+				UserInteraction.GuiInteraction(string.Format("Press [{0}] to {1}", cInput.GetText("Use"),
+					actionToDisplay));
 				if (UserInteraction.UseButtonDown)
 				{
 					Part part = parts[box.spawnedCounter];

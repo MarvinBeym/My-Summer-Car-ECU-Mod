@@ -76,8 +76,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			removalFsm.SendEvent("REMOVE");
 			if (
 				originalPosition.CompareVector3(Vector3.zero, 0f)
-			    || !originalRotation.CompareQuaternion(Quaternion.identity)
-				) return;
+				|| !originalRotation.CompareQuaternion(Quaternion.identity)
+			) return;
 			gameObject.transform.position = originalPosition;
 			gameObject.transform.rotation = originalRotation;
 		}

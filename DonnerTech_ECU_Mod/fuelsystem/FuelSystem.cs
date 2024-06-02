@@ -52,21 +52,23 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			PlayMakerFSM raceCarb = Cache.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
 			racingCarb_adjustAverage = raceCarb.FsmVariables.FindFsmFloat("AdjustAverage");
 			racingCarb_idealSetting = raceCarb.FsmVariables.FindFsmFloat("IdealSetting");
-			airFuelMixture = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/Engine/Fuel").FindFsm("Mixture").FsmVariables.FindFsmFloat("AirFuelMixture");
+			airFuelMixture = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/Engine/Fuel").FindFsm("Mixture").FsmVariables
+				.FindFsmFloat("AirFuelMixture");
 
 			this.fuelInjectorParts = fuelInjectorParts;
 			this.throttleBodyParts = throttleBodyParts;
 
 			fuelInjectionParts = new ReplacementPart(
-				new [] {
+				new[]
+				{
 					new OldPart(Cache.Find("Electrics")),
 					new OldPart(Cache.Find("Distributor")),
 					new OldPart(Cache.Find("Racing Carburators")),
 					new OldPart(Cache.Find("Fuelpump")),
 					new OldPart(Cache.Find("Carburator"), false),
 					new OldPart(Cache.Find("Twin Carburators"), false)
-				}, 
-				new [] 
+				},
+				new[]
 				{
 					new NewPart(fuelInjectorParts[0]),
 					new NewPart(fuelInjectorParts[1]),
@@ -83,32 +85,41 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					new NewPart(mod.smart_engine_module_part, true),
 					new NewPart(mod.mounting_plate_part, true),
 					new NewPart(mod.cable_harness_part, true),
-		});
+				});
 
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AllFixed, ReplacementPart.PartType.NewPart, FuelInjectionInstalled);
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUninstalled, ReplacementPart.PartType.NewPart, FuelInjectionUninstalled);
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUnfixed, ReplacementPart.PartType.NewPart, FuelInjectionUninstalled);
+			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AllFixed, ReplacementPart.PartType.NewPart,
+				FuelInjectionInstalled);
+			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUninstalled, ReplacementPart.PartType.NewPart,
+				FuelInjectionUninstalled);
+			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUnfixed, ReplacementPart.PartType.NewPart,
+				FuelInjectionUninstalled);
 
 			fuel_system_logic = mod.smart_engine_module_part.AddWhenInstalledMono<FuelSystemLogic>();
 			fuel_system_logic.Init(this, mod);
 
 			LoadChips();
 
-			foreach (var chip in chips) {
-				chip.AddPostInstallAction(delegate {
-					foreach (var chipPart in chips.Where(chipPart => !chipPart.IsInstalled() && !chipPart.IsInstallBlocked())) {
+			foreach (var chip in chips)
+			{
+				chip.AddPostInstallAction(delegate
+				{
+					foreach (var chipPart in chips.Where(chipPart =>
+						         !chipPart.IsInstalled() && !chipPart.IsInstallBlocked()))
+					{
 						chipPart.BlockInstall(true);
 					}
 				});
 
-				chip.AddPostUninstallAction(delegate {
-					foreach (var chipPart in chips.Where(chipPart => chipPart.IsInstallBlocked())) {
+				chip.AddPostUninstallAction(delegate
+				{
+					foreach (var chipPart in chips.Where(chipPart => chipPart.IsInstallBlocked()))
+					{
 						chipPart.BlockInstall(false);
 					}
 				});
 			}
 		}
-		
+
 		internal void FuelInjectionInstalled()
 		{
 			if (fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.InUse()))
@@ -179,7 +190,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		public void LoadChips()
 		{
-			var chipsSavePath = Helper.CombinePathsAndCreateIfNotExists(ModLoader.GetModSettingsFolder(mod), "fuelMaps");
+			var chipsSavePath =
+				Helper.CombinePathsAndCreateIfNotExists(ModLoader.GetModSettingsFolder(mod), "fuelMaps");
 
 			string[] chipSaveFiles = ChipSave.LoadSaveFiles(chipsSavePath, "chip_*_saveFile.json");
 			ChipPart.counter = 0;
@@ -203,15 +215,12 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					{
 						fuel_system_logic.installedChip = chipPart;
 					}
-
-					
 				});
 				chipPart.AddPostUninstallAction(delegate
 				{
 					FuelInjectionUninstalled();
 					fuel_system_logic.installedChip = null;
 				});
-				
 			}
 		}
 

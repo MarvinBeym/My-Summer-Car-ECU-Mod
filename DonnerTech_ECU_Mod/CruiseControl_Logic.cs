@@ -1,7 +1,6 @@
 ﻿using MSCLoader;
 using UnityEngine;
 using HutongGames.PlayMaker;
-
 using System;
 using MscModApi.Caching;
 using MscModApi.Tools;
@@ -103,7 +102,7 @@ namespace DonnerTech_ECU_Mod
 			if (Camera.main != null)
 			{
 				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					1 << LayerMask.NameToLayer("DontCollide")) != false)
+					    1 << LayerMask.NameToLayer("DontCollide")) != false)
 				{
 					GameObject gameObjectHit;
 					bool foundObject = false;

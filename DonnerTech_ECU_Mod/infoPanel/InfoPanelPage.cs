@@ -1,5 +1,4 @@
 ﻿using HutongGames.PlayMaker;
-
 using MSCLoader;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using MscModApi.Caching;
-
 using UnityEngine;
 using MscModApi.Tools;
 

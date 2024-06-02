@@ -1,5 +1,5 @@
 ﻿using HutongGames.PlayMaker;
-
+using MSCLoader;
 using MSCLoader;
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		private ChipPart chipOnProgrammer = null;
 
 		private RaycastHit hit;
-		
+
 		public Keybind programmer_ui_open = new Keybind("programmer_ui_open", "Open/Close", KeyCode.Keypad0);
 
 		public ChipProgrammer(DonnerTech_ECU_Mod mod, FuelSystem fuelSystem)
@@ -250,7 +250,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					    itemInHand.name != mod.chip_programmer_part.gameObject.name)
 					{
 						if (Vector3.Distance(mod.chip_programmer_part.transform.position,
-							itemInHand.transform.position) <= 0.075f)
+							    itemInHand.transform.position) <= 0.075f)
 						{
 							UserInteraction.GuiInteraction(UserInteraction.Type.Assemble, "Insert chip");
 							if (UserInteraction.LeftMouseDown)
@@ -297,7 +297,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 								chip.SetActive(true);
 								chip_programmer_chip.SetActive(false);
 								chipInstalledOnProgrammer = false;
-								chip.SetInstalledOnProgrammer(false);;
+								chip.SetInstalledOnProgrammer(false);
+								;
 
 								chipOnProgrammer = null;
 								Vector3 chip_programmer_position =
@@ -322,7 +323,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 									}
 									else
 									{
-										inputFieldMap[y, x].text = chipOnProgrammer.GetFuelMapValue(y, x).ToString("00.0");
+										inputFieldMap[y, x].text =
+											chipOnProgrammer.GetFuelMapValue(y, x).ToString("00.0");
 									}
 								}
 								catch (Exception ex)
@@ -340,7 +342,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				}
 			}
 		}
-		
+
 		private void SetProgrammerUIStatus(bool status)
 		{
 			playerInMenu.Value = status;

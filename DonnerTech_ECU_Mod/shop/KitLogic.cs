@@ -1,5 +1,4 @@
-﻿
-using MSCLoader;
+﻿using MSCLoader;
 using MscModApi;
 using MscModApi.Parts;
 using MscModApi.Tools;
@@ -34,10 +33,10 @@ namespace ModShop
 						UserInteraction.GuiInteraction(
 							string.Format(
 								"Press [{0}] to {1}",
-								cInput.GetText("Use"), 
+								cInput.GetText("Use"),
 								"Unpack " + kit.parts[kit.spawnedCounter].gameObject.name.Replace("(Clone)", "")
-								)
-							);
+							)
+						);
 						if (UserInteraction.UseButtonDown)
 						{
 							Part part = kit.parts[kit.spawnedCounter];

@@ -2,7 +2,6 @@
 using DonnerTech_ECU_Mod.infoPanel;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
-
 using MSCLoader;
 using System;
 using System.Collections;
@@ -470,7 +469,7 @@ namespace DonnerTech_ECU_Mod
 			if (Camera.main != null)
 			{
 				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					1 << LayerMask.NameToLayer("DontCollide")) != false)
+					    1 << LayerMask.NameToLayer("DontCollide")) != false)
 				{
 					GameObject gameObjectHit;
 					bool foundObject = false;
@@ -508,7 +507,7 @@ namespace DonnerTech_ECU_Mod
 			if (Camera.main != null)
 			{
 				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					1 << LayerMask.NameToLayer("DontCollide")) != false)
+					    1 << LayerMask.NameToLayer("DontCollide")) != false)
 				{
 					GameObject gameObjectHit;
 					string guiText = "";

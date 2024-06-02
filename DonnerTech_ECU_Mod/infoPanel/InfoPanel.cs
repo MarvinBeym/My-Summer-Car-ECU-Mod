@@ -48,9 +48,11 @@ namespace DonnerTech_ECU_Mod.infoPanel
 
 		public void Handle()
 		{
-			if (part.gameObject.transform.localScale.x < 1.5f) {
+			if (part.gameObject.transform.localScale.x < 1.5f)
+			{
 				part.gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
 			}
+
 			if (!part.IsInstalled())
 			{
 				if (!workaroundChildDisableDone)
