@@ -70,13 +70,13 @@ namespace DonnerTech_ECU_Mod
 
 		void Update()
 		{
-			if (mod.smart_engine_module_part.IsFixed() && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
+			if (mod.smartEngineModule.IsFixed() && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
 			{
 				CarH.drivetrain.maxRPM = 8500;
 			}
 
-			if (!CarH.hasPower || !CarH.playerInCar || !mod.cable_harness_part.IsFixed() ||
-			    !mod.mounting_plate_part.IsFixed())
+			if (!CarH.hasPower || !CarH.playerInCar || !mod.cableHarness.IsFixed() ||
+			    !mod.mountingPlate.IsFixed())
 			{
 				return;
 			}
@@ -129,9 +129,9 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		internal void Init(Part smart_engine_module_part, Part absModulePart, Part espModulePart, Part tcsModulePart)
+		internal void Init(Part smartEngineModule, Part absModulePart, Part espModulePart, Part tcsModulePart)
 		{
-			part = smart_engine_module_part;
+			part = smartEngineModule;
 			part.AddPostUninstallAction(OnUninstall);
 
 			this.absModulePart = absModulePart;

@@ -131,26 +131,26 @@ namespace DonnerTech_ECU_Mod
 
 		internal PartBaseInfo partBaseInfo;
 
-		public Part abs_module_part;
-		public Part esp_module_part;
-		public Part tcs_module_part;
+		public Part absModule;
+		public Part espModule;
+		public Part tcsModule;
 
-		public Part cable_harness_part;
-		public Part mounting_plate_part;
+		public Part cableHarness;
+		public Part mountingPlate;
 
-		public Part smart_engine_module_part;
-		public Part cruise_control_panel_part;
-		public Part info_panel_part;
+		public Part smartEngineModule;
+		public Part cruiseControlPanel;
+		public Part infoPanel;
 
-		public Part reverse_camera_part;
-		public Part rain_light_sensorboard_part;
+		public Part reverseCamera;
+		public Part rainLightSensorboard;
 
-		public Part fuel_pump_cover_part;
-		public Part fuel_injection_manifold_part;
-		public Part fuel_rail_part;
-		public Part electric_fuel_pump_part;
+		public Part fuelPumpCover;
+		public Part fuelInjectionManifold;
+		public Part fuelRail;
+		public Part electricFuelPump;
 
-		public Part chip_programmer_part;
+		public Part chipProgrammer;
 
 		public MeshRenderer wires_injectors_pumps;
 		public MeshRenderer wires_sparkPlugs1;
@@ -300,81 +300,81 @@ namespace DonnerTech_ECU_Mod
 
 			partBaseInfo = new PartBaseInfo(this, assetBundle, partsList);
 
-			mounting_plate_part = new Part("mounting_plate",
+			mountingPlate = new Part("mounting_plate",
 				"ECU Mounting Plate", CarH.satsuma,
 				mounting_plate_installLocation, new Vector3(0, 180, 0), partBaseInfo);
 
-			abs_module_part = new Part("abs_module",
-				"ABS Module", mounting_plate_part,
+			absModule = new Part("abs_module",
+				"ABS Module", mountingPlate,
 				abs_module_installLocation, new Vector3(0, 0, 0), partBaseInfo);
 
-			esp_module_part = new Part("esp_module",
-				"ESP Module", mounting_plate_part,
+			espModule = new Part("esp_module",
+				"ESP Module", mountingPlate,
 				esp_module_installLocation, new Vector3(0, 0, 0), partBaseInfo);
 
-			tcs_module_part = new Part("tcs_module",
-				"TCS Module", mounting_plate_part,
+			tcsModule = new Part("tcs_module",
+				"TCS Module", mountingPlate,
 				tcs_module_installLocation, new Vector3(0, 0, 0), partBaseInfo);
 
-			smart_engine_module_part = new Part("smart_engine_module",
-				"Smart Engine ECU", mounting_plate_part,
+			smartEngineModule = new Part("smart_engine_module",
+				"Smart Engine ECU", mountingPlate,
 				smart_engine_module_installLocation, new Vector3(0, 0, 0), partBaseInfo);
 
-			smart_engine_module_logic = smart_engine_module_part.AddWhenInstalledMono<SmartEngineModule_Logic>();
-			smart_engine_module_logic.Init(smart_engine_module_part, abs_module_part, esp_module_part, tcs_module_part);
+			smart_engine_module_logic = smartEngineModule.AddWhenInstalledMono<SmartEngineModule_Logic>();
+			smart_engine_module_logic.Init(smartEngineModule, absModule, espModule, tcsModule);
 
-			cable_harness_part = new Part("cable_harness",
-				"ECU Cable Harness", mounting_plate_part,
+			cableHarness = new Part("cable_harness",
+				"ECU Cable Harness", mountingPlate,
 				cable_harness_installLocation, new Vector3(0, 0, 0), partBaseInfo);
 
-			cruise_control_panel_part = new Part("cruise_control_panel",
+			cruiseControlPanel = new Part("cruise_control_panel",
 				"Cruise Control Panel", Cache.Find("dashboard(Clone)"),
 				cruise_control_panel_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 
-			cruise_control_logic = cruise_control_panel_part.AddWhenInstalledMono<CruiseControl_Logic>();
+			cruise_control_logic = cruiseControlPanel.AddWhenInstalledMono<CruiseControl_Logic>();
 
-			info_panel_part = new Part("info_panel",
+			infoPanel = new Part("info_panel",
 				"Info Panel", Cache.Find("dashboard(Clone)"),
 				info_panel_installLocation, new Vector3(0, 180, 180), partBaseInfo);
-			info_panel_part.AddPostInstallAction(delegate
+			infoPanel.AddPostInstallAction(delegate
 			{
-				info_panel_part.gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+				infoPanel.gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
 			});
-			info_panel = new InfoPanel(this, info_panel_part, assetBundle);
+			info_panel = new InfoPanel(this, infoPanel, assetBundle);
 
-			rain_light_sensorboard_part = new Part("rain_light_sensorboard",
+			rainLightSensorboard = new Part("rain_light_sensorboard",
 				"Rain & Light Sensorboard", Cache.Find("dashboard(Clone)"),
 				rain_light_sensorboard_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 
-			reverse_camera_part = new Part("reverse_camera",
+			reverseCamera = new Part("reverse_camera",
 				"Reverse Camera", Cache.Find("bootlid(Clone)"),
 				reverse_camera_installLocation, new Vector3(120, 0, 0), partBaseInfo);
-			reverse_camera_logic = reverse_camera_part.AddWhenInstalledMono<ReverseCamera_Logic>();
+			reverse_camera_logic = reverseCamera.AddWhenInstalledMono<ReverseCamera_Logic>();
 
-			fuel_injection_manifold_part = new Part("fuel_injection_manifold",
+			fuelInjectionManifold = new Part("fuel_injection_manifold",
 				"Fuel Injection Manifold", Cache.Find("cylinder head(Clone)"),
 				fuel_injection_manifold_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 
-			fuel_pump_cover_part = new Part("fuel_pump_cover",
+			fuelPumpCover = new Part("fuel_pump_cover",
 				"Fuel Pump Cover", Cache.Find("block(Clone)"),
 				fuel_pump_cover_installLocation, new Vector3(90, 0, 0), partBaseInfo);
 
-			fuel_rail_part = new Part("fuel_rail",
-				"Fuel Rail", fuel_injection_manifold_part,
+			fuelRail = new Part("fuel_rail",
+				"Fuel Rail", fuelInjectionManifold,
 				fuel_rail_installLocation, new Vector3(30, 0, 0), partBaseInfo);
 
-			chip_programmer_part = new Part("chip_programmer",
+			chipProgrammer = new Part("chip_programmer",
 				"Chip Programmer",
 				new Vector3(0, 0, 0), new Vector3(0, 0, 0), partBaseInfo);
 
-			electric_fuel_pump_part = new Part("electric_fuel_pump",
+			electricFuelPump = new Part("electric_fuel_pump",
 				"Electric Fuel Pump", CarH.satsuma,
 				electric_fuel_pump_installLocation, new Vector3(0, 180, 0), partBaseInfo);
-			electric_fuel_pump_part.transform.FindChild("fuelLine-1").GetComponent<Renderer>().enabled = true;
-			electric_fuel_pump_part.transform.FindChild("fuelLine-2").GetComponent<Renderer>().enabled = true;
+			electricFuelPump.transform.FindChild("fuelLine-1").GetComponent<Renderer>().enabled = true;
+			electricFuelPump.transform.FindChild("fuelLine-2").GetComponent<Renderer>().enabled = true;
 
 			fuel_injectors_box = new Box("fuel_injector", "Fuel Injector", fuel_injectors_box_gameObject, fuel_injector,
-				4, fuel_injection_manifold_part,
+				4, fuelInjectionManifold,
 				new[]
 				{
 					fuel_injector1_installLocation,
@@ -395,7 +395,7 @@ namespace DonnerTech_ECU_Mod
 			}
 
 			throttle_bodies_box = new Box("throttle_body", "Throttle Body", throttle_bodies_box_gameObject,
-				throttle_body, 4, fuel_injection_manifold_part,
+				throttle_body, 4, fuelInjectionManifold,
 				new[]
 				{
 					throttle_body1_installLocation,
@@ -423,7 +423,7 @@ namespace DonnerTech_ECU_Mod
 				}, 0.6f, 8);
 
 
-			wires_injectors_pumps_gameObject.transform.parent = fuel_injection_manifold_part.transform;
+			wires_injectors_pumps_gameObject.transform.parent = fuelInjectionManifold.transform;
 			wires_sparkPlugs1_gameObject.transform.parent = Cache.Find("cylinder head(Clone)").transform;
 			wires_sparkPlugs2_gameObject.transform.parent = CarH.satsuma.transform;
 
@@ -442,7 +442,7 @@ namespace DonnerTech_ECU_Mod
 			wires_sparkPlugs1.enabled = false;
 			wires_sparkPlugs2.enabled = false;
 
-			abs_module_part.AddScrews(
+			absModule.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0.0558f, 0.0115f, -0.0525f), new Vector3(-90, 0, 0)),
@@ -451,7 +451,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(-0.0558f, 0.0115f, -0.0525f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
-			esp_module_part.AddScrews(
+			espModule.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0.09f, 0.0120f, -0.052f), new Vector3(-90, 0, 0)),
@@ -460,7 +460,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(-0.092f, 0.0120f, -0.052f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
-			tcs_module_part.AddScrews(
+			tcsModule.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0.0388f, 0.0150f, -0.0418f), new Vector3(-90, 0, 0)),
@@ -469,7 +469,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(-0.0382f, 0.0150f, -0.0418f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
-			smart_engine_module_part.AddScrews(
+			smartEngineModule.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(-0.028f, 0.01f, 0.039f), new Vector3(-90, 0, 0)),
@@ -478,7 +478,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(-0.028f, 0.01f, -0.0625f), new Vector3(-90, 0, 0)),
 				}, 0.8f, 8);
 
-			mounting_plate_part.AddScrews(
+			mountingPlate.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(-0.1240f, 0.018f, 0.0040f), new Vector3(-90, 0, 0)),
@@ -488,33 +488,33 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(-0.1240f, 0.018f, -0.2000f), new Vector3(-90, 0, 0))
 				}, 1.2f, 12);
 
-			rain_light_sensorboard_part.AddScrews(
+			rainLightSensorboard.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0.078f, 0.0185f, 0f), new Vector3(-90, 0, 0)),
 					new Screw(new Vector3(-0.078f, 0.0185f, 0f), new Vector3(-90, 0, 0)),
 				}, 0.5f, 8);
 
-			info_panel_part.AddScrews(
+			infoPanel.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0f, -0.025f, -0.082f), new Vector3(180, 0, 0)),
 				}, 0.8f, 8);
-			reverse_camera_part.AddScrews(
+			reverseCamera.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0f, -0.015f, 0.0185f), new Vector3(0, 0, 0)),
 				}, 0.5f, 5);
 
 
-			fuel_pump_cover_part.AddScrews(
+			fuelPumpCover.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(-0.02f, 0.003f, -0.0230f), new Vector3(0, 180, 0), Screw.Type.Nut),
 					new Screw(new Vector3(0.018f, 0.003f, -0.0230f), new Vector3(0, 180, 0), Screw.Type.Nut),
 				}, 0.6f, 7);
 
-			fuel_injection_manifold_part.AddScrews(
+			fuelInjectionManifold.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0.0875f, -0.001f, 0.0025f), new Vector3(0, 0, 0), Screw.Type.Nut),
@@ -523,7 +523,7 @@ namespace DonnerTech_ECU_Mod
 					new Screw(new Vector3(-0.0865f, -0.001f, 0.0025f), new Vector3(0, 0, 0), Screw.Type.Nut),
 				}, 0.6f, 8);
 
-			electric_fuel_pump_part.AddScrews(
+			electricFuelPump.AddScrews(
 				new[]
 				{
 					new Screw(new Vector3(0f, 0.04f, -0.0030f), new Vector3(0, 180, 0)),
@@ -536,37 +536,37 @@ namespace DonnerTech_ECU_Mod
 
 			Shop.Add(shopBaseInfo, Shop.ShopLocation.Fleetari, new ShopItem[]
 			{
-				new ShopItem("ABS Module", 800, shopSpawnLocation, abs_module_part, "abs-module_productImage.png"),
-				new ShopItem("ESP Module", 1200, shopSpawnLocation, esp_module_part, "esp-module_productImage.png"),
-				new ShopItem("TCS Module", 1800, shopSpawnLocation, tcs_module_part, "tcs-module_productImage.png"),
-				new ShopItem("ECU Cable Harness", 300, shopSpawnLocation, cable_harness_part,
+				new ShopItem("ABS Module", 800, shopSpawnLocation, absModule, "abs-module_productImage.png"),
+				new ShopItem("ESP Module", 1200, shopSpawnLocation, espModule, "esp-module_productImage.png"),
+				new ShopItem("TCS Module", 1800, shopSpawnLocation, tcsModule, "tcs-module_productImage.png"),
+				new ShopItem("ECU Cable Harness", 300, shopSpawnLocation, cableHarness,
 					"cable-harness_productImage.png"),
-				new ShopItem("ECU Mounting Plate", 100, shopSpawnLocation, mounting_plate_part,
+				new ShopItem("ECU Mounting Plate", 100, shopSpawnLocation, mountingPlate,
 					"mounting-plate_productImage.png"),
-				new ShopItem("Smart Engine Module ECU", 4600, shopSpawnLocation, smart_engine_module_part,
+				new ShopItem("Smart Engine Module ECU", 4600, shopSpawnLocation, smartEngineModule,
 					"smart-engine-module_productImage.png"),
-				new ShopItem("Cruise Control Panel with Controller", 2000, shopSpawnLocation, cruise_control_panel_part,
+				new ShopItem("Cruise Control Panel with Controller", 2000, shopSpawnLocation, cruiseControlPanel,
 					"cruise-control_productImage.png"),
 				new ShopItem("ECU Info Panel", 4000, shopSpawnLocation, info_panel.part, "info-panel_productImage.png"),
-				new ShopItem("Rain & Light Sensorboard", 1000, shopSpawnLocation, rain_light_sensorboard_part,
+				new ShopItem("Rain & Light Sensorboard", 1000, shopSpawnLocation, rainLightSensorboard,
 					"rain-light-sensorboard_productImage.png"),
-				new ShopItem("Reverse Camera", 1500, shopSpawnLocation, reverse_camera_part,
+				new ShopItem("Reverse Camera", 1500, shopSpawnLocation, reverseCamera,
 					"reverse-camera_productImage.png"),
-				new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuel_pump_cover_part,
+				new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuelPumpCover,
 					"fuel-pump-cover-plate_productImage.png"),
-				new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuel_injection_manifold_part,
+				new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuelInjectionManifold,
 					"fuel-injection-manifold_productImage.png"),
-				new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuel_rail_part, "fuel-rail_productImage.png"),
-				new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chip_programmer_part,
+				new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuelRail, "fuel-rail_productImage.png"),
+				new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chipProgrammer,
 					"chip-programmer_productImage.png"),
-				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electric_fuel_pump_part,
+				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electricFuelPump,
 					"electric-fuel-pump_productImage.png"),
 				new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
 				{
 					var chipPart = new ChipPart(
 						$"chip_{ChipPart.counter}",
 						$"Chip {ChipPart.counter + 1}",
-						smart_engine_module_part,
+						smartEngineModule,
 						partBaseInfo
 					);
 					chipPart.SetDefaultPosition(shopSpawnLocation);
@@ -667,11 +667,11 @@ namespace DonnerTech_ECU_Mod
 					new GuiDebugInfo("Cruise control", "false = Bad (cruise control won't work)"),
 					new GuiDebugInfo("Cruise control", "Gear not R", (CarH.drivetrain.gear != 0).ToString()),
 					new GuiDebugInfo("Cruise control", "cruise panel installed",
-						cruise_control_panel_part.IsInstalled().ToString()),
+						cruiseControlPanel.IsInstalled().ToString()),
 					new GuiDebugInfo("Cruise control", "mounting plate installed",
-						mounting_plate_part.IsFixed().ToString()),
+						mountingPlate.IsFixed().ToString()),
 					new GuiDebugInfo("Cruise control", "smart engine module installed",
-						smart_engine_module_part.IsFixed().ToString()),
+						smartEngineModule.IsFixed().ToString()),
 					new GuiDebugInfo("Cruise control", "not on throttle",
 						(CarH.carController.throttleInput <= 0f).ToString()),
 					new GuiDebugInfo("Cruise control", "speed above 20km/h",

@@ -279,7 +279,7 @@ namespace DonnerTech_ECU_Mod
 
 		private void HandleReverseCamera()
 		{
-			if (!mod.reverse_camera_part.IsFixed())
+			if (!mod.reverseCamera.IsFixed())
 			{
 				ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
 				mod.SetReverseCameraEnabled(false);

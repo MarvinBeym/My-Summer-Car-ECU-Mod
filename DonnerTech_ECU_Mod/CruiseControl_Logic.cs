@@ -18,9 +18,9 @@ namespace DonnerTech_ECU_Mod
 
 		private bool allPartsInstalled =>
 		(
-			mod.smart_engine_module_part.IsFixed() &&
-			mod.cable_harness_part.IsFixed() &&
-			mod.mounting_plate_part.IsFixed() &&
+			mod.smartEngineModule.IsFixed() &&
+			mod.cableHarness.IsFixed() &&
+			mod.mountingPlate.IsFixed() &&
 			mod.fuel_system.IsFixed()
 		);
 

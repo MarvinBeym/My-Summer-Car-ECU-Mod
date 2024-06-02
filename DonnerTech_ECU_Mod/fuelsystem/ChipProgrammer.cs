@@ -115,7 +115,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				}
 			}
 
-			chip_programmer_chip = mod.chip_programmer_part.transform.FindChild("rigid_chip").gameObject;
+			chip_programmer_chip = mod.chipProgrammer.transform.FindChild("rigid_chip").gameObject;
 			chip_programmer_chip.SetActive(false);
 		}
 
@@ -178,7 +178,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 
 						SetProgrammerUIStatus(false);
-						Vector3 chip_programmer_position = mod.chip_programmer_part.transform.position;
+						Vector3 chip_programmer_position = mod.chipProgrammer.transform.position;
 						chip.SetPosition(new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f,
 							chip_programmer_position.z));
 						break;
@@ -247,9 +247,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				{
 					GameObject itemInHand = itemPivot.Value.transform.GetChild(0).gameObject;
 					if (itemInHand.name.StartsWith("Chip") &&
-					    itemInHand.name != mod.chip_programmer_part.gameObject.name)
+					    itemInHand.name != mod.chipProgrammer.gameObject.name)
 					{
-						if (Vector3.Distance(mod.chip_programmer_part.transform.position,
+						if (Vector3.Distance(mod.chipProgrammer.transform.position,
 							    itemInHand.transform.position) <= 0.075f)
 						{
 							UserInteraction.GuiInteraction(UserInteraction.Type.Assemble, "Insert chip");
@@ -277,7 +277,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			if (chipInstalledOnProgrammer && chipOnProgrammer != null)
 			{
-				if (mod.chip_programmer_part.gameObject.IsLookingAt())
+				if (mod.chipProgrammer.gameObject.IsLookingAt())
 				{
 					string guiText = String.Format(
 						"Press [{0}] to {1}\n" +
@@ -302,7 +302,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 								chipOnProgrammer = null;
 								Vector3 chip_programmer_position =
-									mod.chip_programmer_part.gameObject.transform.position;
+									mod.chipProgrammer.gameObject.transform.position;
 								chip.SetPosition(new Vector3(chip_programmer_position.x,
 									chip_programmer_position.y + 0.05f, chip_programmer_position.z));
 								break;
@@ -367,7 +367,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					chip_programmer_chip.SetActive(false);
 					chip.SetInstalledOnProgrammer(false);
 
-					Vector3 chip_programmer_position = mod.chip_programmer_part.gameObject.transform.position;
+					Vector3 chip_programmer_position = mod.chipProgrammer.gameObject.transform.position;
 					chip.SetPosition(new Vector3(chip_programmer_position.x, chip_programmer_position.y + 0.05f,
 						chip_programmer_position.z));
 					break;

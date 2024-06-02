@@ -78,13 +78,13 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					new NewPart(throttleBodyParts[1]),
 					new NewPart(throttleBodyParts[2]),
 					new NewPart(throttleBodyParts[3]),
-					new NewPart(mod.fuel_rail_part),
-					new NewPart(mod.fuel_pump_cover_part),
-					new NewPart(mod.fuel_injection_manifold_part),
-					new NewPart(mod.electric_fuel_pump_part),
-					new NewPart(mod.smart_engine_module_part, true),
-					new NewPart(mod.mounting_plate_part, true),
-					new NewPart(mod.cable_harness_part, true),
+					new NewPart(mod.fuelRail),
+					new NewPart(mod.fuelPumpCover),
+					new NewPart(mod.fuelInjectionManifold),
+					new NewPart(mod.electricFuelPump),
+					new NewPart(mod.smartEngineModule, true),
+					new NewPart(mod.mountingPlate, true),
+					new NewPart(mod.cableHarness, true),
 				});
 
 			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AllFixed, ReplacementPart.PartType.NewPart,
@@ -94,7 +94,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUnfixed, ReplacementPart.PartType.NewPart,
 				FuelInjectionUninstalled);
 
-			fuel_system_logic = mod.smart_engine_module_part.AddWhenInstalledMono<FuelSystemLogic>();
+			fuel_system_logic = mod.smartEngineModule.AddWhenInstalledMono<FuelSystemLogic>();
 			fuel_system_logic.Init(this, mod);
 
 			LoadChips();
@@ -203,7 +203,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				ChipPart chipPart = new ChipPart(
 					id,
 					$"Chip {ChipPart.counter + 1}",
-					mod.smart_engine_module_part,
+					mod.smartEngineModule,
 					mod.partBaseInfo);
 				chips.Add(chipPart);
 				chipPart.SetDefaultPosition(Shop.SpawnLocation.Fleetari.Counter);
