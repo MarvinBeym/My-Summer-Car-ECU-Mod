@@ -9,6 +9,7 @@ using System;
 using DonnerTech_ECU_Mod.Parts;
 using MSCLoader;
 using MscModApi.Caching;
+using MscModApi.Parts;
 
 
 namespace DonnerTech_ECU_Mod
@@ -142,10 +143,10 @@ namespace DonnerTech_ECU_Mod
 		{
 			this.mod = mod;
 			this.fuel_system = fuel_system;
-			throttleBodyValves = new Transform[fuel_system.throttleBodyParts.Length];
-			for (var i = 0; i < fuel_system.throttleBodyParts.Length; i++)
+			throttleBodyValves = new Transform[fuel_system.throttleBodyParts.Count];
+			for (var i = 0; i < fuel_system.throttleBodyParts.Count; i++)
 			{
-				throttleBodyValves[i] = fuel_system.throttleBodyParts[i].transform.FindChild("Butterfly-Valve");
+				throttleBodyValves[i] = ((Part)fuel_system.throttleBodyParts[i]).transform.FindChild("Butterfly-Valve");
 			}
 		}
 	}

@@ -10,8 +10,8 @@ namespace DonnerTech_ECU_Mod
 
 		private GameObject reverse_camera;
 
-		private Camera reverse_camera_camera;
-		private Light reverse_camera_light;
+		private Camera camera;
+		private Light light;
 
 		// Use this for initialization
 		void Start()
@@ -31,21 +31,16 @@ namespace DonnerTech_ECU_Mod
 
 			reverse_camera = this.gameObject;
 
-			reverse_camera_camera = reverse_camera.GetComponent<Camera>();
-			reverse_camera_light = reverse_camera.GetComponent<Light>();
+			camera = gameObject.GetComponent<Camera>();
+			light = gameObject.GetComponent<Light>();
 		}
 
-		// Update is called once per frame
-		void Update()
+		public void SetEnabled(bool enabled)
 		{
-		}
-
-		public void SetReverseCameraEnabled(bool enabled)
-		{
-			if (reverse_camera_camera != null)
-				reverse_camera_camera.enabled = enabled;
-			if (reverse_camera_light != null)
-				reverse_camera_light.enabled = enabled;
+			if (camera != null)
+				camera.enabled = enabled;
+			if (light != null)
+				light.enabled = enabled;
 		}
 	}
 }

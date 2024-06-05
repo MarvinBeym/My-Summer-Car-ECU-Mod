@@ -1,5 +1,4 @@
 ﻿using DonnerTech_ECU_Mod.info_panel_pages;
-using DonnerTech_ECU_Mod.infoPanel;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using MSCLoader;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Tools;
 using Tools;
@@ -202,7 +202,7 @@ namespace DonnerTech_ECU_Mod
 
 		void Update()
 		{
-			if (CarH.hasPower && infoPanel.part.IsFixed())
+			if (CarH.hasPower && infoPanel.bolted)
 			{
 				if (!isBooted)
 				{
@@ -279,7 +279,7 @@ namespace DonnerTech_ECU_Mod
 
 		private void HandleReverseCamera()
 		{
-			if (!mod.reverseCamera.IsFixed())
+			if (!mod.reverseCamera.bolted)
 			{
 				ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
 				mod.SetReverseCameraEnabled(false);

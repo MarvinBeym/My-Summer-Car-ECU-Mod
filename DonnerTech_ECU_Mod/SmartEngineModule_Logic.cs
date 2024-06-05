@@ -20,7 +20,7 @@ namespace DonnerTech_ECU_Mod
 			Als,
 			TwoStep,
 		}
-
+		
 		private Part part;
 		private Part absModulePart;
 		private Part espModulePart;
@@ -70,13 +70,13 @@ namespace DonnerTech_ECU_Mod
 
 		void Update()
 		{
-			if (mod.smartEngineModule.IsFixed() && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
+			if (mod.smartEngineModule.bolted && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
 			{
 				CarH.drivetrain.maxRPM = 8500;
 			}
 
-			if (!CarH.hasPower || !CarH.playerInCar || !mod.cableHarness.IsFixed() ||
-			    !mod.mountingPlate.IsFixed())
+			if (!CarH.hasPower || !CarH.playerInCar || !mod.cableHarness.bolted ||
+			    !mod.mountingPlate.bolted)
 			{
 				return;
 			}
@@ -132,7 +132,8 @@ namespace DonnerTech_ECU_Mod
 		internal void Init(Part smartEngineModule, Part absModulePart, Part espModulePart, Part tcsModulePart)
 		{
 			part = smartEngineModule;
-			part.AddPostUninstallAction(OnUninstall);
+
+			part.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, OnUninstall);
 
 			this.absModulePart = absModulePart;
 			this.espModulePart = espModulePart;
@@ -203,7 +204,7 @@ namespace DonnerTech_ECU_Mod
 
 		private bool checkStatePartInstalled(bool state)
 		{
-			if (!this.part.IsFixed())
+			if (!this.part.bolted)
 			{
 				state = false;
 			}

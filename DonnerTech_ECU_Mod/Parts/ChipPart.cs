@@ -10,7 +10,10 @@ namespace DonnerTech_ECU_Mod.Parts
 {
 	public class ChipPart : Part
 	{
+		//May need to be reset onload
 		internal static int counter = 0;
+
+		//May need to be reset onload
 		internal static GameObject prefab;
 		private static readonly Vector3 installPosition = new Vector3(0.008f, 0.001f, -0.058f);
 		private static readonly Vector3 installRotation = new Vector3(0, 90, -90);
@@ -99,7 +102,7 @@ namespace DonnerTech_ECU_Mod.Parts
 
 		internal bool InUse()
 		{
-			return IsInstalled() && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null &&
+			return installed && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null &&
 			       IsProgrammed();
 		}
 	}
