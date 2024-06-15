@@ -223,6 +223,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				fuelInjectionParts.SetReplacedState(true);
 				fuel_system_logic.installedChip = chip;
 				fuelInjectionManifold.wiresVisible = true;
+				fuelInjectionParts.AddNewPart(chip, true);
+
 			});
 			chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, delegate
 			{
@@ -233,9 +235,9 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				fuelInjectionParts.SetReplacedState(false);
 				fuel_system_logic.installedChip = null;
 				fuelInjectionManifold.wiresVisible = false;
-			});
+				fuelInjectionParts.RemoveNewPart(chip, true);
 
-			fuelInjectionParts.AddNewPart(chip, true);
+			});
 		}
 	}
 }
