@@ -21,7 +21,7 @@ namespace DonnerTech_ECU_Mod
 			mod.smartEngineModule.bolted &&
 			mod.cableHarness.bolted &&
 			mod.mountingPlate.bolted &&
-			mod.fuel_system.IsFixed()
+			mod.fuel_system.replaced
 		);
 
 		private RaycastHit hit;

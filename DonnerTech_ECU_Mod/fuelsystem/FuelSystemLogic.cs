@@ -24,7 +24,7 @@ namespace DonnerTech_ECU_Mod
 
 		void LateUpdate()
 		{
-			if (CarH.running && fuel_system.IsFixed())
+			if (CarH.running && fuel_system.replaced)
 			{
 				if ((bool) mod.settingThrottleBodyValveRotation.Value)
 				{

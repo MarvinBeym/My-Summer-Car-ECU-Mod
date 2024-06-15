@@ -62,21 +62,23 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			this.fuelInjectorParts = fuelInjectorParts;
 			this.throttleBodyParts = throttleBodyParts;
 
-			List<Part> newPartsList = new List<Part>
+			List<Part> optionalNewParts = new List<Part>
 			{
+				mod.smartEngineModule,
+				mod.mountingPlate,
+				mod.cableHarness,
 				mod.fuelRail,
-				mod.fuelPumpCover,
-				mod.fuelInjectionManifold,
-				mod.electricFuelPump,
 			};
+
 			foreach (var fuelInjectorPart in fuelInjectorParts)
 			{
-				newPartsList.Add((Part)fuelInjectorPart);
+				optionalNewParts.Add((Part)fuelInjectorPart);
 			}
 			foreach (var throttleBodyPart in throttleBodyParts)
 			{
-				newPartsList.Add((Part)throttleBodyPart);
+				optionalNewParts.Add((Part)throttleBodyPart);
 			}
+
 
 			fuelInjectionParts = new ReplacedGameParts(
 				new[]
@@ -88,67 +90,42 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					new GamePart("Database/DatabaseOrders/Racing Carburators"),
 					new GamePart("Database/DatabaseMotor/Fuelpump")
 				},
-				newPartsList,
 				new List<Part>
 				{
-					mod.smartEngineModule,
-					mod.mountingPlate,
-					mod.cableHarness,
-				}
+					mod.fuelPumpCover,
+					mod.fuelInjectionManifold,
+					mod.electricFuelPump,
+				},
+				optionalNewParts
 			);
 
 
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AllFixed, ReplacementPart.PartType.NewPart,
-				FuelInjectionInstalled);
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUninstalled, ReplacementPart.PartType.NewPart,
-				FuelInjectionUninstalled);
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUnfixed, ReplacementPart.PartType.NewPart,
-				FuelInjectionUninstalled);
+			
+			fuelInjectionParts.AddEventListener(ReplacedGamePartsEvent.Type.AllNewBolted, () =>
+			{
+				fuelInjectionManifold.wiresVisible = replaced;
+
+				if (!replaced)
+				{
+					fuelInjectionParts.SetReplacedState(false);
+				}
+			});
+			
+
+			fuelInjectionParts.AddEventListener(ReplacedGamePartsEvent.Type.AnyNewUnbolted, () =>
+			{
+				fuelInjectionManifold.wiresVisible = false;
+			});
+
+			fuelInjectionParts.AddEventListener(ReplacedGamePartsEvent.Type.AnyNewUninstalled, () =>
+			{
+				fuelInjectionManifold.wiresVisible = false;
+			});
 
 			fuel_system_logic = mod.smartEngineModule.AddEventBehaviour<FuelSystemLogic>(PartEvent.Type.Install);
 			fuel_system_logic.Init(this, mod);
 
 			LoadChips();
-
-			foreach (var chip in chips)
-			{
-				chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Install, delegate
-				{
-					foreach (var chipPart in chips.Where(chipPart =>
-								 !chipPart.installed && !chipPart.installBlocked))
-					{
-						chipPart.installBlocked = true;
-					}
-				});
-
-				chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, delegate
-				{
-					foreach (var chipPart in chips.Where(chipPart => chipPart.installBlocked))
-					{
-						chipPart.installBlocked = false;
-					}
-				});
-			}
-		}
-
-		internal void FuelInjectionInstalled()
-		{
-			if (fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.InUse()))
-			{
-				fuelInjectionParts.SetFakedInstallStatus(true);
-				fuelInjectionManifold.wiresVisible = true;
-			}
-			else
-			{
-				FuelInjectionUninstalled();
-			}
-		}
-
-		internal void FuelInjectionUninstalled()
-		{
-			fuelInjectionParts.SetFakedInstallStatus(false);
-			fuelInjectionManifold.wiresVisible = false;
-
 		}
 
 		public void Handle()
@@ -214,19 +191,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					mod.smartEngineModule,
 					DonnerTech_ECU_Mod.partBaseInfo
 					);
-				chips.Add(chipPart);
 				chipPart.defaultPosition = Shop.SpawnLocation.Fleetari.Counter;
-
-				chipPart.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Install, delegate
-				{
-					FuelInjectionInstalled();
-					if (chipPart.IsProgrammed()) fuel_system_logic.installedChip = chipPart;
-				});
-				chipPart.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, delegate
-				{
-					FuelInjectionUninstalled();
-					fuel_system_logic.installedChip = null;
-				});
+				AddChip(chipPart);
 			}
 		}
 
@@ -236,9 +202,40 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			SaveOriginals();
 		}
 
-		internal bool IsFixed()
+		internal bool replaced => fuelInjectionParts.replaced;
+
+		public void AddChip(ChipPart chip)
 		{
-			return fuelInjectionParts.AreAllNewFixed(true) && chips.Any(chip => chip.InUse());
+			chips.Add(chip);
+
+			chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Install, delegate
+			{
+				foreach (var chipPart in chips.Where(chipPart =>
+					         !chipPart.installed && !chipPart.installBlocked))
+				{
+					chipPart.installBlocked = true;
+				}
+
+				if (!chip.InUse() || !fuelInjectionParts.replaced)
+				{
+					return;
+				}
+				fuelInjectionParts.SetReplacedState(true);
+				fuel_system_logic.installedChip = chip;
+				fuelInjectionManifold.wiresVisible = true;
+			});
+			chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, delegate
+			{
+				foreach (var chipPart in chips.Where(chipPart => chipPart.installBlocked))
+				{
+					chipPart.installBlocked = false;
+				}
+				fuelInjectionParts.SetReplacedState(false);
+				fuel_system_logic.installedChip = null;
+				fuelInjectionManifold.wiresVisible = false;
+			});
+
+			fuelInjectionParts.AddNewPart(chip, true);
 		}
 	}
 }

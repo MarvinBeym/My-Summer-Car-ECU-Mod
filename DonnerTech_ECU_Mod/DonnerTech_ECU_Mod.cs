@@ -360,7 +360,7 @@ namespace DonnerTech_ECU_Mod
 					chipPart.defaultPosition = shopSpawnLocation;
 					chipPart.bought = true;
 					chipPart.ResetToDefault();
-					fuel_system.chips.Add(chipPart);
+					fuel_system.AddChip(chipPart);
 				}, "chip_productImage.png"),
 			});
 
