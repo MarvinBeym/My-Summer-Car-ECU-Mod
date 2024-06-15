@@ -157,7 +157,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					ChipPart chip = fuelSystem.chips[index];
 					if (chip.IsInstalledOnProgrammer())
 					{
-						chip.active = false;
 						chip_programmer_chip.SetActive(false);
 						chipInstalledOnProgrammer = false;
 						chipOnProgrammer = null;
