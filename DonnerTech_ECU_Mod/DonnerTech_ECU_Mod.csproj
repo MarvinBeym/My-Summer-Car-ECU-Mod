@@ -97,8 +97,6 @@
     <Compile Include="fuelsystem\FloatForce.cs" />
     <Compile Include="fuelsystem\FuelSystem.cs" />
     <Compile Include="fuelsystem\FuelSystemLogic.cs" />
-    <Compile Include="fuelsystem\OriginalPart.cs" />
-    <Compile Include="fuelsystem\OriginalPartsSave.cs" />
     <Compile Include="fuelsystem\SparkAngleInputForce.cs" />
     <Compile Include="infoPanel\InfoPanelPage.cs" />
     <Compile Include="infoPanel\pages\Assistance.cs" />
