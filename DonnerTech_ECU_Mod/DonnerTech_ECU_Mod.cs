@@ -113,7 +113,7 @@ namespace DonnerTech_ECU_Mod
 		public Keybind minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
 
 		//FuelSystem
-		public FuelSystem fuel_system;
+		public FuelSystem fuelSystem;
 
 		public FsmString playerCurrentVehicle;
 
@@ -147,7 +147,7 @@ namespace DonnerTech_ECU_Mod
 		public MscModApi.Parts.Box throttleBodiesBox;
 
 
-		public Part chipProgrammer;
+		public ChipProgrammer chipProgrammer;
 
 
 		private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
@@ -285,8 +285,6 @@ namespace DonnerTech_ECU_Mod
 			fuelPumpCover = new FuelPumpCover(block);
 			fuelRail = new FuelRail(fuelInjectionManifold);
 
-			chipProgrammer = new part.ChipProgrammer();
-
 			electricFuelPump = new ElectricFuelPump(SatsumaGamePart.GetInstance());
 
 			fuelInjectorsBox = new MscModApi.Parts.Box(
@@ -315,6 +313,10 @@ namespace DonnerTech_ECU_Mod
 			);
 
 			throttleBodiesBox = new ThrottleBodiesBox(fuelInjectionManifold, throttle_bodies_box_gameObject, throttle_body);
+
+			fuelSystem = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
+			chipProgrammer = new ChipProgrammer(this, fuelSystem);
+			fuelSystem.LoadChips();
 
 			var shopBaseInfo = new ShopBaseInfo(this, assetBundle);
 
@@ -351,20 +353,9 @@ namespace DonnerTech_ECU_Mod
 				new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, throttleBodiesBox, "throttle-bodies-box_productImage.png"),
 			new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
 				{
-					var chipPart = new ChipPart(
-						$"chip_{ChipPart.counter}",
-						$"Chip {ChipPart.counter + 1}",
-						smartEngineModule,
-						partBaseInfo
-					);
-					chipPart.defaultPosition = shopSpawnLocation;
-					chipPart.bought = true;
-					chipPart.ResetToDefault();
-					fuel_system.AddChip(chipPart);
+					CreateChipPart($"chip_{ChipPart.counter}", shopSpawnLocation, true);
 				}, "chip_productImage.png"),
 			});
-
-			fuel_system = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
 
 			assetBundle.Unload(false);
 			Object.Destroy(fuel_injector);
@@ -377,6 +368,25 @@ namespace DonnerTech_ECU_Mod
 		public void SetReverseCameraEnabled(bool enabled)
 		{
 			reverseCamera.SetEnabled(enabled);
+		}
+
+		public void CreateChipPart(string id, Vector3 spawnLocation, bool resetToDefault = false)
+		{
+			var chipPart = new ChipPart(
+				id,
+				$"Chip {ChipPart.counter + 1}",
+				smartEngineModule,
+				partBaseInfo,
+				chipProgrammer
+			);
+			chipPart.defaultPosition = spawnLocation;
+			chipPart.bought = true;
+			fuelSystem.AddChip(chipPart);
+
+			if (resetToDefault)
+			{
+				chipPart.ResetToDefault();
+			}
 		}
 
 		public override void ModSettings()
@@ -405,7 +415,7 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnSave()
 		{
-			fuel_system.Save();
+			fuelSystem.Save();
 		}
 
 
@@ -440,7 +450,6 @@ namespace DonnerTech_ECU_Mod
 
 		public override void Update()
 		{
-			fuel_system.Handle();
 			infoPanel.Handle();
 		}
 

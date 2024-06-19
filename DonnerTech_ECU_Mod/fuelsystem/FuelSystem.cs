@@ -25,7 +25,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 	public class FuelSystem
 	{
 		public FuelSystemLogic fuel_system_logic;
-		public ChipProgrammer chip_programmer;
 
 		public FsmFloat distributor_sparkAngle;
 		public FsmFloat racingCarb_adjustAverage;
@@ -46,8 +45,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		{
 			this.mod = mod;
 			this.fuelInjectionManifold = fuelInjectionManifold;
-
-			chip_programmer = new ChipProgrammer(mod, this);
 
 			PlayMakerFSM distributor = Cache.Find("Distributor").GetComponent<PlayMakerFSM>();
 			//PlayMakerFSM fuelStrainer = Cache.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
@@ -124,13 +121,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			fuel_system_logic = mod.smartEngineModule.AddEventBehaviour<FuelSystemLogic>(PartEvent.Type.Install);
 			fuel_system_logic.Init(this, mod);
-
-			LoadChips();
-		}
-
-		public void Handle()
-		{
-			chip_programmer.Handle();
 		}
 
 		public void SaveOriginals()
@@ -185,20 +175,12 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				var fileName = saveFilePath.Replace($"{chipsSavePath}\\", "");
 				var id = fileName.Replace("_saveFile.json", "");
 
-				ChipPart chipPart = new ChipPart(
-					id,
-					$"Chip {ChipPart.counter + 1}",
-					mod.smartEngineModule,
-					DonnerTech_ECU_Mod.partBaseInfo
-					);
-				chipPart.defaultPosition = Shop.SpawnLocation.Fleetari.Counter;
-				AddChip(chipPart);
+				mod.CreateChipPart(id, Shop.SpawnLocation.Fleetari.Counter);
 			}
 		}
 
 		public void Save()
 		{
-			chip_programmer.Save();
 			SaveOriginals();
 		}
 
@@ -236,7 +218,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				fuel_system_logic.installedChip = null;
 				fuelInjectionManifold.wiresVisible = false;
 				fuelInjectionParts.RemoveNewPart(chip, true);
-
 			});
 		}
 	}

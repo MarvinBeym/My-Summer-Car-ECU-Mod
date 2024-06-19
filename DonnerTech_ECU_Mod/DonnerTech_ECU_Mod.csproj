@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="fuelsystem\ChipProgrammerLogic.cs" />
     <Compile Include="gui\GuiDebug.cs" />
     <Compile Include="gui\GuiDebugElement.cs" />
     <Compile Include="gui\GuiDebugInfo.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="part\AbsModule.cs" />
     <Compile Include="part\MountingPlate.cs" />
     <Compile Include="CruiseControl_Logic.cs" />
-    <Compile Include="fuelsystem\ChipProgrammer.cs" />
     <Compile Include="fuelsystem\FloatForce.cs" />
     <Compile Include="fuelsystem\FuelSystem.cs" />
     <Compile Include="fuelsystem\FuelSystemLogic.cs" />

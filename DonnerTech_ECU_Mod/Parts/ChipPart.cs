@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DonnerTech_ECU_Mod.part;
 using MSCLoader;
 using MscModApi.Parts;
 using MscModApi.Tools;
@@ -21,11 +22,31 @@ namespace DonnerTech_ECU_Mod.Parts
 		private bool installedOnProgrammer;
 		private ChipSave chipSave;
 
-		public ChipPart(string id, string name, Part parentPart,
-			PartBaseInfo partBaseInfo) : base(id, name, prefab, parentPart,
-			installPosition, installRotation, partBaseInfo)
-		{
+		public ChipPart(
+			string id, 
+			string name, 
+			Part parentPart,
+			PartBaseInfo partBaseInfo,
+			ChipProgrammer chipProgrammer
+		) : base(id, name, prefab, parentPart, installPosition, installRotation, partBaseInfo) {
 			counter++;
+
+			AddEventListener(PartEvent.Time.Pre, PartEvent.Type.Save, () =>
+			{
+				if (!IsInstalledOnProgrammer())
+				{
+					return;
+				}
+
+				active = true;
+
+				Vector3 chipProgrammerPosition = chipProgrammer.gameObject.transform.position;
+				position = new Vector3(
+					chipProgrammerPosition.x,
+					chipProgrammerPosition.y + 0.05f,
+					chipProgrammerPosition.z
+				);
+			});
 		}
 
 		public override void CustomSaveLoading(Mod mod, string saveFileName)
