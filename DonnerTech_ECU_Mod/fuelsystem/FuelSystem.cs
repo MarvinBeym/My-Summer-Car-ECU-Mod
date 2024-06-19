@@ -198,7 +198,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					chipPart.installBlocked = true;
 				}
 
-				if (!chip.InUse() || !fuelInjectionParts.replaced)
+				if (!chip.inUse || !fuelInjectionParts.replaced)
 				{
 					return;
 				}

@@ -35,8 +35,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		public InputField[,] inputFieldMap;
 		public ChipProgrammer chipProgrammer;
 
-		private bool chipInstalledOnProgrammer => chipOnProgrammer != null;
-		private ChipPart chipOnProgrammer = null;
+
 
 		private Coroutine awaitChipInsertionRoutine;
 
@@ -81,7 +80,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		private IEnumerator AwaitChipInsertion(ChipPart chipInHand)
 		{
-			while (chipOnProgrammer != chipInHand && Vector3.Distance(chipProgrammer.transform.position, chipInHand.transform.position) <= 0.075f)
+			while (chipProgrammer.chipOnProgrammer != chipInHand && Vector3.Distance(chipProgrammer.transform.position, chipInHand.transform.position) <= 0.075f)
 			{
 				UserInteraction.GuiInteraction(UserInteraction.Type.Assemble, $"Insert {chipInHand.cleanName}");
 				if (UserInteraction.LeftMouseDown)
@@ -124,12 +123,12 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			);
 
 			UserInteraction.GuiInteraction(guiText);
-			if (UserInteraction.RightMouseDown && chipInstalledOnProgrammer)
+			if (UserInteraction.RightMouseDown && chipProgrammer.chipOnProgrammer != null)
 			{
 				showUi = false;
 				RemoveChipFromProgrammer();
 			}
-			else if (UserInteraction.UseButtonDown)
+			else if (UserInteraction.UseButtonDown && chipProgrammer.chipOnProgrammer != null)
 			{
 				for (int row = 0; row < inputFieldMap.GetLength(0); row++)
 				{
@@ -137,14 +136,14 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					{
 						try
 						{
-							if (chipOnProgrammer.GetFuelMap() == null)
+							if (chipProgrammer.chipOnProgrammer.fuelMap == null)
 							{
 								inputFieldMap[row, column].text = "";
 							}
 							else
 							{
 								inputFieldMap[row, column].text =
-									chipOnProgrammer.GetFuelMapValue(row, column).ToString("00.0");
+									chipProgrammer.chipOnProgrammer.GetFuelMapValue(row, column).ToString("00.0");
 							}
 						}
 						catch (Exception ex)
@@ -154,8 +153,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					}
 				}
 
-				inputSparkAngle.text = chipOnProgrammer.GetSparkAngle().ToString("00.0");
-				toggleStartAssistEnabled.isOn = chipOnProgrammer.IsStartAssistEnabled();
+				inputSparkAngle.text = chipProgrammer.chipOnProgrammer.sparkAngle.ToString("00.0");
+				toggleStartAssistEnabled.isOn = chipProgrammer.chipOnProgrammer.startAssist;
 				showUi = true;
 			}
 		}
@@ -270,18 +269,18 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				return;
 			}
 
-			chipOnProgrammer.SetFuelMap(fuelMap);
-			chipOnProgrammer.SetProgrammed(true);
-			chipOnProgrammer.SetStartAssistEnabled(startAssistEnabled);
+			chipProgrammer.chipOnProgrammer.fuelMap = fuelMap;
+			chipProgrammer.chipOnProgrammer.programmed = true;
+			chipProgrammer.chipOnProgrammer.startAssist = startAssistEnabled;
 			try
 			{
-				chipOnProgrammer.SetSparkAngle(sparkAngle);
+				chipProgrammer.chipOnProgrammer.sparkAngle = sparkAngle;
 			}
 			catch (Exception e)
 			{
 				Logger.New("Error while trying to save spark timing after chip programming",
 					"input field value: " + sparkAngle, e);
-				chipOnProgrammer.SetSparkAngle(14.5f);
+				chipProgrammer.chipOnProgrammer.sparkAngle = 14.5f;
 			}
 
 			showUi = false;
@@ -292,28 +291,26 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		{
 			chip.active = false;
 			rigidChip.SetActive(true);
-			chipOnProgrammer = chip;
-			chip.SetInstalledOnProgrammer(true);
+			chipProgrammer.chipOnProgrammer = chip;
 		}
 
 		protected void RemoveChipFromProgrammer()
 		{
-			if (!chipInstalledOnProgrammer)
+			if (chipProgrammer.chipOnProgrammer == null)
 			{
 				return;
 			}
 
-			chipOnProgrammer.active = true;
+			chipProgrammer.chipOnProgrammer.active = true;
 			rigidChip.SetActive(false);
-			chipOnProgrammer.SetInstalledOnProgrammer(false);
 
 			Vector3 chipProgrammerPosition = chipProgrammer.gameObject.transform.position;
-			chipOnProgrammer.position = new Vector3(
+			chipProgrammer.chipOnProgrammer.position = new Vector3(
 				chipProgrammerPosition.x,
 				chipProgrammerPosition.y + 0.05f,
 				chipProgrammerPosition.z
 			);
-			chipOnProgrammer = null;
+			chipProgrammer.chipOnProgrammer = null;
 		}
 	}
 }

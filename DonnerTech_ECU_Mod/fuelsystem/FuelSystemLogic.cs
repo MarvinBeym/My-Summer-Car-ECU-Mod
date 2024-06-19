@@ -35,7 +35,7 @@ namespace DonnerTech_ECU_Mod
 
 				if (installedChip == null) return;
 
-				if (installedChip.IsStartAssistEnabled())
+				if (installedChip.startAssist)
 				{
 					if (CarH.drivetrain.differentialSpeed < 15 &&
 					    (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0))
@@ -50,9 +50,9 @@ namespace DonnerTech_ECU_Mod
 
 				var mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
 				var mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
-				fuel_system.airFuelMixture.Value = installedChip.GetFuelMap()[mapThrottleIndex, mapRpmIndex];
+				fuel_system.airFuelMixture.Value = installedChip.fuelMap[mapThrottleIndex, mapRpmIndex];
 				fuel_system.racingCarb_adjustAverage.Value = fuel_system.racingCarb_idealSetting.Value;
-				fuel_system.distributor_sparkAngle.Value = installedChip.GetSparkAngle();
+				fuel_system.distributor_sparkAngle.Value = installedChip.sparkAngle;
 			}
 		}
 

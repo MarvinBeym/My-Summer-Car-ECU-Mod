@@ -19,34 +19,34 @@ namespace DonnerTech_ECU_Mod.Parts
 		private static readonly Vector3 installPosition = new Vector3(0.008f, 0.001f, -0.058f);
 		private static readonly Vector3 installRotation = new Vector3(0, 90, -90);
 
-		private bool installedOnProgrammer;
 		private ChipSave chipSave;
+		private readonly ChipProgrammer chipProgrammer;
 
 		public ChipPart(
-			string id, 
-			string name, 
+			string id,
+			string name,
 			Part parentPart,
 			PartBaseInfo partBaseInfo,
 			ChipProgrammer chipProgrammer
-		) : base(id, name, prefab, parentPart, installPosition, installRotation, partBaseInfo) {
-			counter++;
+		) : base(id, name, prefab, parentPart, installPosition, installRotation, partBaseInfo)
+		{
+			this.chipProgrammer = chipProgrammer;
 
 			AddEventListener(PartEvent.Time.Pre, PartEvent.Type.Save, () =>
 			{
-				if (!IsInstalledOnProgrammer())
-				{
-					return;
-				}
+				if (!installedOnProgrammer) return;
 
 				active = true;
 
-				Vector3 chipProgrammerPosition = chipProgrammer.gameObject.transform.position;
+				var chipProgrammerPosition = chipProgrammer.gameObject.transform.position;
 				position = new Vector3(
 					chipProgrammerPosition.x,
 					chipProgrammerPosition.y + 0.05f,
 					chipProgrammerPosition.z
 				);
 			});
+
+			counter++;
 		}
 
 		public override void CustomSaveLoading(Mod mod, string saveFileName)
@@ -60,71 +60,38 @@ namespace DonnerTech_ECU_Mod.Parts
 			SaveLoad.SerializeSaveFile<ChipSave>(mod, chipSave, Helper.CombinePaths("fuelMaps", saveFileName));
 		}
 
-		public float[,] GetFuelMap()
-		{
-			return chipSave.map;
-		}
-
 		public float GetFuelMapValue(int throttleIndex, int rpmIndex)
 		{
-			return GetFuelMap()[throttleIndex, rpmIndex];
+			return fuelMap[throttleIndex, rpmIndex];
 		}
 
-		public bool IsProgrammed()
+		public bool programmed
 		{
-			return chipSave.programmed;
+			get => chipSave.programmed;
+			set => chipSave.programmed = value;
 		}
 
-		public float GetSparkAngle()
+		public float sparkAngle
 		{
-			return chipSave.sparkAngle;
+			get => chipSave.sparkAngle;
+			set => chipSave.sparkAngle = value;
 		}
 
-		public bool IsStartAssistEnabled()
+		public float[,] fuelMap
 		{
-			return chipSave.startAssistEnabled;
+			get => chipSave.map;
+			set => chipSave.map = value;
 		}
 
-		public void SetProgrammed(bool programmed)
+		public bool installedOnProgrammer => chipProgrammer.chipOnProgrammer == this;
+
+		public bool startAssist
 		{
-			chipSave.programmed = programmed;
-		}
-
-		public void SetSparkAngle(float sparkAngle)
-		{
-			chipSave.sparkAngle = sparkAngle;
-		}
-
-		public void SetFuelMap(float[,] map)
-		{
-			chipSave.map = map;
+			get => chipSave.startAssistEnabled;
+			set => chipSave.startAssistEnabled = value;
 		}
 
 
-		public void SetFuelMapValue(int y, int x, float value)
-		{
-			chipSave.map[y, x] = value;
-		}
-
-		public void SetInstalledOnProgrammer(bool installed)
-		{
-			this.installedOnProgrammer = installed;
-		}
-
-		public bool IsInstalledOnProgrammer()
-		{
-			return installedOnProgrammer;
-		}
-
-		internal void SetStartAssistEnabled(bool enabled)
-		{
-			chipSave.startAssistEnabled = enabled;
-		}
-
-		internal bool InUse()
-		{
-			return installed && IsProgrammed() && !IsInstalledOnProgrammer() && GetFuelMap() != null &&
-			       IsProgrammed();
-		}
+		public bool inUse => installed && programmed && !installedOnProgrammer && fuelMap != null;
 	}
 }

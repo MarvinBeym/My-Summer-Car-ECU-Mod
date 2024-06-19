@@ -1,4 +1,5 @@
 ﻿using DonnerTech_ECU_Mod.fuelsystem;
+using DonnerTech_ECU_Mod.Parts;
 using HutongGames.PlayMaker;
 using MSCLoader;
 using MscModApi.Caching;
@@ -21,6 +22,12 @@ namespace DonnerTech_ECU_Mod.part
 		private GameObject uiGameObject;
 		private readonly ChipProgrammerLogic logic;
 		private readonly BoxCollider chipCollider;
+
+		public ChipPart chipOnProgrammer
+		{
+			get;
+			internal set;
+		} = null;
 
 		public ChipProgrammer(DonnerTech_ECU_Mod mod, FuelSystem fuelSystem) : base(NullGamePart.GetInstance(), DonnerTech_ECU_Mod.partBaseInfo)
 		{
