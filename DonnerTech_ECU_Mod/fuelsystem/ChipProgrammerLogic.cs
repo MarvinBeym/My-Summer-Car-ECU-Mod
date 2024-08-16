@@ -34,9 +34,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		public InputField[,] inputFieldMap;
 		public ChipProgrammer chipProgrammer;
-
-
-
+		private Text[] allUiTextComponents;
 		private Coroutine awaitChipInsertionRoutine;
 
 		private float sparkAngle
@@ -74,7 +72,23 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				optionsMenu.SetActive(false);
 
 				uiCanvas.enabled = value;
-				if (value) textError.text = "";
+				if (value)
+				{
+					textError.text = "";
+					UiTextGlitchFix();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Fixes the glitched ui text of the chip programmer interface (unknown origin)
+		/// </summary>
+		private void UiTextGlitchFix()
+		{
+			foreach (var textComponent in allUiTextComponents)
+			{
+				textComponent.gameObject.SetActive(false);
+				textComponent.gameObject.SetActive(true);
 			}
 		}
 
@@ -165,6 +179,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			this.fuelSystem = fuelSystem;
 			inputFieldMap = new InputField[TABLE_ROWS, TABLE_COLUMNS];
 
+			allUiTextComponents = uiGameObject.GetComponentsInChildren<Text>(true);
+
 			uiCanvas = uiGameObject.GetComponent<Canvas>();
 			uiCanvas.name = "FuelSystem_Programmer_UI";
 
@@ -222,7 +238,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			rigidChip = chipProgrammer.transform.FindChild("rigid_chip").gameObject;
 			rigidChip.SetActive(false);
 		}
-
 
 		private void BtnResetMap()
 		{
