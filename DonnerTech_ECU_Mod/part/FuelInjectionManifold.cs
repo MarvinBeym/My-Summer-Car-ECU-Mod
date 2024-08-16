@@ -13,9 +13,9 @@ namespace DonnerTech_ECU_Mod.part
 		protected override Vector3 partInstallPosition => new Vector3(-0.009f, -0.0775f, 0.02f);
 		protected override Vector3 partInstallRotation => new Vector3(90, 0, 0);
 
-		protected MeshRenderer injectorsPumpsWires;
-		protected MeshRenderer sparkPlugs1Wires;
-		protected MeshRenderer sparkPlugs2Wires;
+		protected GameObject injectorsPumpsWiresGameObject;
+		protected GameObject sparkPlugs1WiresGameObject;
+		protected GameObject sparkPlugs2WiresGameObject;
 
 		public FuelInjectionManifold(AssetBundle assetBundle, GamePart cylinderHead) : base(cylinderHead, DonnerTech_ECU_Mod.partBaseInfo)
 		{
@@ -28,9 +28,9 @@ namespace DonnerTech_ECU_Mod.part
 			}, 0.6f, 8);
 
 
-			GameObject injectorsPumpsWiresGameObject = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("wires_injectors_pumps.prefab"));
-			GameObject sparkPlugs1WiresGameObject = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("wires_sparkPlugs_1.prefab"));
-			GameObject sparkPlugs2WiresGameObject = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("wires_sparkPlugs_2.prefab"));
+			injectorsPumpsWiresGameObject = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("wires_injectors_pumps.prefab")); 
+			sparkPlugs1WiresGameObject = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("wires_sparkPlugs_1.prefab")); 
+			sparkPlugs2WiresGameObject = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>("wires_sparkPlugs_2.prefab"));
 
 			injectorsPumpsWiresGameObject.transform.parent = transform;
 			sparkPlugs1WiresGameObject.transform.parent = cylinderHead.gameObject.transform;
@@ -48,10 +48,6 @@ namespace DonnerTech_ECU_Mod.part
 			sparkPlugs1WiresGameObject.transform.localRotation = new Quaternion { eulerAngles = new Vector3(90, 0, 0) };
 			sparkPlugs2WiresGameObject.transform.localRotation = new Quaternion { eulerAngles = new Vector3(0, 180, 0) };
 
-			injectorsPumpsWires = injectorsPumpsWiresGameObject.transform.FindChild("default").GetComponent<MeshRenderer>();
-			sparkPlugs1Wires = sparkPlugs1WiresGameObject.transform.FindChild("default").GetComponent<MeshRenderer>();
-			sparkPlugs2Wires = sparkPlugs2WiresGameObject.transform.FindChild("default").GetComponent<MeshRenderer>();
-
 			wiresVisible = false;
 		}
 
@@ -59,11 +55,11 @@ namespace DonnerTech_ECU_Mod.part
 		{
 			set
 			{
-				injectorsPumpsWires.enabled = value;
-				sparkPlugs1Wires.enabled = value;
-				sparkPlugs2Wires.enabled = value;
+				injectorsPumpsWiresGameObject.SetActive(value);
+				sparkPlugs1WiresGameObject.SetActive(value);
+				sparkPlugs2WiresGameObject.SetActive(value);
 			}
-			get => injectorsPumpsWires.enabled;
+			get => injectorsPumpsWiresGameObject.activeSelf;
 		}
 	}
 }
