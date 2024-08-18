@@ -78,14 +78,19 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 
 			fuelInjectionParts = new ReplacedGameParts(
+				"fuelInjectionParts",
+				this.mod,
 				new[]
 				{
 					new GamePart("Database/DatabaseMechanics/Electrics"),
 					new GamePart("Database/DatabaseMotor/Distributor"),
-					new GamePart("Database/DatabaseMotor/Carburator"),
-					new GamePart("Database/DatabaseOrders/Twin Carburators"),
 					new GamePart("Database/DatabaseOrders/Racing Carburators"),
 					new GamePart("Database/DatabaseMotor/Fuelpump")
+				},
+				new[]
+				{
+					new GamePart("Database/DatabaseMotor/Carburator"),
+					new GamePart("Database/DatabaseOrders/Twin Carburators")
 				},
 				new List<Part>
 				{
