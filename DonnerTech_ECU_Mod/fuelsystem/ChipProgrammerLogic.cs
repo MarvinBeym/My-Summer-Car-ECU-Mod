@@ -19,7 +19,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		protected const int TABLE_ROWS = 14;
 
 		public FuelSystem fuelSystem;
-		private GameObject rigidChip;
 
 		public Canvas uiCanvas;
 
@@ -58,19 +57,15 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 		private void UiVisible(bool visible)
 		{
-			get => uiCanvas.enabled;
-			set
-			{
-				playerInMenu.Value = value;
-				playerStop.Value = value;
-				optionsMenu.SetActive(false);
+			playerInMenu.Value = visible;
+			playerStop.Value = visible;
+			optionsMenu.SetActive(false);
 
-				uiCanvas.enabled = value;
-				if (value)
-				{
-					textError.text = "";
-					UiTextGlitchFix();
-				}
+			uiCanvas.enabled = visible;
+			if (visible)
+			{
+				textError.text = "";
+				UiTextGlitchFix();
 			}
 		}
 
@@ -93,7 +88,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				UserInteraction.GuiInteraction(UserInteraction.Type.Assemble, $"Insert {chipInHand.cleanName}");
 				if (UserInteraction.LeftMouseDown)
 				{
-					InsertChipIntoProgrammer(chipInHand);
+					chipProgrammer.Insert(chipInHand);
 				}
 				yield return null;
 			}
@@ -133,8 +128,8 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			UserInteraction.GuiInteraction(guiText);
 			if (UserInteraction.RightMouseDown && chipProgrammer.chipOnProgrammer != null)
 			{
-				showUi = false;
-				RemoveChipFromProgrammer();
+				UiVisible(false);
+				chipProgrammer.Remove();
 			}
 			else if (UserInteraction.UseButtonDown && chipProgrammer.chipOnProgrammer != null)
 			{
@@ -163,7 +158,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 				inputSparkAngle.text = chipProgrammer.chipOnProgrammer.sparkAngle.ToString("00.0");
 				toggleStartAssistEnabled.isOn = chipProgrammer.chipOnProgrammer.startAssist;
-				showUi = true;
+				UiVisible(true);
 			}
 		}
 
@@ -185,7 +180,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			var panel = uiGameObject.transform.FindChild("panel");
 
 			var btnCloseUi = panel.FindChild("btn_closeUI").gameObject.GetComponent<Button>();
-			btnCloseUi.onClick.AddListener(() => showUi = false);
+			btnCloseUi.onClick.AddListener(() => UiVisible(false));
 
 			var btnIgnitionPlus = panel.FindChild("btn_ignitionPlus").gameObject.GetComponent<Button>();
 			btnIgnitionPlus.onClick.AddListener(() => sparkAngle += 0.5f);
@@ -209,7 +204,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			var sparkAngleInputForce = inputSparkAngle.gameObject.AddComponent<SparkAngleInputForce>();
 			sparkAngleInputForce.inputField = inputSparkAngle;
 
-			showUi = false;
+			UiVisible(false);
 
 			var table = uiCanvas.transform.FindChild("panel").FindChild("table").gameObject;
 
@@ -227,8 +222,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				inputFieldMap[row, column] = inputFields[index];
 			}
 
-			rigidChip = chipProgrammer.transform.FindChild("rigid_chip").gameObject;
-			rigidChip.SetActive(false);
+
 		}
 
 		private void BtnResetMap()
@@ -290,34 +284,10 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				chipProgrammer.chipOnProgrammer.sparkAngle = 14.5f;
 			}
 
-			showUi = false;
-			RemoveChipFromProgrammer();
-		}
+			chipProgrammer.Write(fuelMap, toggleStartAssistEnabled.isOn, sparkAngle);
 
-		protected void InsertChipIntoProgrammer(ChipPart chip)
-		{
-			chip.active = false;
-			rigidChip.SetActive(true);
-			chipProgrammer.chipOnProgrammer = chip;
-		}
-
-		protected void RemoveChipFromProgrammer()
-		{
-			if (chipProgrammer.chipOnProgrammer == null)
-			{
-				return;
-			}
-
-			chipProgrammer.chipOnProgrammer.active = true;
-			rigidChip.SetActive(false);
-
-			Vector3 chipProgrammerPosition = chipProgrammer.gameObject.transform.position;
-			chipProgrammer.chipOnProgrammer.position = new Vector3(
-				chipProgrammerPosition.x,
-				chipProgrammerPosition.y + 0.05f,
-				chipProgrammerPosition.z
-			);
-			chipProgrammer.chipOnProgrammer = null;
+			UiVisible(false);
+			chipProgrammer.Remove();
 		}
 	}
 }

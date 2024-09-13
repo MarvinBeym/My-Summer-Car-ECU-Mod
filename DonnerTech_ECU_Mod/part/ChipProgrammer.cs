@@ -22,6 +22,7 @@ namespace DonnerTech_ECU_Mod.part
 		private GameObject uiGameObject;
 		private readonly ChipProgrammerLogic logic;
 		private readonly BoxCollider chipCollider;
+		private GameObject rigidChip;
 
 		public ChipPart chipOnProgrammer
 		{
@@ -46,7 +47,43 @@ namespace DonnerTech_ECU_Mod.part
 			chipCollider = gameObject.AddComponent<BoxCollider>();
 			chipCollider.isTrigger = true;
 			chipCollider.size = new Vector3(0.1f, 0.1f, 0.1f);
+
+			rigidChip = transform.FindChild("rigid_chip").gameObject;
+			rigidChip.SetActive(false);
 		}
 
+		public void Write(float[,] fuelMap, bool startAssistEnabled, float sparkAngle)
+		{
+			chipOnProgrammer.fuelMap = fuelMap;
+			chipOnProgrammer.programmed = true;
+			chipOnProgrammer.startAssist = startAssistEnabled;
+			chipOnProgrammer.sparkAngle = sparkAngle;
+		}
+
+		public void Insert(ChipPart chipPart)
+		{
+			chipPart.active = false;
+			rigidChip.SetActive(true);
+			chipOnProgrammer = chipPart;
+		}
+
+		public void Remove()
+		{
+			if (chipOnProgrammer == null)
+			{
+				return;
+			}
+
+			chipOnProgrammer.active = true;
+			rigidChip.SetActive(false);
+
+			Vector3 chipProgrammerPosition = gameObject.transform.position;
+			chipOnProgrammer.position = new Vector3(
+				chipProgrammerPosition.x,
+				chipProgrammerPosition.y + 0.05f,
+				chipProgrammerPosition.z
+			);
+			chipOnProgrammer = null;
+		}
 	}
 }

@@ -57,7 +57,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			racingCarb_idealSetting = raceCarb.FsmVariables.FindFsmFloat("IdealSetting");
 			airFuelMixture = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/Engine/Fuel").FindFsm("Mixture").FsmVariables
 				.FindFsmFloat("AirFuelMixture");
-
+			
 			this.fuelInjectorParts = fuelInjectorParts;
 			this.throttleBodyParts = throttleBodyParts;
 
