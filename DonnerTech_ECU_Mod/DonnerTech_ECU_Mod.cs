@@ -143,8 +143,8 @@ namespace DonnerTech_ECU_Mod
 		public FuelRail fuelRail;
 		public ElectricFuelPump electricFuelPump;
 
-		public MscModApi.Parts.Box fuelInjectorsBox;
-		public MscModApi.Parts.Box throttleBodiesBox;
+		public MscModApi.Parts.PartBox.Box fuelInjectorsBox;
+		public MscModApi.Parts.PartBox.Box throttleBodiesBox;
 
 
 		public ChipProgrammer chipProgrammer;
@@ -287,7 +287,7 @@ namespace DonnerTech_ECU_Mod
 
 			electricFuelPump = new ElectricFuelPump(SatsumaGamePart.GetInstance());
 
-			fuelInjectorsBox = new MscModApi.Parts.Box(
+			fuelInjectorsBox = new MscModApi.Parts.PartBox.Box(
 				"Fuel Injectors",
 				"fuel_injector",
 				"Fuel Injector",

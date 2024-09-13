@@ -1,4 +1,5 @@
 ﻿using MscModApi.Parts;
+using MscModApi.Parts.EventSystem;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.part

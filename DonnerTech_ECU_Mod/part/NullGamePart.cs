@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HutongGames.PlayMaker;
 using MscModApi.Caching;
 using MscModApi.Parts;
+using MscModApi.Parts.EventSystem;
 using MscModApi.Parts.ReplacePart;
 using UnityEngine;
 

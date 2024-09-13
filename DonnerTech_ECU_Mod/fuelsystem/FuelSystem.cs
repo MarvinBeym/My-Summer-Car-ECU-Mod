@@ -11,6 +11,7 @@ using DonnerTech_ECU_Mod.part;
 using DonnerTech_ECU_Mod.Parts;
 using MscModApi;
 using MscModApi.Caching;
+using MscModApi.Parts.EventSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using MscModApi.Parts.ReplacePart;
@@ -18,6 +19,7 @@ using MscModApi.Tools;
 using Tools;
 using Helper = MscModApi.Tools.Helper;
 using MscModApi.Parts.ReplacePart;
+using MscModApi.Parts.ReplacePart.EventSystem;
 using MscModApi.Shopping;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
