@@ -56,13 +56,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			set => inputSparkAngle.text = value.ToString("0.0");
 		}
 
-		private bool startAssistEnabled
-		{
-			get => toggleStartAssistEnabled.isOn;
-			set => toggleStartAssistEnabled.isOn = value;
-		}
-
-		public bool showUi
+		private void UiVisible(bool visible)
 		{
 			get => uiCanvas.enabled;
 			set
@@ -205,8 +199,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				.FindChild("txtField_error").gameObject
 				.GetComponent<Text>();
 
-			toggleStartAssistEnabled.onValueChanged.AddListener(delegate { startAssistEnabled = !startAssistEnabled; });
-
 			var btnWriteChip = panel.FindChild("btn_writeChip").gameObject.GetComponent<Button>();
 			btnWriteChip.onClick.AddListener(BtnWriteChip);
 
@@ -286,7 +278,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 			chipProgrammer.chipOnProgrammer.fuelMap = fuelMap;
 			chipProgrammer.chipOnProgrammer.programmed = true;
-			chipProgrammer.chipOnProgrammer.startAssist = startAssistEnabled;
+			chipProgrammer.chipOnProgrammer.startAssist = toggleStartAssistEnabled.isOn;
 			try
 			{
 				chipProgrammer.chipOnProgrammer.sparkAngle = sparkAngle;
