@@ -2,6 +2,8 @@
 using UnityEngine;
 using HutongGames.PlayMaker;
 using System;
+using DonnerTech_ECU_Mod.fuelsystem;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Tools;
 
@@ -11,46 +13,42 @@ namespace DonnerTech_ECU_Mod
 	{
 		private DonnerTech_ECU_Mod mod;
 
-		private GameObject cruiseControlPanel;
+		private CruiseControlPanel cruiseControlPanel;
 		private TextMesh cruiseControlText;
 
 		private AudioSource dashButtonAudio;
-
-		private bool allPartsInstalled =>
-		(
-			mod.smartEngineModule.bolted &&
-			mod.cableHarness.bolted &&
-			mod.mountingPlate.bolted &&
-			mod.fuelSystem.replaced
-		);
 
 		private RaycastHit hit;
 
 		//Cruise control
 		private int setCruiseControlSpeed = 0;
 		private bool cruiseControlModuleEnabled = false;
+		private GameObject switchMinus;
+		private GameObject switchPlus;
+		private GameObject switchSet;
+		private GameObject switchReset;
+
 
 		// Use this for initialization
 		void Start()
 		{
-			System.Collections.Generic.List<Mod> mods = ModLoader.LoadedMods;
-			Mod[] modsArr = mods.ToArray();
-			foreach (Mod mod in modsArr)
-			{
-				if (mod.Name == "DonnerTechRacing ECUs")
-				{
-					this.mod = (DonnerTech_ECU_Mod) mod;
-					break;
-				}
-			}
-
-			cruiseControlPanel = this.gameObject;
-			cruiseControlText = cruiseControlPanel.GetComponentInChildren<TextMesh>();
 		}
 
+		public void Init(CruiseControlPanel cruiseControlPanel)
+		{
+			this.cruiseControlPanel = cruiseControlPanel;
+
+			switchMinus = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Minus").gameObject;
+			switchPlus = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Plus").gameObject;
+			switchSet = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Set").gameObject;
+			switchReset = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Reset").gameObject;
+			cruiseControlText = cruiseControlPanel.transform
+				.FindChild("ECU-Mod_CruiseControlPanel_Set_Speed_Text")
+				.GetComponent<TextMesh>();
+		}
 		void Update()
 		{
-			if (CarH.hasPower && allPartsInstalled && mod.playerCurrentVehicle.Value == "Satsuma")
+			if (CarH.hasPower && cruiseControlPanel.functional && CarH.playerInCar)
 			{
 				HandleButtonPresses();
 
@@ -99,57 +97,40 @@ namespace DonnerTech_ECU_Mod
 
 		private void HandleButtonPresses()
 		{
-			if (Camera.main != null)
+			Action actionToPerform = null;
+			string guiText = null;
+
+			if (switchMinus.IsLookingAt())
 			{
-				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					    1 << LayerMask.NameToLayer("DontCollide")) != false)
+				actionToPerform = DecreaseCruiseControl;
+				guiText = "decrease cruise speed";
+			}
+
+			if (switchPlus.IsLookingAt())
+			{
+				actionToPerform = IncreaseCruiseControl;
+				guiText = "increase cruise speed";
+			}
+
+			if (switchReset.IsLookingAt())
+			{
+				actionToPerform = ResetCruiseControl;
+				guiText = "reset/disable cruise control";
+			}
+
+			if (switchSet.IsLookingAt())
+			{
+				actionToPerform = SetCruiseControl;
+				guiText = "set/enable cruise control";
+			}
+
+			if (actionToPerform != null && guiText != null)
+			{
+				UserInteraction.GuiInteraction(guiText);
+				if (UserInteraction.UseButtonDown)
 				{
-					GameObject gameObjectHit;
-					bool foundObject = false;
-					string guiText = "";
-					gameObjectHit = hit.collider?.gameObject;
-					if (gameObjectHit != null)
-					{
-						Action actionToPerform = null;
-						//CruiseControl Panel
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Minus")
-						{
-							foundObject = true;
-							actionToPerform = DecreaseCruiseControl;
-							guiText = "decrease cruise speed";
-						}
-
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Plus")
-						{
-							foundObject = true;
-							actionToPerform = IncreaseCruiseControl;
-							guiText = "increase cruise speed";
-						}
-
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Set")
-						{
-							foundObject = true;
-							actionToPerform = SetCruiseControl;
-							guiText = "set/enable cruise control";
-						}
-
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Reset")
-						{
-							foundObject = true;
-							actionToPerform = ResetCruiseControl;
-							guiText = "reset/disable cruise control";
-						}
-
-						if (foundObject)
-						{
-							UserInteraction.GuiInteraction(guiText);
-							if (UserInteraction.UseButtonDown)
-							{
-								actionToPerform.Invoke();
-								gameObjectHit.PlayTouch();
-							}
-						}
-					}
+					actionToPerform.Invoke();
+					cruiseControlPanel.gameObject.PlayTouch();
 				}
 			}
 		}

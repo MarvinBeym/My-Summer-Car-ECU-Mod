@@ -271,8 +271,6 @@ namespace DonnerTech_ECU_Mod
 
 			cableHarness = new CableHarness(mountingPlate);
 
-			cruiseControlPanel = new CruiseControlPanel(dashboard);
-
 			//ToDo
 			infoPanel = new InfoPanel(dashboard, this, assetBundle);
 
@@ -317,6 +315,8 @@ namespace DonnerTech_ECU_Mod
 			fuelSystem = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
 			chipProgrammer = new ChipProgrammer(this, fuelSystem);
 			fuelSystem.LoadChips();
+
+			cruiseControlPanel = new CruiseControlPanel(dashboard, smartEngineModule, cableHarness, mountingPlate, fuelSystem);
 
 			var shopBaseInfo = new ShopBaseInfo(this, assetBundle);
 
