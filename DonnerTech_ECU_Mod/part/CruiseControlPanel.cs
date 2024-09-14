@@ -17,6 +17,10 @@ namespace DonnerTech_ECU_Mod.part
 		public CruiseControlPanel(GamePart parent) : base(parent, DonnerTech_ECU_Mod.partBaseInfo)
 		{
 			//ToDo: Maybe add screw
+			AddScrews(new[]
+			{
+				new Screw(new Vector3(0f, 0.012f, -0.025f), new Vector3(-90, 0, 0)),
+			}, 0.8f, 10);
 
 			cruise_control_logic = AddEventBehaviour<CruiseControl_Logic>(PartEvent.Type.Install);
 
