@@ -109,7 +109,7 @@ namespace DonnerTech_ECU_Mod
 				index = RPM_INDEX_LIMIT;
 			}
 
-			return index;
+			return index > 0 ? index : 0;
 		}
 
 		public void Init(FuelSystem fuel_system, DonnerTech_ECU_Mod mod)
