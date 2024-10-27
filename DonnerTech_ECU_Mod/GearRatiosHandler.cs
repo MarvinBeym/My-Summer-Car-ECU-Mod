@@ -10,6 +10,13 @@ namespace DonnerTech_ECU_Mod
 {
 	public static class GearRatiosHandler
 	{
+		private enum GearRatioType
+		{
+			IGNORE,
+			APPLY,
+			ORIGINAL,
+		}
+
 		private static float[] originalGearRatios = {
 			-4.093f,
 			0f,
@@ -30,22 +37,31 @@ namespace DonnerTech_ECU_Mod
 			0.65f // 6th
 		};
 
-		public static SettingsCheckBox useCustomGearRatios;
-
+		private static SettingsDropDownList changeGearRatios;
+		private static string[] availableOptions = {
+			GearRatioType.IGNORE.ToString(),
+			GearRatioType.APPLY.ToString(),
+			GearRatioType.ORIGINAL.ToString()
+		};
 
 		public static void SetupSettings(Mod mod)
 		{
 
-			if (useCustomGearRatios != null)
+			if (changeGearRatios != null)
 			{
 				return;
 			}
 
-			Settings.AddHeader(mod, "Custom Gear Ratio", Color.clear);
-			useCustomGearRatios = Settings.AddCheckBox(mod, "useCustomGearRatios", "Use custom gear ratio", false, () =>
+			Settings.AddHeader(mod, "Change Car Transmission type", Color.clear);
+			changeGearRatios = Settings.AddDropDownList(mod, "changeGearRatios", "Change Car Gear ratios (IGNORE = disabled logic, allowing other mods to change)", availableOptions, 0, () =>
 			{
-				CarH.drivetrain.gearRatios = useCustomGearRatios.GetValue() ? newGearRatios : originalGearRatios;
+				if (changeGearRatios != null)
+				{
+					Set(StringToEnum(availableOptions[changeGearRatios.GetSelectedItemIndex()]));
+				}
 			});
+			Settings.AddText(mod, "Reapply by other mods may be required after setting this to 'IGNORE'");
+
 
 			string gearRatioHelpText = "New Gear Ratios: \n";
 			for (int i = 0; i < newGearRatios.Length; i++)
@@ -66,16 +82,42 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddText(mod, gearRatioHelpText);
 		}
 
+		private static void Set(GearRatioType gearRatioType)
+		{
+			switch (gearRatioType)
+			{
+				case GearRatioType.APPLY:
+					CarH.drivetrain.gearRatios = newGearRatios;
+					break;
+				case GearRatioType.ORIGINAL:
+					CarH.drivetrain.gearRatios = originalGearRatios;
+					break;
+			}
+		}
+
+		private static GearRatioType StringToEnum(string value)
+		{
+			if (value == GearRatioType.APPLY.ToString())
+			{
+				return GearRatioType.APPLY;
+			}
+
+			if (value == GearRatioType.ORIGINAL.ToString())
+			{
+				return GearRatioType.ORIGINAL;
+			}
+
+			return GearRatioType.IGNORE;
+		}
+
 		public static void Handle()
 		{
-			if (useCustomGearRatios.GetValue() && CarH.drivetrain.gearRatios != newGearRatios)
+			string gearRatiosToSet= availableOptions[changeGearRatios.GetSelectedItemIndex()];
+			if (gearRatiosToSet == GearRatioType.IGNORE.ToString())
 			{
-				CarH.drivetrain.gearRatios = newGearRatios;
+				return;
 			}
-			else if (!useCustomGearRatios.GetValue() && CarH.drivetrain.gearRatios == newGearRatios)
-			{
-				CarH.drivetrain.gearRatios = originalGearRatios;
-			}
+			Set(StringToEnum(gearRatiosToSet));
 		}
 	}
 }
