@@ -87,9 +87,8 @@ namespace DonnerTech_ECU_Mod
 		 * - Ability to hide pages on info page based on condition (eg no turbo installed = don't show page at all)
 		 * - Maybe remove the faults page -> maybe replace with actual Fault codes that get displayed
 		 * - Create a manifold (either in ecu or turbo mod to be able to connect fuel injection to turbo mod)
-		 * - AWD not set on game load anymore?
-		 * - Six gear not set on game load anymore
-		 * - Only show Options (ABS, ESP, TCS, ... when module is installed)?
+		 * - Only show Options (ABS, ESP, TCS, ... when module is installed)
+		 * - Optimize and cleanup code (use logic classes, change names to camelCase, reduce code size, ...)
 		 */
 		/* Changelog (v1.5.7)
 		 * Fixed started loading & finished loading console message
@@ -123,8 +122,6 @@ namespace DonnerTech_ECU_Mod
 
 		//FuelSystem
 		public FuelSystem fuelSystem;
-
-		public FsmString playerCurrentVehicle;
 
 		internal static PartBaseInfo partBaseInfo;
 
@@ -172,16 +169,10 @@ namespace DonnerTech_ECU_Mod
 		public override void OnNewGame()
 		{
 			MscModApi.MscModApi.NewGameCleanUp(this);
-			foreach (var file in Directory.GetFiles(ModLoader.GetModSettingsFolder(this), "chip_*_saveFile.json",
-				         SearchOption.AllDirectories))
+			foreach (var file in Directory.GetFiles(Path.Combine(ModLoader.GetModSettingsFolder(this), "fuelMaps"), "chip_*_saveFile.json", SearchOption.TopDirectoryOnly))
 			{
 				File.Delete(file);
 			}
-			/*
-			fuel_system.chips.ForEach(delegate (Chip chip) {
-				SaveLoad.SerializeSaveFile<ChipSave>(this, null, chip.mapSaveFile);
-			});
-			*/
 		}
 
 		public override void OnLoad()
