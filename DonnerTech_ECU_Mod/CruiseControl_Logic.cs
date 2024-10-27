@@ -48,51 +48,52 @@ namespace DonnerTech_ECU_Mod
 		}
 		void Update()
 		{
-			if (CarH.hasPower && cruiseControlPanel.functional && CarH.playerInCar)
-			{
-				HandleButtonPresses();
-
-				SetCruiseControlSpeedText(setCruiseControlSpeed.ToString());
-				if (CarH.drivetrain.gear != 0 && cruiseControlModuleEnabled && CarH.carController.throttleInput <= 0f)
-				{
-					float valueToThrottle = 0f;
-					if (CarH.drivetrain.differentialSpeed >= (setCruiseControlSpeed - 0.5) &&
-					    CarH.drivetrain.differentialSpeed <= (setCruiseControlSpeed + 0.5))
-					{
-						valueToThrottle = 0.5f;
-					}
-					else if (CarH.drivetrain.differentialSpeed < (setCruiseControlSpeed - 0.5))
-					{
-						valueToThrottle = 1f;
-					}
-					else if (CarH.drivetrain.differentialSpeed >= (setCruiseControlSpeed + 0.5f))
-					{
-						valueToThrottle = 0f;
-					}
-					else if (CarH.drivetrain.differentialSpeed >= setCruiseControlSpeed)
-					{
-						valueToThrottle = 0.3f;
-					}
-
-					CarH.drivetrain.idlethrottle = valueToThrottle;
-					if (CarH.drivetrain.differentialSpeed < 19f || CarH.carController.brakeInput > 0f ||
-					    CarH.carController.clutchInput > 0f || CarH.carController.handbrakeInput > 0f)
-					{
-						ResetCruiseControl();
-					}
-				}
-				else if (cruiseControlModuleEnabled && CarH.carController.throttleInput <= 0f)
-				{
-					ResetCruiseControl();
-					setCruiseControlSpeed = 0;
-				}
-			}
-			else
+			if (!CarH.hasPower || !cruiseControlPanel.conditionsFulfilled || !CarH.playerInCar)
 			{
 				setCruiseControlSpeed = 0;
 				cruiseControlModuleEnabled = false;
 				SetCruiseControlSpeedText("");
+				return;
 			}
+
+			HandleButtonPresses();
+
+			SetCruiseControlSpeedText(cruiseControlPanel.set.ToString());
+
+			if (cruiseControlPanel.enabled
+				&& (
+					cruiseControlPanel.currentCarSpeed < CruiseControlPanel.MIN_SET
+					|| CarH.carController.brakeInput > 0f
+					|| CarH.carController.clutchInput > 0f
+					|| CarH.carController.handbrakeInput > 0f
+					|| CarH.drivetrain.gear <= 0
+					)
+				)
+			{
+				cruiseControlPanel.Reset();
+				return;
+			}
+
+			if (!cruiseControlPanel.enabled)
+			{
+				return;
+			}
+
+			float cruiseControlThrottle = Map(
+				(float)cruiseControlPanel.currentCarSpeed, 
+				0,
+				(float)cruiseControlPanel.set, 
+				1f, 
+				0.35f
+				);
+			CarH.drivetrain.idlethrottle = cruiseControlThrottle;
+
+			ModConsole.Print(cruiseControlThrottle);
+			return;
+		}
+		private float Map(float value, float fromLow, float fromHigh, float toLow, float toHigh)
+		{
+			return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 		}
 
 		private void HandleButtonPresses()
@@ -102,25 +103,25 @@ namespace DonnerTech_ECU_Mod
 
 			if (switchMinus.IsLookingAt())
 			{
-				actionToPerform = DecreaseCruiseControl;
+				actionToPerform = cruiseControlPanel.Decrease;
 				guiText = "decrease cruise speed";
 			}
 
 			if (switchPlus.IsLookingAt())
 			{
-				actionToPerform = IncreaseCruiseControl;
+				actionToPerform = cruiseControlPanel.Increase;
 				guiText = "increase cruise speed";
 			}
 
 			if (switchReset.IsLookingAt())
 			{
-				actionToPerform = ResetCruiseControl;
+				actionToPerform = cruiseControlPanel.Reset;
 				guiText = "reset/disable cruise control";
 			}
 
 			if (switchSet.IsLookingAt())
 			{
-				actionToPerform = SetCruiseControl;
+				actionToPerform = cruiseControlPanel.Set;
 				guiText = "set/enable cruise control";
 			}
 
@@ -135,55 +136,15 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		private void DecreaseCruiseControl()
-		{
-			if (setCruiseControlSpeed > 20)
-			{
-				setCruiseControlSpeed -= 2;
-			}
-		}
-
-		private void IncreaseCruiseControl()
-		{
-			setCruiseControlSpeed += 2;
-		}
-
-		private void SetCruiseControl()
-		{
-			if (CarH.drivetrain.differentialSpeed >= 20)
-			{
-				int speedToSet = Convert.ToInt32(CarH.drivetrain.differentialSpeed);
-				if (speedToSet % 2 != 0)
-				{
-					speedToSet--;
-				}
-
-				setCruiseControlSpeed = speedToSet;
-
-				SetCruiseControlSpeedTextColor(Color.green);
-				cruiseControlModuleEnabled = true;
-			}
-		}
-
-		private void ResetCruiseControl()
-		{
-			if (!cruiseControlModuleEnabled)
-			{
-				setCruiseControlSpeed = 0;
-			}
-
-			SetCruiseControlSpeedTextColor(Color.white);
-			cruiseControlModuleEnabled = false;
-		}
-
 		private void SetCruiseControlSpeedText(string toSet)
 		{
 			cruiseControlText.text = toSet;
 		}
 
-		private void SetCruiseControlSpeedTextColor(Color colorToSet)
+		public Color textColor
 		{
-			cruiseControlText.color = colorToSet;
+			get => cruiseControlText.color;
+			set => cruiseControlText.color = value;
 		}
 	}
 }
