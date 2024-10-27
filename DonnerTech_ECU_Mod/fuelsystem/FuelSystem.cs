@@ -130,46 +130,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			fuel_system_logic.Init(this, mod);
 		}
 
-		public void SaveOriginals()
-		{
-			/*
-			try
-			{
-				OriginalPart fuelPump = allOriginalParts.Find(originalPart => originalPart.partName == "Fuelpump");
-				originalPartsSave.fuelPump_installed = fuelPump.gameObjectInstalled;
-				originalPartsSave.fuelPump_position = fuelPump.gameObject.transform.position;
-				originalPartsSave.fuelPump_rotation = fuelPump.gameObject.transform.rotation;
-
-				OriginalPart racingCarb =
-					allOriginalParts.Find(originalPart => originalPart.partName == "Racing Carburators");
-				originalPartsSave.racingCarb_installed = racingCarb.gameObjectInstalled;
-				originalPartsSave.racingCarb_position = racingCarb.gameObject.transform.position;
-				originalPartsSave.racingCarb_rotation = racingCarb.gameObject.transform.rotation;
-
-				OriginalPart distributor =
-					allOriginalParts.Find(originalPart => originalPart.partName == "Distributor");
-				originalPartsSave.distributor_installed = distributor.gameObjectInstalled;
-				originalPartsSave.distributor_position = distributor.gameObject.transform.position;
-				originalPartsSave.distributor_rotation = distributor.gameObject.transform.rotation;
-
-				OriginalPart electrics = allOriginalParts.Find(originalPart => originalPart.partName == "Electrics");
-				originalPartsSave.electrics_installed = electrics.gameObjectInstalled;
-				originalPartsSave.electrics_position = electrics.gameObject.transform.position;
-				originalPartsSave.electrics_rotation = electrics.gameObject.transform.rotation;
-
-				SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave,
-					Helper.CombinePaths(new string[]
-						{ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile}));
-			}
-			catch (Exception ex)
-			{
-				Logger.New("Error while trying to save original parts replaced by fuel injection system",
-					$"path of save file: {Helper.CombinePaths(new string[] {ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile})}",
-					ex);
-			}
-			*/
-		}
-
 		public void LoadChips()
 		{
 			var chipsSavePath =
@@ -184,11 +144,6 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 
 				mod.CreateChipPart(id, Shop.SpawnLocation.Fleetari.Counter);
 			}
-		}
-
-		public void Save()
-		{
-			SaveOriginals();
 		}
 
 		internal bool replaced => fuelInjectionParts.replaced;

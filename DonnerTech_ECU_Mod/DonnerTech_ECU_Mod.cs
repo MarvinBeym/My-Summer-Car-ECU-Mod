@@ -257,13 +257,11 @@ namespace DonnerTech_ECU_Mod
 
 			cableHarness = new CableHarness(mountingPlate);
 
-			//ToDo
 			infoPanel = new InfoPanel(dashboard, this, assetBundle);
 
 			rainLightSensorboard = new RainLightSensorBoard(dashboard);
 
 			reverseCamera = new ReverseCamera(bootlid);
-
 
 			fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
 			fuelPumpCover = new FuelPumpCover(block);
@@ -394,7 +392,7 @@ namespace DonnerTech_ECU_Mod
 
 		public override void OnSave()
 		{
-			fuelSystem.Save();
+			//Nothing to do
 		}
 
 
