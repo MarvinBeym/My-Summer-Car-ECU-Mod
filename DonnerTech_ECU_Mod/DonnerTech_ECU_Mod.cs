@@ -25,7 +25,7 @@ namespace DonnerTech_ECU_Mod
 #if DEBUG
 		/*  ToDo:
 		 *  Remove Autotune?`-> maybe replace with something else
-		 *  Maybe remove the faults page -> maybe replace with actual Fault codes that get displayed
+		 *  
 		 *  
 		 *  Add option to chip that helps with starting the car from a standstill
 		 *  
@@ -81,6 +81,15 @@ namespace DonnerTech_ECU_Mod
 		 *
 		 * BUGS/Need to fix
 		 * ECU mod: add ERRor to display if something is wrong
+		 *
+		 * ToDo:
+		 * - Maybe make rev limiter bounce more instead of having the rpm stay exactly at the set rpm
+		 * - Ability to hide pages on info page based on condition (eg no turbo installed = don't show page at all)
+		 * - Maybe remove the faults page -> maybe replace with actual Fault codes that get displayed
+		 * - Create a manifold (either in ecu or turbo mod to be able to connect fuel injection to turbo mod)
+		 * - AWD not set on game load anymore?
+		 * - Six gear not set on game load anymore
+		 * - Only show Options (ABS, ESP, TCS, ... when module is installed)?
 		 */
 		/* Changelog (v1.5.7)
 		 * Fixed started loading & finished loading console message
@@ -156,27 +165,8 @@ namespace DonnerTech_ECU_Mod
 		public Settings settingThrottleBodyValveRotation =
 			new Settings("settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
 
-		private Settings toggleSixGears =
-			new Settings("toggleSixGears", "SixGears Mod (with gear ratio changes)", false);
-
 		public Settings enableAirrideInfoPanelPage = new Settings("enableAirrideInfoPanelPage",
 			"Enable Airride (enabled/disabled before load)", false);
-
-		private Settings toggleAWD = new Settings("toggleAWD", "All Wheel Drive (AWD)", false);
-
-		private static float[] originalGearRatios;
-
-		private static float[] newGearRatio =
-		{
-			-4.093f, // reverse
-			0f, // neutral
-			3.4f, // 1st
-			1.8f, // 2nd
-			1.4f, // 3rd
-			1.0f, // 4th
-			0.8f, // 5th
-			0.65f // 6th
-		};
 
 
 		public override void OnNewGame()
@@ -215,8 +205,6 @@ namespace DonnerTech_ECU_Mod
 				});
 
 			resetPosSetting.DoAction = PosReset;
-			toggleAWD.DoAction = ToggleAWD;
-			toggleSixGears.DoAction = ToggleSixGears;
 
 			assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
 
@@ -245,8 +233,6 @@ namespace DonnerTech_ECU_Mod
 			ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
 			ecu_mod_gameObject.name = ID;
 
-			originalGearRatios = CarH.drivetrain.gearRatios;
-			
 			var fuel_injector = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
 			var throttle_body = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
 
@@ -397,20 +383,13 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddButton(this, resetPosSetting, "Reset uninstalled part location");
 			Settings.AddHeader(this, "Settings");
 			Settings.AddCheckBox(this, enableAirrideInfoPanelPage);
-			Settings.AddCheckBox(this, toggleSixGears);
-			Settings.AddCheckBox(this, toggleAWD);
 			Settings.AddCheckBox(this, settingThrottleBodyValveRotation);
 			Settings.AddHeader(this, "", Color.clear);
 
-			Settings.AddText(this, "New Gear ratios + 5th & 6th gear\n" +
-			                       "1.Gear: " + newGearRatio[2] + "\n" +
-			                       "2.Gear: " + newGearRatio[3] + "\n" +
-			                       "3.Gear: " + newGearRatio[4] + "\n" +
-			                       "4.Gear: " + newGearRatio[5] + "\n" +
-			                       "5.Gear: " + newGearRatio[6] + "\n" +
-			                       "6.Gear: " + newGearRatio[7]
-			);
-			Settings.AddText(this, "Copyright © Marvin Beym 2020-2021");
+			TransmissionHandler.SetupSettings(this);
+			GearRatiosHandler.SetupSettings(this);
+
+			Settings.AddText(this, "Copyright © Marvin Beym 2020-2024");
 		}
 
 		public override void OnSave()
@@ -450,6 +429,9 @@ namespace DonnerTech_ECU_Mod
 
 		public override void Update()
 		{
+			TransmissionHandler.Handle();
+			GearRatiosHandler.Handle();
+
 			infoPanel.Handle();
 		}
 
@@ -463,34 +445,6 @@ namespace DonnerTech_ECU_Mod
 			{
 				ModConsole.Error(ex.Message);
 			}
-		}
-
-		private void ToggleSixGears()
-		{
-			if (toggleSixGears.Value is bool value)
-			{
-				if (value)
-				{
-					CarH.drivetrain.gearRatios = newGearRatio;
-					return;
-				}
-			}
-
-			CarH.drivetrain.gearRatios = originalGearRatios;
-		}
-
-		private void ToggleAWD()
-		{
-			if (toggleAWD.Value is bool value)
-			{
-				if (value)
-				{
-					CarH.drivetrain.SetTransmission(Drivetrain.Transmissions.AWD);
-					return;
-				}
-			}
-
-			CarH.drivetrain.SetTransmission(Drivetrain.Transmissions.FWD);
 		}
 	}
 }
