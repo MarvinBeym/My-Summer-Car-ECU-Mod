@@ -260,6 +260,7 @@ namespace DonnerTech_ECU_Mod
 					ecu_InfoPanel_Handbrake.enabled = false;
 					ecu_InfoPanel_LowBeam.enabled = false;
 					ecu_InfoPanel_HighBeam.enabled = false;
+					ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
 
 					foreach (KeyValuePair<string, TextMesh> display_value in display_values)
 					{
