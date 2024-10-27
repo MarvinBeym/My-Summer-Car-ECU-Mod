@@ -1,8 +1,6 @@
 ﻿using DonnerTech_ECU_Mod.info_panel_pages;
-using DonnerTech_ECU_Mod.infoPanel;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
-
 using MSCLoader;
 using System;
 using System.Collections;
@@ -10,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Tools;
 using Tools;
@@ -203,7 +202,7 @@ namespace DonnerTech_ECU_Mod
 
 		void Update()
 		{
-			if (CarH.hasPower && infoPanel.part.IsFixed())
+			if (CarH.hasPower && infoPanel.bolted)
 			{
 				if (!isBooted)
 				{
@@ -261,6 +260,7 @@ namespace DonnerTech_ECU_Mod
 					ecu_InfoPanel_Handbrake.enabled = false;
 					ecu_InfoPanel_LowBeam.enabled = false;
 					ecu_InfoPanel_HighBeam.enabled = false;
+					ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
 
 					foreach (KeyValuePair<string, TextMesh> display_value in display_values)
 					{
@@ -280,7 +280,7 @@ namespace DonnerTech_ECU_Mod
 
 		private void HandleReverseCamera()
 		{
-			if (!mod.reverse_camera_part.IsFixed())
+			if (!mod.reverseCamera.bolted)
 			{
 				ecu_InfoPanel_Display_Reverse_Camera.enabled = false;
 				mod.SetReverseCameraEnabled(false);
@@ -470,7 +470,7 @@ namespace DonnerTech_ECU_Mod
 			if (Camera.main != null)
 			{
 				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					1 << LayerMask.NameToLayer("DontCollide")) != false)
+					    1 << LayerMask.NameToLayer("DontCollide")) != false)
 				{
 					GameObject gameObjectHit;
 					bool foundObject = false;
@@ -508,7 +508,7 @@ namespace DonnerTech_ECU_Mod
 			if (Camera.main != null)
 			{
 				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					1 << LayerMask.NameToLayer("DontCollide")) != false)
+					    1 << LayerMask.NameToLayer("DontCollide")) != false)
 				{
 					GameObject gameObjectHit;
 					string guiText = "";

@@ -4,11 +4,14 @@ using MscModApi.Parts;
 using MSCLoader;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using DonnerTech_ECU_Mod.part;
 using DonnerTech_ECU_Mod.Parts;
 using MscModApi;
 using MscModApi.Caching;
+using MscModApi.Parts.EventSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using MscModApi.Parts.ReplacePart;
@@ -16,6 +19,7 @@ using MscModApi.Tools;
 using Tools;
 using Helper = MscModApi.Tools.Helper;
 using MscModApi.Parts.ReplacePart;
+using MscModApi.Parts.ReplacePart.EventSystem;
 using MscModApi.Shopping;
 
 namespace DonnerTech_ECU_Mod.fuelsystem
@@ -23,27 +27,26 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 	public class FuelSystem
 	{
 		public FuelSystemLogic fuel_system_logic;
-		public ChipProgrammer chip_programmer;
 
 		public FsmFloat distributor_sparkAngle;
 		public FsmFloat racingCarb_adjustAverage;
 		public FsmFloat racingCarb_idealSetting;
 
 		public FsmFloat airFuelMixture;
-		internal Part[] fuelInjectorParts;
-		internal Part[] throttleBodyParts;
+		protected ReadOnlyCollection<BasicPart> fuelInjectorParts;
+		public ReadOnlyCollection<BasicPart> throttleBodyParts;
 		public List<ChipPart> chips = new List<ChipPart>();
 
 
 		public DonnerTech_ECU_Mod mod;
 
-		internal ReplacementPart fuelInjectionParts;
+		internal ReplacedGameParts fuelInjectionParts;
+		protected FuelInjectionManifold fuelInjectionManifold;
 
-		public FuelSystem(DonnerTech_ECU_Mod mod, Part[] fuelInjectorParts, Part[] throttleBodyParts)
+		public FuelSystem(DonnerTech_ECU_Mod mod, ReadOnlyCollection<BasicPart> fuelInjectorParts, ReadOnlyCollection<BasicPart> throttleBodyParts, FuelInjectionManifold fuelInjectionManifold)
 		{
 			this.mod = mod;
-
-			chip_programmer = new ChipProgrammer(mod, this);
+			this.fuelInjectionManifold = fuelInjectionManifold;
 
 			PlayMakerFSM distributor = Cache.Find("Distributor").GetComponent<PlayMakerFSM>();
 			//PlayMakerFSM fuelStrainer = Cache.Find("FuelStrainer").GetComponent<PlayMakerFSM>();
@@ -52,134 +55,85 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 			PlayMakerFSM raceCarb = Cache.Find("Racing Carburators").GetComponent<PlayMakerFSM>();
 			racingCarb_adjustAverage = raceCarb.FsmVariables.FindFsmFloat("AdjustAverage");
 			racingCarb_idealSetting = raceCarb.FsmVariables.FindFsmFloat("IdealSetting");
-			airFuelMixture = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/Engine/Fuel").FindFsm("Mixture").FsmVariables.FindFsmFloat("AirFuelMixture");
-
+			airFuelMixture = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/Engine/Fuel").FindFsm("Mixture").FsmVariables
+				.FindFsmFloat("AirFuelMixture");
+			
 			this.fuelInjectorParts = fuelInjectorParts;
 			this.throttleBodyParts = throttleBodyParts;
 
-			fuelInjectionParts = new ReplacementPart(
-				new [] {
-					new OldPart(Cache.Find("Electrics")),
-					new OldPart(Cache.Find("Distributor")),
-					new OldPart(Cache.Find("Racing Carburators")),
-					new OldPart(Cache.Find("Fuelpump")),
-					new OldPart(Cache.Find("Carburator"), false),
-					new OldPart(Cache.Find("Twin Carburators"), false)
-				}, 
-				new [] 
+			List<Part> optionalNewParts = new List<Part>
+			{
+				mod.smartEngineModule,
+				mod.mountingPlate,
+				mod.cableHarness,
+				mod.fuelRail,
+			};
+
+			foreach (var fuelInjectorPart in fuelInjectorParts)
+			{
+				optionalNewParts.Add((Part)fuelInjectorPart);
+			}
+			foreach (var throttleBodyPart in throttleBodyParts)
+			{
+				optionalNewParts.Add((Part)throttleBodyPart);
+			}
+
+
+			fuelInjectionParts = new ReplacedGameParts(
+				"fuelInjectionParts",
+				this.mod,
+				new[]
 				{
-					new NewPart(fuelInjectorParts[0]),
-					new NewPart(fuelInjectorParts[1]),
-					new NewPart(fuelInjectorParts[2]),
-					new NewPart(fuelInjectorParts[3]),
-					new NewPart(throttleBodyParts[0]),
-					new NewPart(throttleBodyParts[1]),
-					new NewPart(throttleBodyParts[2]),
-					new NewPart(throttleBodyParts[3]),
-					new NewPart(mod.fuel_rail_part),
-					new NewPart(mod.fuel_pump_cover_part),
-					new NewPart(mod.fuel_injection_manifold_part),
-					new NewPart(mod.electric_fuel_pump_part),
-					new NewPart(mod.smart_engine_module_part, true),
-					new NewPart(mod.mounting_plate_part, true),
-					new NewPart(mod.cable_harness_part, true),
-		});
+					new GamePart("Database/DatabaseMechanics/Electrics"),
+					new GamePart("Database/DatabaseMotor/Distributor"),
+					new GamePart("Database/DatabaseOrders/Racing Carburators"),
+					new GamePart("Database/DatabaseMotor/Fuelpump")
+				},
+				new[]
+				{
+					new GamePart("Database/DatabaseMotor/Carburator"),
+					new GamePart("Database/DatabaseOrders/Twin Carburators")
+				},
+				new List<Part>
+				{
+					mod.fuelPumpCover,
+					mod.fuelInjectionManifold,
+					mod.electricFuelPump,
+				},
+				optionalNewParts
+			);
 
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AllFixed, ReplacementPart.PartType.NewPart, FuelInjectionInstalled);
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUninstalled, ReplacementPart.PartType.NewPart, FuelInjectionUninstalled);
-			fuelInjectionParts.AddAction(ReplacementPart.ActionType.AnyUnfixed, ReplacementPart.PartType.NewPart, FuelInjectionUninstalled);
 
-			fuel_system_logic = mod.smart_engine_module_part.AddWhenInstalledMono<FuelSystemLogic>();
+			
+			fuelInjectionParts.AddEventListener(ReplacedGamePartsEvent.Type.AllNewBolted, () =>
+			{
+				fuelInjectionManifold.wiresVisible = replaced;
+
+				if (!replaced)
+				{
+					fuelInjectionParts.SetReplacedState(false);
+				}
+			});
+			
+
+			fuelInjectionParts.AddEventListener(ReplacedGamePartsEvent.Type.AnyNewUnbolted, () =>
+			{
+				fuelInjectionManifold.wiresVisible = false;
+			});
+
+			fuelInjectionParts.AddEventListener(ReplacedGamePartsEvent.Type.AnyNewUninstalled, () =>
+			{
+				fuelInjectionManifold.wiresVisible = false;
+			});
+
+			fuel_system_logic = mod.smartEngineModule.AddEventBehaviour<FuelSystemLogic>(PartEvent.Type.Install);
 			fuel_system_logic.Init(this, mod);
-
-			LoadChips();
-
-			foreach (var chip in chips) {
-				chip.AddPostInstallAction(delegate {
-					foreach (var chipPart in chips.Where(chipPart => !chipPart.IsInstalled() && !chipPart.IsInstallBlocked())) {
-						chipPart.BlockInstall(true);
-					}
-				});
-
-				chip.AddPostUninstallAction(delegate {
-					foreach (var chipPart in chips.Where(chipPart => chipPart.IsInstallBlocked())) {
-						chipPart.BlockInstall(false);
-					}
-				});
-			}
-		}
-		
-		internal void FuelInjectionInstalled()
-		{
-			if (fuelInjectionParts.AreAllNewFixed() && chips.Any(chip => chip.InUse()))
-			{
-				fuelInjectionParts.SetFakedInstallStatus(true);
-				mod.wires_injectors_pumps.enabled = true;
-				mod.wires_sparkPlugs1.enabled = true;
-				mod.wires_sparkPlugs2.enabled = true;
-			}
-			else
-			{
-				FuelInjectionUninstalled();
-			}
-		}
-
-		internal void FuelInjectionUninstalled()
-		{
-			fuelInjectionParts.SetFakedInstallStatus(false);
-			mod.wires_injectors_pumps.enabled = false;
-			mod.wires_sparkPlugs1.enabled = false;
-			mod.wires_sparkPlugs2.enabled = false;
-		}
-
-		public void Handle()
-		{
-			chip_programmer.Handle();
-		}
-
-		public void SaveOriginals()
-		{
-			/*
-			try
-			{
-				OriginalPart fuelPump = allOriginalParts.Find(originalPart => originalPart.partName == "Fuelpump");
-				originalPartsSave.fuelPump_installed = fuelPump.gameObjectInstalled;
-				originalPartsSave.fuelPump_position = fuelPump.gameObject.transform.position;
-				originalPartsSave.fuelPump_rotation = fuelPump.gameObject.transform.rotation;
-
-				OriginalPart racingCarb =
-					allOriginalParts.Find(originalPart => originalPart.partName == "Racing Carburators");
-				originalPartsSave.racingCarb_installed = racingCarb.gameObjectInstalled;
-				originalPartsSave.racingCarb_position = racingCarb.gameObject.transform.position;
-				originalPartsSave.racingCarb_rotation = racingCarb.gameObject.transform.rotation;
-
-				OriginalPart distributor =
-					allOriginalParts.Find(originalPart => originalPart.partName == "Distributor");
-				originalPartsSave.distributor_installed = distributor.gameObjectInstalled;
-				originalPartsSave.distributor_position = distributor.gameObject.transform.position;
-				originalPartsSave.distributor_rotation = distributor.gameObject.transform.rotation;
-
-				OriginalPart electrics = allOriginalParts.Find(originalPart => originalPart.partName == "Electrics");
-				originalPartsSave.electrics_installed = electrics.gameObjectInstalled;
-				originalPartsSave.electrics_position = electrics.gameObject.transform.position;
-				originalPartsSave.electrics_rotation = electrics.gameObject.transform.rotation;
-
-				SaveLoad.SerializeSaveFile<OriginalPartsSave>(mod, originalPartsSave,
-					Helper.CombinePaths(new string[]
-						{ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile}));
-			}
-			catch (Exception ex)
-			{
-				Logger.New("Error while trying to save original parts replaced by fuel injection system",
-					$"path of save file: {Helper.CombinePaths(new string[] {ModLoader.GetModSettingsFolder(mod), "fuelSystem", orignal_parts_saveFile})}",
-					ex);
-			}
-			*/
 		}
 
 		public void LoadChips()
 		{
-			var chipsSavePath = Helper.CombinePathsAndCreateIfNotExists(ModLoader.GetModSettingsFolder(mod), "fuelMaps");
+			var chipsSavePath =
+				Helper.CombinePathsAndCreateIfNotExists(ModLoader.GetModSettingsFolder(mod), "fuelMaps");
 
 			string[] chipSaveFiles = ChipSave.LoadSaveFiles(chipsSavePath, "chip_*_saveFile.json");
 			ChipPart.counter = 0;
@@ -188,42 +142,45 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 				var fileName = saveFilePath.Replace($"{chipsSavePath}\\", "");
 				var id = fileName.Replace("_saveFile.json", "");
 
-				ChipPart chipPart = new ChipPart(
-					id,
-					$"Chip {ChipPart.counter + 1}",
-					mod.smart_engine_module_part,
-					mod.partBaseInfo);
-				chips.Add(chipPart);
-				chipPart.SetDefaultPosition(Shop.SpawnLocation.Fleetari.Counter);
-
-				chipPart.AddPostInstallAction(delegate
-				{
-					FuelInjectionInstalled();
-					if (chipPart.IsProgrammed())
-					{
-						fuel_system_logic.installedChip = chipPart;
-					}
-
-					
-				});
-				chipPart.AddPostUninstallAction(delegate
-				{
-					FuelInjectionUninstalled();
-					fuel_system_logic.installedChip = null;
-				});
-				
+				mod.CreateChipPart(id, Shop.SpawnLocation.Fleetari.Counter);
 			}
 		}
 
-		public void Save()
-		{
-			chip_programmer.Save();
-			SaveOriginals();
-		}
+		internal bool replaced => fuelInjectionParts.replaced;
 
-		internal bool IsFixed()
+		public void AddChip(ChipPart chip)
 		{
-			return fuelInjectionParts.AreAllNewFixed(true) && chips.Any(chip => chip.InUse());
+			chips.Add(chip);
+
+			chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Install, delegate
+			{
+				foreach (var chipPart in chips.Where(chipPart =>
+					         !chipPart.installed && !chipPart.installBlocked))
+				{
+					chipPart.installBlocked = true;
+				}
+
+				if (!chip.inUse || !fuelInjectionParts.replaced)
+				{
+					return;
+				}
+				fuelInjectionParts.SetReplacedState(true);
+				fuel_system_logic.installedChip = chip;
+				fuelInjectionManifold.wiresVisible = true;
+				fuelInjectionParts.AddNewPart(chip, true);
+
+			});
+			chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, delegate
+			{
+				foreach (var chipPart in chips.Where(chipPart => chipPart.installBlocked))
+				{
+					chipPart.installBlocked = false;
+				}
+				fuelInjectionParts.SetReplacedState(false);
+				fuel_system_logic.installedChip = null;
+				fuelInjectionManifold.wiresVisible = false;
+				fuelInjectionParts.RemoveNewPart(chip, true);
+			});
 		}
 	}
 }

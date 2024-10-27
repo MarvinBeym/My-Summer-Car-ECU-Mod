@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MscModApi.Caching;
-
+using MscModApi.Parts;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -13,152 +13,105 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 	class Turbocharger : InfoPanelPage
 	{
 		private GameObject turbine;
-		private PlayMakerFSM turbocharger_bigFSM;
-		private FsmFloat turbocharger_big_rpm;
-		private FsmFloat turbocharger_big_pressure;
-		private FsmFloat turbocharger_big_max_boost;
-		private FsmFloat turbocharger_big_wear;
-		private FsmFloat turbocharger_big_exhaust_temp;
-		private FsmFloat turbocharger_big_intake_temp;
-		private FsmBool turbocharger_big_allInstalled;
+		private readonly bool modInstalled;
 
-		private PlayMakerFSM turbocharger_smallFSM;
-		private FsmFloat turbocharger_small_rpm;
-		private FsmFloat turbocharger_small_pressure;
-		private FsmFloat turbocharger_small_max_boost;
-		private FsmFloat turbocharger_small_wear;
-		private FsmFloat turbocharger_small_exhaust_temp;
-		private FsmFloat turbocharger_small_intake_temp;
-		private FsmBool turbocharger_small_allInstalled;
+		private GameObject gtTurboGameObject;
+		private GameObject racingTurboGameObject;
+		private GameObject installedTurbo;
+		private FsmFloat setBoost;
+		private FsmInt exhaustTemp;
+		private FsmInt intakeTemp;
+		private FsmInt rpm;
+		private FsmFloat boost;
 
 		public Turbocharger(string pageName, GameObject turbine, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,
 			infoPanelBaseInfo)
 		{
 			this.turbine = turbine;
 			turbineUsed = true;
+
+			modInstalled = ModLoader.IsModPresent("SatsumaTurboCharger");
+
+			if (modInstalled)
+			{
+
+			}
 		}
 
 		public override string[] guiTexts => new string[0];
 
 		public override void DisplayValues()
 		{
+			if (installedTurbo == null)
+			{
+				display_values["value_1"].text = "---";
+				display_values["value_2"].text = "---";
+				display_values["value_14"].text = "---";
+				display_values["value_15"].text = "---";
+				display_values["value_16"].text = "---";
+				return;
+			}
+
 			turbine.transform.Rotate(0f, 0f, 40 * Time.deltaTime);
 
-			if (turbocharger_bigFSM != null && turbocharger_big_allInstalled.Value)
-			{
-				if (turbocharger_big_pressure.Value >= 0f)
-				{
-					display_values["value_1"].text = turbocharger_big_pressure.Value.ToString("0.00");
-				}
-				else
-				{
-					display_values["value_1"].text = "0.00";
-				}
-
-				display_values["value_2"].text = turbocharger_big_max_boost.Value.ToString("0.00");
-				display_values["value_14"].text = turbocharger_big_exhaust_temp.Value.ToString("000");
-				display_values["value_15"].text = turbocharger_big_intake_temp.Value.ToString("000");
-				display_values["value_16"].text = turbocharger_big_rpm.Value.ToString("0");
-			}
-			else if (turbocharger_smallFSM != null && turbocharger_small_allInstalled.Value)
-			{
-				if (turbocharger_small_pressure.Value >= 0f)
-				{
-					display_values["value_1"].text = turbocharger_small_pressure.Value.ToString("0.00");
-				}
-				else
-				{
-					display_values["value_1"].text = "0.00";
-				}
-
-				display_values["value_2"].text = turbocharger_small_max_boost.Value.ToString("0.00");
-				display_values["value_14"].text = turbocharger_small_exhaust_temp.Value.ToString("000");
-				display_values["value_15"].text = turbocharger_small_intake_temp.Value.ToString("000");
-				display_values["value_16"].text = turbocharger_small_rpm.Value.ToString("0");
-			}
+			display_values["value_1"].text = boost.Value.ToString("0.00");
+			display_values["value_2"].text = setBoost.Value.ToString("0.00");
+			display_values["value_14"].text = exhaustTemp.Value > 0f ? exhaustTemp.Value.ToString("000") : "---"; //ToDo: requires implementation on turbo mod side
+			display_values["value_15"].text = intakeTemp.Value > 0f ? intakeTemp.Value.ToString("000") : "---"; //ToDo: requires implementation on turbo mod side
+			display_values["value_16"].text = rpm.Value.ToString("0");
 		}
 
 		public override void Handle()
 		{
-			if (ModLoader.IsModPresent("SatsumaTurboCharger"))
+			if (modInstalled)
 			{
-				if (turbocharger_bigFSM == null)
+				if (gtTurboGameObject == null)
 				{
-					CheckTurboBigFsm();
+					gtTurboGameObject = Cache.Find("GT Turbo(Clone)");
 				}
 
-				if (turbocharger_smallFSM == null)
+				if (racingTurboGameObject == null)
 				{
+					racingTurboGameObject = Cache.Find("Racing Turbo(Clone)");
+				}
+
+				bool installedTurboChanged = false;
+				if (gtTurboGameObject != null && gtTurboGameObject.transform.root == CarH.satsuma.transform && installedTurbo != gtTurboGameObject)
+				{
+					installedTurbo = gtTurboGameObject;
+					installedTurboChanged = true;
+				}
+
+				if (racingTurboGameObject != null && racingTurboGameObject.transform.root == CarH.satsuma.transform && installedTurbo != gtTurboGameObject)
+				{
+					installedTurbo = racingTurboGameObject;
+					installedTurboChanged = true;
+				}
+
+				if (installedTurboChanged)
+				{
+					PlayMakerFSM fsmPartData = installedTurbo.GetPlayMaker(FsmPartData.FsmName);
+					setBoost = fsmPartData.GetVariable<FsmFloat>("setBoost");
+					exhaustTemp = fsmPartData.GetVariable<FsmInt>("exhaustTemp");
+					intakeTemp = fsmPartData.GetVariable<FsmInt>("intakeTemp");
+					rpm = fsmPartData.GetVariable<FsmInt>("rpm");
+					boost = fsmPartData.GetVariable<FsmFloat>("boost");
+				}
+
+				if (
+					gtTurboGameObject != null && gtTurboGameObject.transform.root != CarH.satsuma.transform
+				    && racingTurboGameObject != null && racingTurboGameObject.transform.root != CarH.satsuma.transform
+				   )
+				{
+					installedTurbo = null;
 				}
 
 				DisplayValues();
 			}
 		}
 
-		private void CheckTurboBigFsm()
-		{
-			try
-			{
-				GameObject racingTurbo = Cache.Find("Racing Turbocharger(Clone)");
-				if (racingTurbo != null)
-				{
-					turbocharger_bigFSM = racingTurbo.GetComponent<PlayMakerFSM>();
-					if (turbocharger_bigFSM != null)
-					{
-						turbocharger_big_rpm = turbocharger_bigFSM.FsmVariables.FindFsmFloat("Rpm");
-						turbocharger_big_pressure = turbocharger_bigFSM.FsmVariables.FindFsmFloat("Pressure");
-						turbocharger_big_max_boost = turbocharger_bigFSM.FsmVariables.FindFsmFloat("Max boost");
-						turbocharger_big_wear = turbocharger_bigFSM.FsmVariables.FindFsmFloat("Wear");
-						turbocharger_big_exhaust_temp =
-							turbocharger_bigFSM.FsmVariables.FindFsmFloat("Exhaust temperature");
-						turbocharger_big_intake_temp =
-							turbocharger_bigFSM.FsmVariables.FindFsmFloat("Intake temperature");
-						turbocharger_big_allInstalled = turbocharger_bigFSM.FsmVariables.FindFsmBool("All installed");
-					}
-				}
-			}
-			catch
-			{
-			}
-		}
-
-		private void CheckTurboSmallFsm()
-		{
-			try
-			{
-				GameObject gtTurbo = Cache.Find("GT Turbocharger(Clone)");
-				if (gtTurbo != null)
-				{
-					turbocharger_smallFSM = gtTurbo.GetComponent<PlayMakerFSM>();
-					if (turbocharger_smallFSM != null)
-					{
-						turbocharger_small_rpm = turbocharger_smallFSM.FsmVariables.FindFsmFloat("Rpm");
-						turbocharger_small_pressure = turbocharger_smallFSM.FsmVariables.FindFsmFloat("Pressure");
-						turbocharger_small_max_boost = turbocharger_smallFSM.FsmVariables.FindFsmFloat("Max boost");
-						turbocharger_small_wear = turbocharger_smallFSM.FsmVariables.FindFsmFloat("Wear");
-						turbocharger_small_exhaust_temp =
-							turbocharger_smallFSM.FsmVariables.FindFsmFloat("Exhaust temperature");
-						turbocharger_small_intake_temp =
-							turbocharger_smallFSM.FsmVariables.FindFsmFloat("Intake temperature");
-						turbocharger_small_allInstalled =
-							turbocharger_smallFSM.FsmVariables.FindFsmBool("All installed");
-					}
-				}
-			}
-			catch
-			{
-			}
-		}
-
 		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
 		{
-			/*
-			switch (value)
-			{
-			    
-			}
-			playTouchSound(gameObjectHit);
-			*/
 		}
 	}
 }

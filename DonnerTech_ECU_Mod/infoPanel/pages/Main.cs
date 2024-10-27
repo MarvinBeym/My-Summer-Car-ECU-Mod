@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MscModApi.Caching;
-
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
@@ -193,7 +192,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 				float kmLeft = (fuelLeft.Value / Lper100km) * 100;
 				timerFuel = 0;
 				consumptionCounter = 0;
-				return new float[] {Lper100km, kmLeft};
+				return new float[] { Lper100km, kmLeft };
 			}
 
 			return null;

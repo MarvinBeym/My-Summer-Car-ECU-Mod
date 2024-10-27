@@ -1,8 +1,9 @@
 ﻿using MSCLoader;
 using UnityEngine;
 using HutongGames.PlayMaker;
-
 using System;
+using DonnerTech_ECU_Mod.fuelsystem;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Tools;
 
@@ -12,188 +13,127 @@ namespace DonnerTech_ECU_Mod
 	{
 		private DonnerTech_ECU_Mod mod;
 
-		private GameObject cruiseControlPanel;
+		private CruiseControlPanel cruiseControlPanel;
 		private TextMesh cruiseControlText;
 
 		private AudioSource dashButtonAudio;
-
-		private bool allPartsInstalled =>
-		(
-			mod.smart_engine_module_part.IsFixed() &&
-			mod.cable_harness_part.IsFixed() &&
-			mod.mounting_plate_part.IsFixed() &&
-			mod.fuel_system.IsFixed()
-		);
 
 		private RaycastHit hit;
 
 		//Cruise control
 		private int setCruiseControlSpeed = 0;
 		private bool cruiseControlModuleEnabled = false;
+		private GameObject switchMinus;
+		private GameObject switchPlus;
+		private GameObject switchSet;
+		private GameObject switchReset;
+
 
 		// Use this for initialization
 		void Start()
 		{
-			System.Collections.Generic.List<Mod> mods = ModLoader.LoadedMods;
-			Mod[] modsArr = mods.ToArray();
-			foreach (Mod mod in modsArr)
-			{
-				if (mod.Name == "DonnerTechRacing ECUs")
-				{
-					this.mod = (DonnerTech_ECU_Mod) mod;
-					break;
-				}
-			}
-
-			cruiseControlPanel = this.gameObject;
-			cruiseControlText = cruiseControlPanel.GetComponentInChildren<TextMesh>();
 		}
 
+		public void Init(CruiseControlPanel cruiseControlPanel)
+		{
+			this.cruiseControlPanel = cruiseControlPanel;
+
+			switchMinus = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Minus").gameObject;
+			switchPlus = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Plus").gameObject;
+			switchSet = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Set").gameObject;
+			switchReset = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Reset").gameObject;
+			cruiseControlText = cruiseControlPanel.transform
+				.FindChild("ECU-Mod_CruiseControlPanel_Set_Speed_Text")
+				.GetComponent<TextMesh>();
+		}
 		void Update()
 		{
-			if (CarH.hasPower && allPartsInstalled && mod.playerCurrentVehicle.Value == "Satsuma")
-			{
-				HandleButtonPresses();
-
-				SetCruiseControlSpeedText(setCruiseControlSpeed.ToString());
-				if (CarH.drivetrain.gear != 0 && cruiseControlModuleEnabled && CarH.carController.throttleInput <= 0f)
-				{
-					float valueToThrottle = 0f;
-					if (CarH.drivetrain.differentialSpeed >= (setCruiseControlSpeed - 0.5) &&
-					    CarH.drivetrain.differentialSpeed <= (setCruiseControlSpeed + 0.5))
-					{
-						valueToThrottle = 0.5f;
-					}
-					else if (CarH.drivetrain.differentialSpeed < (setCruiseControlSpeed - 0.5))
-					{
-						valueToThrottle = 1f;
-					}
-					else if (CarH.drivetrain.differentialSpeed >= (setCruiseControlSpeed + 0.5f))
-					{
-						valueToThrottle = 0f;
-					}
-					else if (CarH.drivetrain.differentialSpeed >= setCruiseControlSpeed)
-					{
-						valueToThrottle = 0.3f;
-					}
-
-					CarH.drivetrain.idlethrottle = valueToThrottle;
-					if (CarH.drivetrain.differentialSpeed < 19f || CarH.carController.brakeInput > 0f ||
-					    CarH.carController.clutchInput > 0f || CarH.carController.handbrakeInput > 0f)
-					{
-						ResetCruiseControl();
-					}
-				}
-				else if (cruiseControlModuleEnabled && CarH.carController.throttleInput <= 0f)
-				{
-					ResetCruiseControl();
-					setCruiseControlSpeed = 0;
-				}
-			}
-			else
+			if (!CarH.hasPower || !cruiseControlPanel.conditionsFulfilled || !CarH.playerInCar)
 			{
 				setCruiseControlSpeed = 0;
 				cruiseControlModuleEnabled = false;
 				SetCruiseControlSpeedText("");
+				return;
 			}
+
+			HandleButtonPresses();
+
+			SetCruiseControlSpeedText(cruiseControlPanel.set.ToString());
+
+			if (cruiseControlPanel.enabled
+				&& (
+					cruiseControlPanel.currentCarSpeed < CruiseControlPanel.MIN_SET
+					|| CarH.carController.brakeInput > 0f
+					|| CarH.carController.clutchInput > 0f
+					|| CarH.carController.handbrakeInput > 0f
+					|| CarH.drivetrain.gear <= 0
+					)
+				)
+			{
+				cruiseControlPanel.Reset();
+				return;
+			}
+
+			if (!cruiseControlPanel.enabled)
+			{
+				return;
+			}
+
+			float cruiseControlThrottle = Map(
+				(float)cruiseControlPanel.currentCarSpeed, 
+				0,
+				(float)cruiseControlPanel.set, 
+				1f, 
+				0.35f
+				);
+			CarH.drivetrain.idlethrottle = cruiseControlThrottle;
+
+			ModConsole.Print(cruiseControlThrottle);
+			return;
+		}
+		private float Map(float value, float fromLow, float fromHigh, float toLow, float toHigh)
+		{
+			return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 		}
 
 		private void HandleButtonPresses()
 		{
-			if (Camera.main != null)
+			Action actionToPerform = null;
+			string guiText = null;
+
+			if (switchMinus.IsLookingAt())
 			{
-				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					1 << LayerMask.NameToLayer("DontCollide")) != false)
+				actionToPerform = cruiseControlPanel.Decrease;
+				guiText = "decrease cruise speed";
+			}
+
+			if (switchPlus.IsLookingAt())
+			{
+				actionToPerform = cruiseControlPanel.Increase;
+				guiText = "increase cruise speed";
+			}
+
+			if (switchReset.IsLookingAt())
+			{
+				actionToPerform = cruiseControlPanel.Reset;
+				guiText = "reset/disable cruise control";
+			}
+
+			if (switchSet.IsLookingAt())
+			{
+				actionToPerform = cruiseControlPanel.Set;
+				guiText = "set/enable cruise control";
+			}
+
+			if (actionToPerform != null && guiText != null)
+			{
+				UserInteraction.GuiInteraction(guiText);
+				if (UserInteraction.UseButtonDown)
 				{
-					GameObject gameObjectHit;
-					bool foundObject = false;
-					string guiText = "";
-					gameObjectHit = hit.collider?.gameObject;
-					if (gameObjectHit != null)
-					{
-						Action actionToPerform = null;
-						//CruiseControl Panel
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Minus")
-						{
-							foundObject = true;
-							actionToPerform = DecreaseCruiseControl;
-							guiText = "decrease cruise speed";
-						}
-
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Plus")
-						{
-							foundObject = true;
-							actionToPerform = IncreaseCruiseControl;
-							guiText = "increase cruise speed";
-						}
-
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Set")
-						{
-							foundObject = true;
-							actionToPerform = SetCruiseControl;
-							guiText = "set/enable cruise control";
-						}
-
-						if (gameObjectHit.name == "ECU-Mod_CruiseControlPanel_Switch_Reset")
-						{
-							foundObject = true;
-							actionToPerform = ResetCruiseControl;
-							guiText = "reset/disable cruise control";
-						}
-
-						if (foundObject)
-						{
-							UserInteraction.GuiInteraction(guiText);
-							if (UserInteraction.UseButtonDown)
-							{
-								actionToPerform.Invoke();
-								gameObjectHit.PlayTouch();
-							}
-						}
-					}
+					actionToPerform.Invoke();
+					cruiseControlPanel.gameObject.PlayTouch();
 				}
 			}
-		}
-
-		private void DecreaseCruiseControl()
-		{
-			if (setCruiseControlSpeed > 20)
-			{
-				setCruiseControlSpeed -= 2;
-			}
-		}
-
-		private void IncreaseCruiseControl()
-		{
-			setCruiseControlSpeed += 2;
-		}
-
-		private void SetCruiseControl()
-		{
-			if (CarH.drivetrain.differentialSpeed >= 20)
-			{
-				int speedToSet = Convert.ToInt32(CarH.drivetrain.differentialSpeed);
-				if (speedToSet % 2 != 0)
-				{
-					speedToSet--;
-				}
-
-				setCruiseControlSpeed = speedToSet;
-
-				SetCruiseControlSpeedTextColor(Color.green);
-				cruiseControlModuleEnabled = true;
-			}
-		}
-
-		private void ResetCruiseControl()
-		{
-			if (!cruiseControlModuleEnabled)
-			{
-				setCruiseControlSpeed = 0;
-			}
-
-			SetCruiseControlSpeedTextColor(Color.white);
-			cruiseControlModuleEnabled = false;
 		}
 
 		private void SetCruiseControlSpeedText(string toSet)
@@ -201,9 +141,10 @@ namespace DonnerTech_ECU_Mod
 			cruiseControlText.text = toSet;
 		}
 
-		private void SetCruiseControlSpeedTextColor(Color colorToSet)
+		public Color textColor
 		{
-			cruiseControlText.color = colorToSet;
+			get => cruiseControlText.color;
+			set => cruiseControlText.color = value;
 		}
 	}
 }

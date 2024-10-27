@@ -21,7 +21,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		public Modules(string pageName, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,
 			infoPanelBaseInfo)
 		{
-			this.smartEngineLogic = mod.smart_engine_module_logic;
+			smartEngineLogic = mod.smartEngineModule.logic;
 			this.needle = needle;
 			needleUsed = true;
 

@@ -4,7 +4,7 @@ using System;
 using MscModApi;
 using MscModApi.Caching;
 using MscModApi.Parts;
-
+using MscModApi.Parts.EventSystem;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
@@ -21,7 +21,7 @@ namespace DonnerTech_ECU_Mod
 			Als,
 			TwoStep,
 		}
-
+		
 		private Part part;
 		private Part absModulePart;
 		private Part espModulePart;
@@ -71,13 +71,13 @@ namespace DonnerTech_ECU_Mod
 
 		void Update()
 		{
-			if (mod.smart_engine_module_part.IsFixed() && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
+			if (mod.smartEngineModule.bolted && !twoStepModuleEnabled.Value && CarH.drivetrain.maxRPM != 8500)
 			{
 				CarH.drivetrain.maxRPM = 8500;
 			}
 
-			if (!CarH.hasPower || !CarH.playerInCar || !mod.cable_harness_part.IsFixed() ||
-			    !mod.mounting_plate_part.IsFixed())
+			if (!CarH.hasPower || !CarH.playerInCar || !mod.cableHarness.bolted ||
+			    !mod.mountingPlate.bolted)
 			{
 				return;
 			}
@@ -130,10 +130,11 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		internal void Init(Part smart_engine_module_part, Part absModulePart, Part espModulePart, Part tcsModulePart)
+		internal void Init(Part smartEngineModule, Part absModulePart, Part espModulePart, Part tcsModulePart)
 		{
-			part = smart_engine_module_part;
-			part.AddPostUninstallAction(OnUninstall);
+			part = smartEngineModule;
+
+			part.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, OnUninstall);
 
 			this.absModulePart = absModulePart;
 			this.espModulePart = espModulePart;
@@ -204,7 +205,7 @@ namespace DonnerTech_ECU_Mod
 
 		private bool checkStatePartInstalled(bool state)
 		{
-			if (!this.part.IsFixed())
+			if (!this.part.bolted)
 			{
 				state = false;
 			}

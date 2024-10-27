@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# IDE0002: Memberzugriff vereinfachen
+dotnet_diagnostic.IDE0002.severity = none
