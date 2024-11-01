@@ -16,5 +16,10 @@ namespace DonnerTech_ECU_Mod.part.Module
 		protected Module(GamePart parent) : base(parent, DonnerTech_ECU_Mod.partBaseInfo)
 		{
 		}
+
+		public void Toggle()
+		{
+			enabled = !enabled;
+		}
 	}
 }
