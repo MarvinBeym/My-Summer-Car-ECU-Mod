@@ -67,14 +67,6 @@ namespace DonnerTech_ECU_Mod
 		public bool lightsensor_enabled = false;
 		private bool lightsensor_wasEnabled = false;
 
-		private MeshRenderer shift_indicator_renderer;
-		private Gradient shift_indicator_gradient;
-
-		private float shift_indicator_blink_timer = 0;
-		public int shift_indicator_baseLine = 3500;
-		public int shift_indicator_greenLine = 6500;
-		public int shift_indicator_redLine = 7500;
-
 		private void Start()
 		{
 			try
@@ -148,7 +140,6 @@ namespace DonnerTech_ECU_Mod
 				}
 				else
 				{
-					HandleShiftIndicator();
 					HandleKeybinds();
 					HandleButtonPresses();
 
@@ -180,7 +171,6 @@ namespace DonnerTech_ECU_Mod
 			{
 				try
 				{
-					shift_indicator_renderer.material.color = Color.black;
 					infoPanel.needleRotation = 0;
 					rpmIncrementer = 0;
 					rpmDecrementer = 9000;
@@ -267,65 +257,6 @@ namespace DonnerTech_ECU_Mod
 				infoPanel.ClearDisplayValues();
 
 				infoPanel.isBooting = true;
-			}
-		}
-
-		public void SetupShiftIndicator()
-		{
-			shift_indicator_gradient = new Gradient();
-			GradientColorKey[] colorKey = new GradientColorKey[3];
-			colorKey[0].color = new Color(1.0f, 0.64f, 0.0f); //Orange
-			colorKey[0].time = (float) shift_indicator_baseLine / 10000;
-
-			colorKey[1].color = Color.green;
-			colorKey[1].time = (float) shift_indicator_greenLine / 10000;
-
-			colorKey[2].color = Color.red;
-			colorKey[2].time = (float) shift_indicator_redLine / 10000;
-
-			GradientAlphaKey[] alphaKey = new GradientAlphaKey[3];
-			alphaKey[0].alpha = 1f - (float) shift_indicator_baseLine / 10000;
-			alphaKey[0].time = (float) shift_indicator_baseLine / 10000;
-
-			alphaKey[1].alpha = 1f - (float) shift_indicator_greenLine / 10000;
-			alphaKey[1].time = (float) shift_indicator_greenLine / 10000;
-
-			alphaKey[2].alpha = 1f - (float) shift_indicator_redLine / 10000;
-			alphaKey[2].time = (float) shift_indicator_redLine / 10000;
-
-			shift_indicator_gradient.SetKeys(colorKey, alphaKey);
-		}
-
-		private void HandleShiftIndicator()
-		{
-			if (CarH.running)
-			{
-				float gradientValue = CarH.drivetrain.rpm / 10000;
-
-				if (CarH.drivetrain.rpm >= 7500)
-				{
-					shift_indicator_blink_timer += Time.deltaTime;
-
-					if (shift_indicator_blink_timer <= 0.15f)
-					{
-						shift_indicator_renderer.material.color = Color.black;
-					}
-
-					if (shift_indicator_blink_timer >= 0.3f)
-					{
-						shift_indicator_blink_timer = 0;
-
-						shift_indicator_renderer.material.color = shift_indicator_gradient.Evaluate(gradientValue);
-					}
-				}
-				else
-				{
-					shift_indicator_renderer.material.color = shift_indicator_gradient.Evaluate(gradientValue);
-				}
-			}
-			else
-			{
-				shift_indicator_renderer.material.color = Color.black;
 			}
 		}
 
@@ -599,9 +530,6 @@ namespace DonnerTech_ECU_Mod
 			panel = this.gameObject;
 			this.infoPanel = infoPanel;
 			this.mod = mod;
-
-			shift_indicator_renderer = panel.transform.FindChild("shiftIndicator").GetComponent<MeshRenderer>();
-			SetupShiftIndicator();
 		}
 
 		public string GetSelectedSetting()

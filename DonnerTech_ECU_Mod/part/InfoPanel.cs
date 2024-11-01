@@ -39,6 +39,14 @@ namespace DonnerTech_ECU_Mod.part
 		public bool isBooted = false;
 		public bool isBooting = false;
 
+		//ShiftIndicator
+		public int shiftIndicatorBaseLine = 3500;
+		public int shiftIndicatorGreenLine = 6500;
+		public int shiftIndicatorRedLine = 7500;
+		public  ShiftIndicatorLogic shiftIndicatorLogic;
+
+
+
 		public float needleRotation
 		{
 			set => needleObject.transform.localRotation = Quaternion.Euler(new Vector3(-90f, value, 0));
@@ -77,6 +85,13 @@ namespace DonnerTech_ECU_Mod.part
 			LoadSpriteOverride(mod, assetBundle);
 
 			needleObject = transform.FindChild("needle").gameObject;
+
+			logic = AddEventBehaviour<InfoPanel_Logic>(PartEvent.Type.Install);
+			logic.Init(this, mod, assetBundle);
+
+			shiftIndicatorLogic = AddEventBehaviour<ShiftIndicatorLogic>(PartEvent.Type.Install);
+			shiftIndicatorLogic.Init(this);
+
 			InfoPanelBaseInfo infoPanelBaseInfo = new InfoPanelBaseInfo(mod, assetBundle, displayValues, logic);
 			pages = new List<InfoPanelPage>
 			{
@@ -97,9 +112,6 @@ namespace DonnerTech_ECU_Mod.part
 			{
 				pages.Add(new Airride("airride_page", this, infoPanelBaseInfo));
 			}
-
-			logic = AddEventBehaviour<InfoPanel_Logic>(PartEvent.Type.Install);
-			logic.Init(this, mod, assetBundle);
 		}
 
 		private Dictionary<string, TextMesh> LoadDisplayValues()

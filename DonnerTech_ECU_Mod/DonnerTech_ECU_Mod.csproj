@@ -114,6 +114,7 @@
     <Compile Include="Parts\ChipPart.cs" />
     <Compile Include="Parts\ChipSave.cs" />
     <Compile Include="ReverseCamera_Logic.cs" />
+    <Compile Include="ShiftIndicatorLogic.cs" />
     <Compile Include="SmartEngineModule_Logic.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

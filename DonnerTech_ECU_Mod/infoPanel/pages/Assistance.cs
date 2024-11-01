@@ -38,8 +38,8 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		{
 			display_values["value_1"].text = logic.rainsensor_enabled.ToOnOff();
 			display_values["value_2"].text = logic.lightsensor_enabled.ToOnOff();
-			display_values["value_3"].text = logic.shift_indicator_greenLine.ToString();
-			display_values["value_4"].text = logic.shift_indicator_redLine.ToString();
+			display_values["value_3"].text = infoPanel.shiftIndicatorGreenLine.ToString();
+			display_values["value_4"].text = infoPanel.shiftIndicatorRedLine.ToString();
 			switch (logic.GetSelectedSetting())
 			{
 				case "Select Shift Indicator green line":
@@ -71,10 +71,10 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					switch (action)
 					{
 						case "Select Shift Indicator green line":
-							logic.shift_indicator_greenLine += 100;
+							infoPanel.shiftIndicatorGreenLine += 100;
 							break;
 						case "Select Shift Indicator red line":
-							logic.shift_indicator_redLine += 100;
+							infoPanel.shiftIndicatorRedLine += 100;
 							break;
 					}
 
@@ -83,32 +83,32 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					switch (action)
 					{
 						case "Select Shift Indicator green line":
-							logic.shift_indicator_greenLine -= 100;
+							infoPanel.shiftIndicatorGreenLine -= 100;
 							break;
 						case "Select Shift Indicator red line":
-							logic.shift_indicator_redLine -= 100;
+							infoPanel.shiftIndicatorRedLine -= 100;
 							break;
 					}
 
 					break;
 			}
 
-			if (logic.shift_indicator_greenLine >= logic.shift_indicator_redLine)
+			if (infoPanel.shiftIndicatorGreenLine >= infoPanel.shiftIndicatorRedLine)
 			{
-				logic.shift_indicator_greenLine -= 100;
+				infoPanel.shiftIndicatorGreenLine -= 100;
 			}
 
-			if (logic.shift_indicator_greenLine <= logic.shift_indicator_baseLine)
+			if (infoPanel.shiftIndicatorGreenLine <= infoPanel.shiftIndicatorBaseLine)
 			{
-				logic.shift_indicator_greenLine += 100;
+				infoPanel.shiftIndicatorGreenLine += 100;
 			}
 
-			if (logic.shift_indicator_redLine <= logic.shift_indicator_greenLine)
+			if (infoPanel.shiftIndicatorRedLine <= infoPanel.shiftIndicatorGreenLine)
 			{
-				logic.shift_indicator_redLine += 100;
+				infoPanel.shiftIndicatorRedLine += 100;
 			}
 
-			logic.SetupShiftIndicator();
+			infoPanel.shiftIndicatorLogic.InitGradient();
 		}
 
 		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
