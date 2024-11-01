@@ -33,8 +33,8 @@ namespace DonnerTech_ECU_Mod.part
 
 		public bool lightSensorEnabled
 		{
-			get;
-			set;
+			get => lightSensorLogic.enabled;
+			set => rainSensorLogic.enabled = value;
 		}
 
 		public bool rainSensorEnabled
