@@ -111,7 +111,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			infoPanel.shiftIndicatorLogic.InitGradient();
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			switch (value)
 			{
@@ -140,8 +140,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					logic.SetSelectedSetting("Select Shift Indicator red line");
 					break;
 			}
-
-			gameObjectHit.PlayTouch();
 		}
 	}
 }

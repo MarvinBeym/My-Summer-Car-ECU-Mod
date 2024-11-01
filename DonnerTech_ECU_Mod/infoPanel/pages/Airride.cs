@@ -160,7 +160,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			DisplayValues();
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			switch (value)
 			{
@@ -183,8 +183,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					playSound = false;
 					break;
 			}
-
-			gameObjectHit.PlayTouch();
 		}
 	}
 }

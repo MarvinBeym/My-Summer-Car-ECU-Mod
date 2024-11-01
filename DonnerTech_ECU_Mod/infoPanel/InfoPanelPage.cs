@@ -91,7 +91,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public abstract string[] guiTexts { get; }
 		public abstract void Handle();
-		public abstract void Pressed_Display_Value(string value, GameObject gameObjectHit);
+		public abstract void Pressed_Display_Value(string value);
 		public abstract void DisplayValues();
 
 		protected string ConvertFloatToWear(float value)

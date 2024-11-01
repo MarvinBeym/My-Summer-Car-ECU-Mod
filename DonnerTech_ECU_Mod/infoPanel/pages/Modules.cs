@@ -110,7 +110,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			needle.transform.localRotation = Quaternion.Euler(new Vector3(-90f, GetRPMRotation(-1f), 0));
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			switch (value)
 			{
@@ -139,8 +139,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					logic.SetSelectedSetting("Select 2Step RPM");
 					break;
 			}
-
-			gameObjectHit.PlayTouch();
 		}
 	}
 }

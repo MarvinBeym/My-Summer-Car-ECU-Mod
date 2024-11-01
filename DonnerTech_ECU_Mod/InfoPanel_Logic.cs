@@ -5,6 +5,7 @@ using MSCLoader;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
@@ -102,27 +103,21 @@ namespace DonnerTech_ECU_Mod
 			}
 			else
 			{
-				try
-				{
-					infoPanel.needleRotation = 0;
-					rpmIncrementer = 0;
-					rpmDecrementer = 9000;
+				infoPanel.needleRotation = 0;
+				rpmIncrementer = 0;
+				rpmDecrementer = 9000;
 
-					tenIncrementer = 0;
-					hundredIncrementer = 0;
-					thousandIncrementer = 0;
+				tenIncrementer = 0;
+				hundredIncrementer = 0;
+				thousandIncrementer = 0;
 
-					infoPanel.SetAllRendererEnabledState(false);
+				infoPanel.SetAllRendererEnabledState(false);
 
-					infoPanel.ClearDisplayValues();
+				infoPanel.ClearDisplayValues();
 
-					infoPanel.isBooting = false;
-					infoPanel.isBooted = false;
-					currentPage = 0;
-				}
-				catch
-				{
-				}
+				infoPanel.isBooting = false;
+				infoPanel.isBooted = false;
+				currentPage = 0;
 			}
 		}
 
@@ -182,40 +177,45 @@ namespace DonnerTech_ECU_Mod
 
 		public void HandleTouchPresses(string[] guiTexts, InfoPanelPage page)
 		{
+			int displayValueNumber = RaycastGetDisplayValueNumber();
+
+			if (displayValueNumber < 0)
+			{
+				return;
+			}
+
+			string valueToPass = guiTexts[displayValueNumber - 1];
+			string guiText = guiTexts[displayValueNumber - 1];
+
+			UserInteraction.GuiInteraction(guiText);
+			if (UserInteraction.UseButtonDown || UserInteraction.LeftMouseDown)
+			{
+				page.Pressed_Display_Value(valueToPass);
+				infoPanel.gameObject.PlayTouch();
+			}
+		}
+
+		private int RaycastGetDisplayValueNumber()
+		{
 			if (Camera.main != null)
 			{
-				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f,
-					    1 << LayerMask.NameToLayer("DontCollide")) != false)
+				if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 1f, 1 << LayerMask.NameToLayer("DontCollide")))
 				{
-					GameObject gameObjectHit;
-					bool foundObject = false;
-					string guiText = "";
-					gameObjectHit = hit.collider?.gameObject;
-					if (gameObjectHit != null)
+					GameObject gameObjectHit = hit.collider?.gameObject;
+					if (gameObjectHit != null && gameObjectHit.name.StartsWith("displayValue_"))
 					{
-						string valueToPass = null;
-						for (int i = 1; i <= guiTexts.Length; i++)
+						if (!int.TryParse(gameObjectHit.name.Replace("displayValue_", ""), NumberStyles.Integer,
+							    NumberFormatInfo.CurrentInfo, out var displayValueNumber))
 						{
-							if (gameObjectHit.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
-							{
-								valueToPass = guiTexts[i - 1];
-								guiText = guiTexts[i - 1];
-								foundObject = true;
-								break;
-							}
+							return -1;
 						}
 
-						if (foundObject)
-						{
-							UserInteraction.GuiInteraction(guiText);
-							if (UserInteraction.UseButtonDown || UserInteraction.LeftMouseDown)
-							{
-								page.Pressed_Display_Value(valueToPass, gameObjectHit);
-							}
-						}
+						return displayValueNumber;
 					}
 				}
 			}
+
+			return -1;
 		}
 
 		private void HandleButtonPresses()

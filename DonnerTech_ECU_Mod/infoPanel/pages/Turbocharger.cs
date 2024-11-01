@@ -110,7 +110,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			}
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 		}
 	}
