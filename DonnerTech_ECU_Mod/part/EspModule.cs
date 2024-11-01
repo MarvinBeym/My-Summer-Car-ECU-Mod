@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.part
 {
-	public class EspModule : Module.Module
+	public class EspModule : Module.ModulePart
 	{
 		protected override string partId => "esp_module";
 		protected override string partName => "ESP Module";

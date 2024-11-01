@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.part
 {
-	public class AbsModule : Module.Module
+	public class AbsModule : Module.ModulePart
 	{
 		protected override string partId => "abs_module";
 		protected override string partName => "ABS Module";

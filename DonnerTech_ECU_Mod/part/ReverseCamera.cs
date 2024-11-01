@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.part
 {
-	public class ReverseCamera : Module.Module
+	public class ReverseCamera : Module.ModulePart
 	{
 		protected override string partId => "reverse_camera";
 		protected override string partName => "Reverse Camera";

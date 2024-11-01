@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DonnerTech_ECU_Mod.part
 {
-	public class TcsModule : Module.Module
+	public class TcsModule : Module.ModulePart
 	{
 		protected override string partId => "tcs_module";
 		protected override string partName => "TCS Module";
