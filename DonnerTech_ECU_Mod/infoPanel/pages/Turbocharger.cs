@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Parts;
 using UnityEngine;
@@ -24,8 +25,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmInt rpm;
 		private FsmFloat boost;
 
-		public Turbocharger(string pageName, GameObject turbine, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,
-			infoPanelBaseInfo)
+		public Turbocharger(string pageName, InfoPanel infoPanel, GameObject turbine, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			this.turbine = turbine;
 			turbineUsed = true;

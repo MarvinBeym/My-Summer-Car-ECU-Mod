@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmFloat wearSpark3;
 		private FsmFloat wearSpark4;
 
-		public Faults2(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Faults2(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			PlayMakerFSM race_radiatorFSM = Cache.Find("Racing Radiator").GetComponent<PlayMakerFSM>();
 			PlayMakerFSM radiatorFSM = Cache.Find("Radiator").GetComponent<PlayMakerFSM>();

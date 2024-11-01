@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmFloat wearHeadlightBulbLeft;
 		private FsmFloat wearHeadlightBulbRight;
 
-		public Faults(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Faults(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			PlayMakerFSM mechanicalWear = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear")
 				.GetComponent<PlayMakerFSM>();

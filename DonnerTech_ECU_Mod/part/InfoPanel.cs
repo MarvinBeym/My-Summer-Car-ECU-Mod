@@ -80,17 +80,17 @@ namespace DonnerTech_ECU_Mod.part
 			InfoPanelBaseInfo infoPanelBaseInfo = new InfoPanelBaseInfo(mod, assetBundle, displayValues, logic);
 			pages = new List<InfoPanelPage>
 			{
-				new Main("main_page", needleObject, infoPanelBaseInfo),
-				new Modules("modules_page", needleObject, infoPanelBaseInfo),
-				new Faults("faults_page", infoPanelBaseInfo),
-				new Faults2("faults2_page", infoPanelBaseInfo),
-				new Assistance("assistance_page", infoPanelBaseInfo),
+				new Main("main_page", this, needleObject, infoPanelBaseInfo),
+				new Modules("modules_page", this, needleObject, infoPanelBaseInfo),
+				new Faults("faults_page", this, infoPanelBaseInfo),
+				new Faults2("faults2_page", this, infoPanelBaseInfo),
+				new Assistance("assistance_page", this, infoPanelBaseInfo),
 			};
 
 
 			if (mod.turboModInstalled)
 			{
-				pages.Add(new Turbocharger("turbocharger_page", transform.FindChild("turbine").gameObject, infoPanelBaseInfo));
+				pages.Add(new Turbocharger("turbocharger_page", this, transform.FindChild("turbine").gameObject, infoPanelBaseInfo));
 			}
 
 			if ((bool)mod.enableAirrideInfoPanelPage.Value)

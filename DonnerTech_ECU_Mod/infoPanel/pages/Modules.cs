@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Tools;
 using UnityEngine;
@@ -18,8 +19,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmInt odometerKM;
 
 
-		public Modules(string pageName, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,
-			infoPanelBaseInfo)
+		public Modules(string pageName, InfoPanel infoPanel, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			smartEngineLogic = mod.smartEngineModule.logic;
 			this.needle = needle;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Tools;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
 	class Assistance : InfoPanelPage
 	{
-		public Assistance(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Assistance(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 		}
 

@@ -6,6 +6,7 @@ using System.Text;
 using MscModApi.Caching;
 using MscModApi.Tools;
 using UnityEngine;
+using DonnerTech_ECU_Mod.part;
 
 namespace DonnerTech_ECU_Mod.info_panel_pages
 {
@@ -41,7 +42,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmBool carb_installed;
 		private FsmFloat carbAdjust;
 
-		public Page4(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Page4(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			PlayMakerFSM rockershaftFSM = Cache.Find("RockerShaft").GetComponent<PlayMakerFSM>();
 			cylinder1exhaust = rockershaftFSM.FsmVariables.FindFsmFloat("cyl1exhaust");

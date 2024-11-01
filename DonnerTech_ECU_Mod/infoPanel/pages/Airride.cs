@@ -107,7 +107,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			return;
 		}
 
-		public Airride(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Airride(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			airrideLogic = infoPanel.AddEventBehaviour<Airride_Logic>(PartEvent.Type.Install);
 			airrideLogic.Init(this, mod);

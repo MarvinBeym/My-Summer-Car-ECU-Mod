@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using UnityEngine;
 using MscModApi.Tools;
@@ -32,6 +33,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 	{
 		public string pageName;
 		public Sprite pageSprite;
+		protected InfoPanel infoPanel;
 		protected DonnerTech_ECU_Mod mod;
 		protected InfoPanel_Logic logic;
 		protected Dictionary<string, TextMesh> display_values;
@@ -44,9 +46,10 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private const float needle_minAngle = 0;
 		private const float needle_maxRPM = 9000;
 
-		public InfoPanelPage(string pageName, InfoPanelBaseInfo infoPanelBaseInfo)
+		public InfoPanelPage(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo)
 		{
 			this.pageName = pageName;
+			this.infoPanel = infoPanel;
 			this.mod = infoPanelBaseInfo.mod;
 			this.display_values = infoPanelBaseInfo.display_values;
 			this.logic = infoPanelBaseInfo.logic;
