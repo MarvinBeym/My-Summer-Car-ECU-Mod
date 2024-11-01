@@ -23,10 +23,17 @@ namespace DonnerTech_ECU_Mod.part
 			}, 0.8f, 8);
 		}
 
-		public override bool enabled 
-		{ 
+		public override bool enabled
+		{
 			get => CarH.carController.ABS;
-			set => CarH.carController.ABS = value;
+			set
+			{
+				if (!installedOnCar || !bolted)
+				{
+					value = false;
+				}
+				CarH.carController.ABS = value;
+			}
 		}
 	}
 }

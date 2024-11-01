@@ -26,7 +26,14 @@ namespace DonnerTech_ECU_Mod.part
 		public override bool enabled
 		{
 			get => CarH.carController.TCS;
-			set => CarH.carController.TCS = value;
+			set
+			{
+				if (!installedOnCar || !bolted)
+				{
+					value = false;
+				}
+				CarH.carController.TCS = value;
+			}
 		}
 	}
 }

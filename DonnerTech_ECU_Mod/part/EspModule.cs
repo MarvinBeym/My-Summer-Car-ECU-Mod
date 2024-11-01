@@ -27,7 +27,14 @@ namespace DonnerTech_ECU_Mod.part
 		public override bool enabled
 		{
 			get => CarH.carController.ESP;
-			set => CarH.carController.ESP = value;
+			set
+			{
+				if (!installedOnCar || !bolted)
+				{
+					value = false;
+				}
+				CarH.carController.ESP = value;
+			}
 		}
 	}
 }

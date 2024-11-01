@@ -44,6 +44,10 @@ namespace DonnerTech_ECU_Mod.part
 			get => camera.enabled;
 			set
 			{
+				if (!installedOnCar || !bolted || !infoPanel.installed || !infoPanel.installedOnCar || !infoPanel.isBooted)
+				{
+					value = false;
+				}
 				infoPanel.reverseCameraRenderer.enabled = value;
 				camera.enabled = value;
 				light.enabled = value;
