@@ -249,6 +249,7 @@ namespace DonnerTech_ECU_Mod
 			cableHarness = new CableHarness(mountingPlate);
 
 			infoPanel = new InfoPanel(dashboard, this, assetBundle);
+			infoPanel = new InfoPanel(dashboard, absModule, espModule, tcsModule, this, assetBundle);
 
 			rainLightSensorboard = new RainLightSensorBoard(dashboard);
 
