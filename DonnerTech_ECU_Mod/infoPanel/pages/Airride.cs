@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
+using MscModApi.Parts.EventSystem;
 using MscModApi.Tools;
 using UnityEngine;
 
@@ -105,9 +107,9 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			return;
 		}
 
-		public Airride(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Airride(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
 		{
-			airrideLogic = logic.panel.AddComponent<Airride_Logic>();
+			airrideLogic = infoPanel.AddEventBehaviour<Airride_Logic>(PartEvent.Type.Install);
 			airrideLogic.Init(this, mod);
 
 			airride_audioSource = CarH.satsuma.AddComponent<AudioSource>();
