@@ -22,9 +22,9 @@ namespace DonnerTech_ECU_Mod.part.Module
 
 		private void SetupEventListeners()
 		{
-			AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, Disable);
-			AddEventListener(PartEvent.Time.Post, PartEvent.Type.Unbolted, Disable);
-			AddEventListener(PartEvent.Time.Post, PartEvent.Type.UninstallFromCar, Disable);
+			AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, Disable, false);
+			AddEventListener(PartEvent.Time.Post, PartEvent.Type.Unbolted, Disable, false);
+			AddEventListener(PartEvent.Time.Post, PartEvent.Type.UninstallFromCar, Disable, false);
 		}
 
 		protected void Disable()
