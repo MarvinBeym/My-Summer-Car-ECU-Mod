@@ -84,6 +84,7 @@
     <Compile Include="part\FuelRail.cs" />
     <Compile Include="part\FuelPumpCover.cs" />
     <Compile Include="part\FuelInjectionManifold.cs" />
+    <Compile Include="part\Module\Module.cs" />
     <Compile Include="part\NullGamePart.cs" />
     <Compile Include="part\RainLightSensorBoard.cs" />
     <Compile Include="part\CableHarness.cs" />
