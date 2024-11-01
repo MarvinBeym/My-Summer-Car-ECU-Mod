@@ -32,11 +32,6 @@ namespace DonnerTech_ECU_Mod.part.Module
 
 			logic = AddEventBehaviour<ReverseCamera_Logic>(PartEvent.Type.InstallOnCar);
 			logic.Init(this);
-
-			AddEventListener(PartEvent.Time.Pre, PartEvent.Type.Unbolted, () =>
-			{
-				enabled = false;
-			});
 		}
 
 		public override bool enabled
