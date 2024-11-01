@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using DonnerTech_ECU_Mod.info_panel_pages;
 using DonnerTech_ECU_Mod.part.Module;
+using HutongGames.PlayMaker;
 using MSCLoader;
+using MscModApi.Caching;
 using MscModApi.Parts;
 using MscModApi.Parts.EventSystem;
 using MscModApi.Parts.ReplacePart;
@@ -44,13 +47,16 @@ namespace DonnerTech_ECU_Mod.part
 		public int shiftIndicatorBaseLine = 3500;
 		public int shiftIndicatorGreenLine = 6500;
 		public int shiftIndicatorRedLine = 7500;
-		public  ShiftIndicatorLogic shiftIndicatorLogic;
+		public ShiftIndicatorLogic shiftIndicatorLogic;
 
 		public AbsModule absModule;
 		public EspModule espModule;
 		public TcsModule tcsModule;
 		public readonly RainLightSensorBoard rainLightSensorboard;
 
+
+		//Scale workaround stuff
+		private bool infoPanelInHand = false;
 
 		public float needleRotation
 		{
@@ -64,8 +70,9 @@ namespace DonnerTech_ECU_Mod.part
 			this.espModule = espModule;
 			this.tcsModule = tcsModule;
 			this.rainLightSensorboard = rainLightSensorboard;
-			AddEventListener(PartEvent.Time.Post, PartEvent.Type.Install,
-				delegate { transform.localScale = new Vector3(1.5f, 1.5f, 1.5f); });
+
+			SetupScaleFix();
+
 			AddScrews(new[]
 			{
 				new Screw(new Vector3(0f, -0.025f, -0.082f), new Vector3(180, 0, 0))
@@ -259,11 +266,6 @@ namespace DonnerTech_ECU_Mod.part
 
 		public void Handle()
 		{
-			if (transform.localScale.x < 1.5f)
-			{
-				transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-			}
-
 			if (!installed)
 			{
 				if (!workaroundChildDisableDone)
@@ -287,6 +289,65 @@ namespace DonnerTech_ECU_Mod.part
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Should be rather moved to MscModApi (Already exists in MscModApi but not publicly accessible and only available in GamePart class)
+		/// </summary>
+		private void AddActionAsFirst(FsmState fsmState, Action action)
+		{
+			if (fsmState == null)
+			{
+				return;
+			}
+
+			var actions = new List<FsmStateAction>(fsmState.Actions);
+			actions.Insert(0, new FsmAction(action));
+			fsmState.Actions = actions.ToArray();
+		}
+
+		/// <summary>
+		/// Should be rather moved to MscModApi (Already exists in MscModApi but not publicly accessible and only available in GamePart class)
+		/// </summary>
+		private void AddActionAsLast(FsmState fsmState, Action action)
+		{
+			if (fsmState == null)
+			{
+				return;
+			}
+
+			var actions = new List<FsmStateAction>(fsmState.Actions) { new FsmAction(action) };
+			fsmState.Actions = actions.ToArray();
+		}
+
+
+		/// <summary>
+		/// Should be fixed by actually scaling the 3D-model in the future so it stays as 1.0 in Unity
+		/// </summary>
+		private void SetupScaleFix()
+		{
+			GameObject hand = Cache.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera/1Hand_Assemble/Hand");
+
+			PlayMakerFSM pickUpFsm = hand.FindFsm("PickUp");
+			FsmGameObject pickedGameObject = pickUpFsm.FsmVariables.GetFsmGameObject("PickedObject");
+			if (!pickUpFsm.Fsm.Initialized)
+			{
+				pickUpFsm.InitializeFSM();
+			}
+			FsmState waitState = pickUpFsm.FindState("Wait");
+
+
+			AddActionAsFirst(waitState, () =>
+			{
+				infoPanelInHand = pickedGameObject.Value == gameObject;
+			});
+			AddActionAsLast(waitState, () =>
+			{
+				if (infoPanelInHand)
+				{
+					transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+				}
+			});
 		}
 	}
 }
