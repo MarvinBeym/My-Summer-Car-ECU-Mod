@@ -248,12 +248,13 @@ namespace DonnerTech_ECU_Mod
 
 			cableHarness = new CableHarness(mountingPlate);
 
-			infoPanel = new InfoPanel(dashboard, absModule, espModule, tcsModule, this, assetBundle);
+			rainLightSensorboard = new RainLightSensorBoard(dashboard);
+
+			infoPanel = new InfoPanel(dashboard, absModule, espModule, tcsModule, rainLightSensorboard, this, assetBundle);
 
 			reverseCamera = new ReverseCamera(bootlid, infoPanel);
 
 
-			rainLightSensorboard = new RainLightSensorBoard(dashboard);
 
 			fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
 			fuelPumpCover = new FuelPumpCover(block);

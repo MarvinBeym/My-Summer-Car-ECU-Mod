@@ -36,8 +36,8 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = logic.rainsensor_enabled.ToOnOff();
-			display_values["value_2"].text = logic.lightsensor_enabled.ToOnOff();
+			display_values["value_1"].text = infoPanel.rainLightSensorboard.rainSensorEnabled.ToOnOff();
+			display_values["value_2"].text = infoPanel.rainLightSensorboard.lightSensorEnabled.ToOnOff();
 			display_values["value_3"].text = infoPanel.shiftIndicatorGreenLine.ToString();
 			display_values["value_4"].text = infoPanel.shiftIndicatorRedLine.ToString();
 			switch (logic.GetSelectedSetting())
@@ -116,10 +116,10 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			switch (value)
 			{
 				case "Enable Rainsensor":
-					logic.rainsensor_enabled = !logic.rainsensor_enabled;
+					infoPanel.rainLightSensorboard.rainSensorEnabled = !infoPanel.rainLightSensorboard.rainSensorEnabled;
 					break;
 				case "Enable Lightsensor":
-					logic.lightsensor_enabled = !logic.lightsensor_enabled;
+					infoPanel.rainLightSensorboard.lightSensorEnabled = !infoPanel.rainLightSensorboard.rainSensorEnabled;
 					break;
 				case "Select Shift Indicator green line":
 					if (logic.GetSelectedSetting() == "Select Shift Indicator green line")

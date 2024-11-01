@@ -45,6 +45,7 @@ namespace DonnerTech_ECU_Mod.part
 		public int shiftIndicatorRedLine = 7500;
 		public  ShiftIndicatorLogic shiftIndicatorLogic;
 
+		public readonly RainLightSensorBoard rainLightSensorboard;
 
 
 		public float needleRotation
@@ -53,8 +54,9 @@ namespace DonnerTech_ECU_Mod.part
 		}
 
 
-		public InfoPanel(GamePart parent, AbsModule absModule, EspModule espModule, TcsModule tcsModule, DonnerTech_ECU_Mod mod, AssetBundle assetBundle) : base(parent, DonnerTech_ECU_Mod.partBaseInfo)
+		public InfoPanel(GamePart parent, AbsModule absModule, EspModule espModule, TcsModule tcsModule, RainLightSensorBoard rainLightSensorboard, DonnerTech_ECU_Mod mod, AssetBundle assetBundle) : base(parent, DonnerTech_ECU_Mod.partBaseInfo)
 		{
+			this.rainLightSensorboard = rainLightSensorboard;
 			AddEventListener(PartEvent.Time.Post, PartEvent.Type.Install,
 				delegate { transform.localScale = new Vector3(1.5f, 1.5f, 1.5f); });
 			AddScrews(new[]

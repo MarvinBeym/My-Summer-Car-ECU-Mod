@@ -76,6 +76,7 @@
     <Compile Include="gui\GuiDebug.cs" />
     <Compile Include="gui\GuiDebugElement.cs" />
     <Compile Include="gui\GuiDebugInfo.cs" />
+    <Compile Include="LightSensorLogic.cs" />
     <Compile Include="part\BlockGamePart.cs" />
     <Compile Include="part\InfoPanel.cs" />
     <Compile Include="part\ChipProgrammer.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Parts\ChipPart.cs" />
     <Compile Include="Parts\ChipSave.cs" />
     <Compile Include="ReverseCamera_Logic.cs" />
+    <Compile Include="RainSensorLogic.cs" />
     <Compile Include="ShiftIndicatorLogic.cs" />
     <Compile Include="SmartEngineModule_Logic.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />

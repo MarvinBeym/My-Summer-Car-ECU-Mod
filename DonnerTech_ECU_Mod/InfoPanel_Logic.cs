@@ -33,8 +33,7 @@ namespace DonnerTech_ECU_Mod
 		private DonnerTech_ECU_Mod mod;
 
 		private GameObject turnSignals;
-		private GameObject beamShort;
-		private GameObject beamLong;
+
 		private GameObject blinkerRight;
 		private GameObject blinkerLeft;
 
@@ -51,24 +50,18 @@ namespace DonnerTech_ECU_Mod
 		private float thousandIncrementer = 0;
 
 
-		//Lightsensor stuff
-		private bool isNight = false;
-
 		private RaycastHit hit;
 
 		private string selectedSetting = "";
 
-		private FsmFloat rainIntensity;
-		PlayMakerFSM wiperLogicFSM;
-		public bool rainsensor_enabled = false;
-		private bool rainsensor_wasEnabled = false;
-
-
-		public bool lightsensor_enabled = false;
-		private bool lightsensor_wasEnabled = false;
+		private GameObject beamShort;
+		private GameObject beamLong;
 
 		private void Start()
 		{
+
+			beamShort = Cache.Find("SATSUMA(557kg, 248)/Electricity/PowerON/BeamsShort");
+			beamLong = Cache.Find("SATSUMA(557kg, 248)/Electricity/PowerON/BeamsLong");
 			try
 			{
 				turnSignals = Cache.Find("SATSUMA(557kg, 248)/Dashboard/TurnSignals");
@@ -88,46 +81,6 @@ namespace DonnerTech_ECU_Mod
 				Logger.New("Unable to find turn signal gameobject or Blinkers fsm",
 					"SATSUMA(557kg, 248)/Dashboard/TurnSignals", ex);
 			}
-
-
-			try
-			{
-				GameObject powerON = Cache.Find("SATSUMA(557kg, 248)/Electricity/PowerON");
-				for (int i = 0; i < powerON.transform.childCount; i++)
-				{
-					GameObject tmp = powerON.transform.GetChild(i).gameObject;
-					if (tmp.name == "BeamsShort")
-					{
-						beamShort = tmp;
-					}
-					else if (tmp.name == "BeamsLong")
-					{
-						beamLong = tmp;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.New("Unable to find powerOn object of BeamsShort/BeamsLong",
-					"SATSUMA(557kg, 248)/Electricity/PowerON", ex);
-			}
-
-			rainIntensity = PlayMakerGlobals.Instance.Variables.FindFsmFloat("RainIntensity");
-			GameObject buttonWipers =
-				Cache.Find(
-					"SATSUMA(557kg, 248)/Dashboard/pivot_dashboard/dashboard(Clone)/pivot_meters/dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers");
-			PlayMakerFSM[] buttonWipersFSMs = buttonWipers.GetComponents<PlayMakerFSM>();
-			foreach (PlayMakerFSM buttonWiperFSM in buttonWipersFSMs)
-			{
-				if (buttonWiperFSM.FsmName == "Function")
-				{
-					wiperLogicFSM = buttonWiperFSM;
-					break;
-				}
-			}
-
-			FsmHook.FsmInject(Cache.Find("StreetLights"), "Day", new Action(delegate() { isNight = false; }));
-			FsmHook.FsmInject(Cache.Find("StreetLights"), "Night", new Action(delegate() { isNight = true; }));
 		}
 
 		void Update()
@@ -142,26 +95,6 @@ namespace DonnerTech_ECU_Mod
 				{
 					HandleKeybinds();
 					HandleButtonPresses();
-
-					if (rainsensor_enabled)
-						HandleRainsensorLogic();
-					else if (rainsensor_wasEnabled)
-					{
-						FsmBool wiperOn = wiperLogicFSM.FsmVariables.FindFsmBool("On");
-						FsmFloat wiperDelay = wiperLogicFSM.FsmVariables.FindFsmFloat("Delay");
-						wiperOn.Value = false;
-						wiperDelay.Value = 0f;
-						rainsensor_wasEnabled = false;
-					}
-
-					if (lightsensor_enabled)
-						HandleLightsensorLogic();
-					else if (lightsensor_wasEnabled)
-					{
-						beamShort.SetActive(false);
-						lightsensor_wasEnabled = false;
-					}
-
 
 					DisplayGeneralInfomation();
 					infoPanel.pages[currentPage].Handle();
@@ -190,51 +123,6 @@ namespace DonnerTech_ECU_Mod
 				catch
 				{
 				}
-			}
-		}
-
-		private void HandleRainsensorLogic()
-		{
-			rainsensor_wasEnabled = true;
-			FsmBool wiperOn = wiperLogicFSM.FsmVariables.FindFsmBool("On");
-			FsmFloat wiperDelay = wiperLogicFSM.FsmVariables.FindFsmFloat("Delay");
-			if (rainsensor_enabled)
-			{
-				switch (rainIntensity.Value)
-				{
-					case float f when f >= 0.5f:
-						wiperOn.Value = true;
-						wiperDelay.Value = 0f;
-						break;
-					case float f when f > 0f:
-						wiperOn.Value = true;
-						wiperDelay.Value = 3f;
-						break;
-					default:
-						wiperOn.Value = false;
-						wiperDelay.Value = 0f;
-						break;
-				}
-			}
-			else
-			{
-				wiperOn.Value = false;
-				wiperDelay.Value = 0f;
-			}
-		}
-
-		private void HandleLightsensorLogic()
-		{
-			lightsensor_wasEnabled = true;
-			if (lightsensor_enabled)
-			{
-				if (this.isNight)
-				{
-					beamShort.SetActive(true);
-					return;
-				}
-
-				beamShort.SetActive(false);
 			}
 		}
 
