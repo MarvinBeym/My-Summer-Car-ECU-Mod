@@ -248,12 +248,12 @@ namespace DonnerTech_ECU_Mod
 
 			cableHarness = new CableHarness(mountingPlate);
 
-			infoPanel = new InfoPanel(dashboard, this, assetBundle);
 			infoPanel = new InfoPanel(dashboard, absModule, espModule, tcsModule, this, assetBundle);
 
-			rainLightSensorboard = new RainLightSensorBoard(dashboard);
+			reverseCamera = new ReverseCamera(bootlid, infoPanel);
 
-			reverseCamera = new ReverseCamera(bootlid);
+
+			rainLightSensorboard = new RainLightSensorBoard(dashboard);
 
 			fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
 			fuelPumpCover = new FuelPumpCover(block);
@@ -339,11 +339,6 @@ namespace DonnerTech_ECU_Mod
 
 			ModConsole.Print(
 				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] finished loading</color>");
-		}
-
-		public void SetReverseCameraEnabled(bool enabled)
-		{
-			reverseCamera.SetEnabled(enabled);
 		}
 
 		public void CreateChipPart(string id, Vector3 spawnLocation, bool resetToDefault = false)

@@ -1,46 +1,24 @@
-﻿using MSCLoader;
+﻿using DonnerTech_ECU_Mod.part;
+using MSCLoader;
+using MscModApi.Caching;
 using UnityEngine;
 
 namespace DonnerTech_ECU_Mod
 {
 	public class ReverseCamera_Logic : MonoBehaviour
 	{
-		private Mod mainMod;
-		private DonnerTech_ECU_Mod donnerTech_ecu_mod;
+		private ReverseCamera reverseCamera;
+		private InfoPanel infoPanel;
 
-		private GameObject reverse_camera;
-
-		private Camera camera;
-		private Light light;
-
-		// Use this for initialization
-		void Start()
+		public void Init(ReverseCamera reverseCamera)
 		{
-			System.Collections.Generic.List<Mod> mods = ModLoader.LoadedMods;
-			Mod[] modsArr = mods.ToArray();
-			foreach (Mod mod in modsArr)
-			{
-				if (mod.Name == "DonnerTechRacing ECUs")
-				{
-					mainMod = mod;
-					break;
-				}
-			}
-
-			donnerTech_ecu_mod = (DonnerTech_ECU_Mod) mainMod;
-
-			reverse_camera = this.gameObject;
-
-			camera = gameObject.GetComponent<Camera>();
-			light = gameObject.GetComponent<Light>();
+			this.reverseCamera = reverseCamera;
+			infoPanel = reverseCamera.infoPanel;
 		}
 
-		public void SetEnabled(bool enabled)
+		void Update()
 		{
-			if (camera != null)
-				camera.enabled = enabled;
-			if (light != null)
-				light.enabled = enabled;
+			reverseCamera.enabled = CarH.hasPower && infoPanel.bolted && infoPanel.isBooted && CarH.drivetrain.gear == 0;
 		}
 	}
 }
