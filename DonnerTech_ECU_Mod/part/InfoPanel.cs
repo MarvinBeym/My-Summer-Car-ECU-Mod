@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using DonnerTech_ECU_Mod.info_panel_pages;
+using DonnerTech_ECU_Mod.part.Module;
 using MSCLoader;
 using MscModApi.Parts;
 using MscModApi.Parts.EventSystem;

@@ -2,9 +2,9 @@
 using MscModApi.Parts;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod.part
+namespace DonnerTech_ECU_Mod.part.Module
 {
-	public class AbsModule : Module.ModulePart
+	public class AbsModule : ModulePart
 	{
 		protected override string partId => "abs_module";
 		protected override string partName => "ABS Module";

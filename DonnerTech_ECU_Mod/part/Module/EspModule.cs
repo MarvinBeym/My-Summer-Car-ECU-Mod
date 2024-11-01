@@ -1,11 +1,10 @@
 ﻿using MscModApi.Caching;
 using MscModApi.Parts;
-using MscModApi.Parts.ReplacePart;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod.part
+namespace DonnerTech_ECU_Mod.part.Module
 {
-	public class EspModule : Module.ModulePart
+	public class EspModule : ModulePart
 	{
 		protected override string partId => "esp_module";
 		protected override string partName => "ESP Module";

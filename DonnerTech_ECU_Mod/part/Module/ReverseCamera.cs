@@ -3,9 +3,9 @@ using MscModApi.Parts.EventSystem;
 using MscModApi.Parts.ReplacePart;
 using UnityEngine;
 
-namespace DonnerTech_ECU_Mod.part
+namespace DonnerTech_ECU_Mod.part.Module
 {
-	public class ReverseCamera : Module.ModulePart
+	public class ReverseCamera : ModulePart
 	{
 		protected override string partId => "reverse_camera";
 		protected override string partName => "Reverse Camera";

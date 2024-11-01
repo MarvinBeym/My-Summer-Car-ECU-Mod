@@ -89,12 +89,12 @@
     <Compile Include="part\NullGamePart.cs" />
     <Compile Include="part\RainLightSensorBoard.cs" />
     <Compile Include="part\CableHarness.cs" />
-    <Compile Include="part\ReverseCamera.cs" />
+    <Compile Include="part\Module\ReverseCamera.cs" />
     <Compile Include="part\CruiseControlPanel.cs" />
     <Compile Include="part\SmartEngineModule.cs" />
-    <Compile Include="part\EspModule.cs" />
-    <Compile Include="part\TcsModule.cs" />
-    <Compile Include="part\AbsModule.cs" />
+    <Compile Include="part\Module\EspModule.cs" />
+    <Compile Include="part\Module\TcsModule.cs" />
+    <Compile Include="part\Module\AbsModule.cs" />
     <Compile Include="part\MountingPlate.cs" />
     <Compile Include="CruiseControl_Logic.cs" />
     <Compile Include="fuelsystem\FloatForce.cs" />

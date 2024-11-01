@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.part;
+using DonnerTech_ECU_Mod.part.Module;
 using DonnerTech_ECU_Mod.Parts;
 using HutongGames.PlayMaker;
 using MSCLoader;

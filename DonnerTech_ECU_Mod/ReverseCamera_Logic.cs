@@ -1,4 +1,5 @@
 ﻿using DonnerTech_ECU_Mod.part;
+using DonnerTech_ECU_Mod.part.Module;
 using MSCLoader;
 using MscModApi.Caching;
 using UnityEngine;
