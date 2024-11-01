@@ -87,9 +87,9 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = smartEngineLogic.absModuleEnabled.Value.ToOnOff();
-			display_values["value_2"].text = smartEngineLogic.espModuleEnabled.Value.ToOnOff();
-			display_values["value_3"].text = smartEngineLogic.tcsModuleEnabled.Value.ToOnOff();
+			display_values["value_1"].text = infoPanel.absModule.enabled.ToOnOff();
+			display_values["value_2"].text = infoPanel.espModule.enabled.ToOnOff();
+			display_values["value_3"].text = infoPanel.tcsModule.enabled.ToOnOff();
 			display_values["value_4"].text = smartEngineLogic.twoStepModuleEnabled.Value.ToOnOff();
 			display_values["value_13"].text = smartEngineLogic.alsModuleEnabled.Value.ToOnOff();
 			display_values["value_16"].text = smartEngineLogic.twoStepRpm.Value.ToString();
@@ -115,13 +115,13 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			switch (value)
 			{
 				case "Enable ABS":
-					smartEngineLogic.ToggleModule(Module.Abs);
+					infoPanel.absModule.Toggle();
 					break;
 				case "Enable ESP":
-					smartEngineLogic.ToggleModule(Module.Esp);
+					infoPanel.espModule.Toggle();
 					break;
 				case "Enable TCS":
-					smartEngineLogic.ToggleModule(Module.Tcs);
+					infoPanel.tcsModule.Toggle();
 					break;
 				case "Enable 2StepRevLimiter":
 					smartEngineLogic.ToggleModule(Module.TwoStep);

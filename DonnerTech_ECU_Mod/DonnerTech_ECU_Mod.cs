@@ -244,7 +244,7 @@ namespace DonnerTech_ECU_Mod
 			espModule = new EspModule(mountingPlate);
 			tcsModule = new TcsModule(mountingPlate);
 
-			smartEngineModule = new SmartEngineModule(mountingPlate, absModule, espModule, tcsModule);
+			smartEngineModule = new SmartEngineModule(mountingPlate);
 
 			cableHarness = new CableHarness(mountingPlate);
 

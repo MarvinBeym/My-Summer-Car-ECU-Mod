@@ -15,23 +15,14 @@ namespace DonnerTech_ECU_Mod
 
 		public enum Module
 		{
-			Abs,
-			Esp,
-			Tcs,
 			Als,
 			TwoStep,
 		}
 		
 		private Part part;
-		private Part absModulePart;
-		private Part espModulePart;
-		private Part tcsModulePart;
 
 		public PlayMakerFSM modulesFsm;
 		public FsmFloat twoStepRpm = new FsmFloat("2Step rpm");
-		public FsmBool absModuleEnabled = new FsmBool("ABS Module Enabled");
-		public FsmBool espModuleEnabled = new FsmBool("ESP Module Enabled");
-		public FsmBool tcsModuleEnabled = new FsmBool("TCS Module Enabled");
 		public FsmBool alsModuleEnabled = new FsmBool("ALS Module Enabled");
 		public FsmBool twoStepModuleEnabled = new FsmBool("2STEP Module Enabled");
 
@@ -56,9 +47,6 @@ namespace DonnerTech_ECU_Mod
 
 			modulesFsm.FsmVariables.BoolVariables = new FsmBool[]
 			{
-				absModuleEnabled,
-				espModuleEnabled,
-				tcsModuleEnabled,
 				alsModuleEnabled,
 				twoStepModuleEnabled,
 			};
@@ -130,22 +118,15 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		internal void Init(Part smartEngineModule, Part absModulePart, Part espModulePart, Part tcsModulePart)
+		internal void Init(Part smartEngineModule)
 		{
 			part = smartEngineModule;
 
 			part.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, OnUninstall);
-
-			this.absModulePart = absModulePart;
-			this.espModulePart = espModulePart;
-			this.tcsModulePart = tcsModulePart;
 		}
 
 		private void OnUninstall()
 		{
-			SetAbs(false);
-			SetEsp(false);
-			SetTcs(false);
 			SetAls(false);
 			SetTwoStep(false);
 		}
@@ -154,15 +135,6 @@ namespace DonnerTech_ECU_Mod
 		{
 			switch (module)
 			{
-				case Module.Abs:
-					SetAbs(!absModuleEnabled.Value);
-					break;
-				case Module.Esp:
-					SetEsp(!espModuleEnabled.Value);
-					break;
-				case Module.Tcs:
-					SetTcs(!tcsModuleEnabled.Value);
-					break;
 				case Module.Als:
 					SetAls(!alsModuleEnabled.Value);
 					break;
@@ -170,27 +142,6 @@ namespace DonnerTech_ECU_Mod
 					SetTwoStep(!twoStepModuleEnabled.Value);
 					break;
 			}
-		}
-
-		public void SetAbs(bool newState)
-		{
-			newState = checkStatePartInstalled(newState);
-			absModuleEnabled.Value = newState;
-			CarH.carController.ABS = newState;
-		}
-
-		public void SetEsp(bool newState)
-		{
-			newState = checkStatePartInstalled(newState);
-			espModuleEnabled.Value = newState;
-			CarH.carController.ESP = newState;
-		}
-
-		public void SetTcs(bool newState)
-		{
-			newState = checkStatePartInstalled(newState);
-			tcsModuleEnabled.Value = newState;
-			CarH.carController.TCS = newState;
 		}
 
 		public void SetAls(bool newState)
