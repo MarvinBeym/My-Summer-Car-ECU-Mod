@@ -53,7 +53,7 @@ namespace DonnerTech_ECU_Mod
 
 			rainIntensity = PlayMakerGlobals.Instance.Variables.FindFsmFloat("RainIntensity");
 			GameObject buttonWipers = Cache.Find(
-					"SATSUMA(557kg, 248)/Dashboard/pivot_dashboard/dashboard(Clone)/pivot_meters/dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers"
+					"dashboard meters(Clone)/Knobs/ButtonsDash/ButtonWipers"
 			);
 
 			wiperLogicFSM = buttonWipers.FindFsm("Function");
