@@ -10,7 +10,7 @@ namespace DonnerTech_ECU_Mod
 	{
 		private ReverseCamera reverseCamera;
 		private InfoPanel infoPanel;
-
+		
 		public void Init(ReverseCamera reverseCamera)
 		{
 			this.reverseCamera = reverseCamera;

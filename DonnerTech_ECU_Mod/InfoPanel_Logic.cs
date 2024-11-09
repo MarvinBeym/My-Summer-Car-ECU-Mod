@@ -183,14 +183,18 @@ namespace DonnerTech_ECU_Mod
 			{
 				return;
 			}
+			
+			string value = guiTexts.ElementAtOrDefault(displayValueNumber - 1);
 
-			string valueToPass = guiTexts[displayValueNumber - 1];
-			string guiText = guiTexts[displayValueNumber - 1];
-
-			UserInteraction.GuiInteraction(guiText);
+			if (value == null)
+			{
+				return;
+			}
+			
+			UserInteraction.GuiInteraction(value);
 			if (UserInteraction.UseButtonDown || UserInteraction.LeftMouseDown)
 			{
-				page.Pressed_Display_Value(valueToPass);
+				page.Pressed_Display_Value(value);
 				infoPanel.gameObject.PlayTouch();
 			}
 		}
