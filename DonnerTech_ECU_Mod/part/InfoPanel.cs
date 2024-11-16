@@ -56,7 +56,7 @@ namespace DonnerTech_ECU_Mod.part
 
 
 		//Scale workaround stuff
-		private bool infoPanelInHand = false;
+		private bool infoPanelInHand;
 
 		public float needleRotation
 		{
@@ -78,7 +78,7 @@ namespace DonnerTech_ECU_Mod.part
 				new Screw(new Vector3(0f, -0.025f, -0.082f), new Vector3(180, 0, 0))
 			}, 0.8f, 8);
 
-
+			/*
 			TextMesh[] textMeshes = gameObject.GetComponentsInChildren<TextMesh>(true);
 			foreach (TextMesh textMesh in textMeshes)
 			{
@@ -94,7 +94,7 @@ namespace DonnerTech_ECU_Mod.part
 			if (spriteRenderers.Length > 0 && textMeshes.Length > 0)
 			{
 				workaroundChildDisableDone = true;
-			}
+			}*/
 
 			displayValues = LoadDisplayValues();
 			LoadRenderers();
@@ -157,8 +157,6 @@ namespace DonnerTech_ECU_Mod.part
 						displayValues.Add("value_" + i, textMesh);
 					}
 				}
-
-				textMesh.gameObject.GetComponent<MeshRenderer>().enabled = false;
 			}
 
 			return displayValues;
@@ -266,6 +264,7 @@ namespace DonnerTech_ECU_Mod.part
 
 		public void Handle()
 		{
+			/*
 			if (!installed)
 			{
 				if (!workaroundChildDisableDone)
@@ -289,6 +288,7 @@ namespace DonnerTech_ECU_Mod.part
 					}
 				}
 			}
+			*/
 		}
 
 		/// <summary>
