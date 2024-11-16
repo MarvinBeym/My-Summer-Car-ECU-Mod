@@ -21,10 +21,31 @@ namespace DonnerTech_ECU_Mod.part
 		protected override Vector3 partInstallPosition => new Vector3(0.25f, -0.088f, -0.01f);
 		protected override Vector3 partInstallRotation => new Vector3(0, 180, 180);
 
+		public const string VALUE_1 = "1";
+		public const string VALUE_2 = "2";
+		public const string VALUE_3 = "3";
+		public const string VALUE_4 = "4";
+		public const string VALUE_5 = "5";
+		public const string VALUE_6 = "6";
+		public const string VALUE_7 = "7";
+		public const string VALUE_8 = "7";
+		public const string VALUE_9 = "9";
+		public const string VALUE_10 = "10";
+		public const string VALUE_11 = "11";
+		public const string VALUE_12 = "12";
+		public const string VALUE_13 = "13";
+		public const string VALUE_14 = "14";
+		public const string VALUE_15 = "15";
+		public const string VALUE_16 = "16";
+		public const string VALUE_GEAR = "gear";
+		public const string VALUE_KMH = "kmh";
+		public const string VALUE_KM = "km";
+
+
 		protected bool workaroundChildDisableDone = false;
 		public InfoPanel_Logic logic;
 
-		public Dictionary<string, TextMesh> displayValues;
+		private Dictionary<string, TextMesh> displayValues;
 		public List<InfoPanelPage> pages;
 
 		private List<Renderer> renderers = new List<Renderer>();
@@ -320,6 +341,50 @@ namespace DonnerTech_ECU_Mod.part
 			fsmState.Actions = actions.ToArray();
 		}
 
+		public InfoPanel SetDisplayValue(string index, string value)
+		{
+			string key = $"value_{index}";
+			if (displayValues.TryGetValue(key, out var displayValue))
+			{
+				displayValue.text = value;
+			}
+
+			return this;
+		}
+
+		public string GetDisplayValue(string index)
+		{
+			string key = $"value_{index}";
+			if (displayValues.TryGetValue(key, out var displayValue))
+			{
+				return displayValue.text;
+			}
+
+			return "";
+		}
+
+		public InfoPanel SetDisplayValueColor(string index, Color color)
+		{
+			string key = $"value_{index}";
+			if (displayValues.TryGetValue(key, out var displayValue))
+			{
+				displayValue.color = color;
+			}
+
+			return this;
+		}
+
+		public InfoPanel SetDisplayValue(string index, int value, string format = "")
+		{
+			SetDisplayValue(index, format != "" ? value.ToString(format) : value.ToString());
+			return this;
+		}
+
+		public InfoPanel SetDisplayValue(string index, float value, string format = "")
+		{
+			SetDisplayValue(index, format != "" ? value.ToString(format) : value.ToString());
+			return this;
+		}
 
 		/// <summary>
 		/// Should be fixed by actually scaling the 3D-model in the future so it stays as 1.0 in Unity

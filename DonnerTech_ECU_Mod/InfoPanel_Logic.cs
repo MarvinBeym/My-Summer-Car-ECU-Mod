@@ -376,16 +376,18 @@ namespace DonnerTech_ECU_Mod
 
 				infoPanel.needleRotation = GetRPMRotation(rpmDecrementer);
 
-				infoPanel.displayValues["value_1"].text = rpmDecrementer.ToString();
-				infoPanel.displayValues["value_2"].text = hundredIncrementer.ToString();
-				infoPanel.displayValues["value_3"].text = tenIncrementer.ToString() + "." + tenIncrementer.ToString();
-				infoPanel.displayValues["value_4"].text = tenIncrementer.ToString();
-				infoPanel.displayValues["value_13"].text = "";
-				infoPanel.displayValues["value_14"].text = tenIncrementer.ToString("00 .0") + "V";
-				infoPanel.displayValues["value_15"].text = thousandIncrementer.ToString();
-				infoPanel.displayValues["value_16"].text = tenIncrementer.ToString();
-				infoPanel.displayValues["value_kmh"].text = hundredIncrementer.ToString();
-				infoPanel.displayValues["value_km"].text = (thousandIncrementer * 10f).ToString();
+				infoPanel
+					.SetDisplayValue(InfoPanel.VALUE_1, rpmDecrementer)
+					.SetDisplayValue(InfoPanel.VALUE_1, rpmDecrementer)
+					.SetDisplayValue(InfoPanel.VALUE_2, hundredIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_3, tenIncrementer + "." + tenIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_4, tenIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_13, "")
+					.SetDisplayValue(InfoPanel.VALUE_14, tenIncrementer.ToString("00 .0") + "V")
+					.SetDisplayValue(InfoPanel.VALUE_15, thousandIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_16, tenIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_KMH, hundredIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_KM, (thousandIncrementer * 10f));
 			}
 			else if (rpmIncrementer < 9000)
 			{
@@ -396,16 +398,17 @@ namespace DonnerTech_ECU_Mod
 
 				infoPanel.needleRotation = GetRPMRotation(rpmIncrementer);
 
-				infoPanel.displayValues["value_1"].text = rpmIncrementer.ToString();
-				infoPanel.displayValues["value_2"].text = hundredIncrementer.ToString();
-				infoPanel.displayValues["value_3"].text = tenIncrementer.ToString() + "." + tenIncrementer.ToString();
-				infoPanel.displayValues["value_4"].text = tenIncrementer.ToString();
-				infoPanel.displayValues["value_13"].text = "Boot up";
-				infoPanel.displayValues["value_14"].text = tenIncrementer.ToString("00 .0") + "V";
-				infoPanel.displayValues["value_15"].text = thousandIncrementer.ToString();
-				infoPanel.displayValues["value_16"].text = tenIncrementer.ToString();
-				infoPanel.displayValues["value_kmh"].text = hundredIncrementer.ToString();
-				infoPanel.displayValues["value_km"].text = (thousandIncrementer * 10f).ToString();
+				infoPanel
+					.SetDisplayValue(InfoPanel.VALUE_1, rpmIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_2, hundredIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_3, tenIncrementer + "." + tenIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_4, tenIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_13, "Boot up")
+					.SetDisplayValue(InfoPanel.VALUE_14, tenIncrementer.ToString("00 .0") + "V")
+					.SetDisplayValue(InfoPanel.VALUE_15, thousandIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_16, tenIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_KMH, hundredIncrementer)
+					.SetDisplayValue(InfoPanel.VALUE_KM, (thousandIncrementer * 10f));
 			}
 
 			if (rpmIncrementer >= 9000 && rpmDecrementer <= 0)

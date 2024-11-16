@@ -36,7 +36,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		protected InfoPanel infoPanel;
 		protected DonnerTech_ECU_Mod mod;
 		protected InfoPanel_Logic logic;
-		protected Dictionary<string, TextMesh> display_values;
 
 		public bool needleUsed { get; set; } = false;
 		public bool turbineUsed = false;
@@ -51,7 +50,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			this.pageName = pageName;
 			this.infoPanel = infoPanel;
 			this.mod = infoPanelBaseInfo.mod;
-			this.display_values = infoPanelBaseInfo.display_values;
 			this.logic = infoPanelBaseInfo.logic;
 			AssetBundle assetBundle = infoPanelBaseInfo.assetBundle;
 

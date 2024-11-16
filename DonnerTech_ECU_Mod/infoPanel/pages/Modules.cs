@@ -87,24 +87,26 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = infoPanel.absModule.enabled.ToOnOff();
-			display_values["value_2"].text = infoPanel.espModule.enabled.ToOnOff();
-			display_values["value_3"].text = infoPanel.tcsModule.enabled.ToOnOff();
-			display_values["value_4"].text = smartEngineLogic.twoStepModuleEnabled.Value.ToOnOff();
-			display_values["value_13"].text = smartEngineLogic.alsModuleEnabled.Value.ToOnOff();
-			display_values["value_16"].text = smartEngineLogic.twoStepRpm.Value.ToString();
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, infoPanel.absModule.enabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_2, infoPanel.espModule.enabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_3, infoPanel.tcsModule.enabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_4, smartEngineLogic.twoStepModuleEnabled.Value.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_13, smartEngineLogic.alsModuleEnabled.Value.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_16, smartEngineLogic.twoStepRpm.Value);
 			if (logic.GetSelectedSetting() == "Select 2Step RPM")
 			{
-				display_values["value_16"].color = Color.green;
+				infoPanel.SetDisplayValueColor(InfoPanel.VALUE_16, Color.green);
 			}
 			else
 			{
-				display_values["value_16"].color = Color.white;
+				infoPanel.SetDisplayValueColor(InfoPanel.VALUE_16, Color.white);
 			}
 
-			display_values["value_km"].text = odometerKM.Value.ToString();
-			display_values["value_kmh"].text = Convert.ToInt32(CarH.drivetrain.differentialSpeed).ToString();
-			display_values["value_gear"].text = GearToString();
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_KM, odometerKM.Value)
+				.SetDisplayValue(InfoPanel.VALUE_KMH, Convert.ToInt32(CarH.drivetrain.differentialSpeed))
+				.SetDisplayValue(InfoPanel.VALUE_GEAR, GearToString());
 
 
 			needle.transform.localRotation = Quaternion.Euler(new Vector3(-90f, GetRPMRotation(-1f), 0));

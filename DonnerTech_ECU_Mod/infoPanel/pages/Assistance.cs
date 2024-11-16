@@ -36,23 +36,27 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = infoPanel.rainLightSensorboard.rainSensorEnabled.ToOnOff();
-			display_values["value_2"].text = infoPanel.rainLightSensorboard.lightSensorEnabled.ToOnOff();
-			display_values["value_3"].text = infoPanel.shiftIndicatorGreenLine.ToString();
-			display_values["value_4"].text = infoPanel.shiftIndicatorRedLine.ToString();
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, infoPanel.rainLightSensorboard.rainSensorEnabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_2, infoPanel.rainLightSensorboard.lightSensorEnabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_3, infoPanel.shiftIndicatorGreenLine)
+				.SetDisplayValue(InfoPanel.VALUE_4, infoPanel.shiftIndicatorRedLine);
 			switch (logic.GetSelectedSetting())
 			{
 				case "Select Shift Indicator green line":
-					display_values["value_3"].color = Color.green;
-					display_values["value_4"].color = Color.white;
+					infoPanel
+						.SetDisplayValueColor(InfoPanel.VALUE_3, Color.green)
+						.SetDisplayValueColor(InfoPanel.VALUE_4, Color.white);
 					break;
 				case "Select Shift Indicator red line":
-					display_values["value_3"].color = Color.white;
-					display_values["value_4"].color = Color.green;
+					infoPanel
+						.SetDisplayValueColor(InfoPanel.VALUE_3, Color.white)
+						.SetDisplayValueColor(InfoPanel.VALUE_4, Color.green);
 					break;
 				default:
-					display_values["value_3"].color = Color.white;
-					display_values["value_4"].color = Color.white;
+					infoPanel
+						.SetDisplayValueColor(InfoPanel.VALUE_3, Color.white)
+						.SetDisplayValueColor(InfoPanel.VALUE_4, Color.white);
 					break;
 			}
 		}
