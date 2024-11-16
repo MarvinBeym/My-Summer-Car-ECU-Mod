@@ -19,23 +19,21 @@ namespace DonnerTech_ECU_Mod
 		protected const int RPM_STEP = 500;
 		protected const int RPM_INDEX_LIMIT = 16;
 		private DonnerTech_ECU_Mod mod;
-		private FuelSystem fuel_system;
+		private FuelSystem fuelSystem;
 		private Transform[] throttleBodyValves;
-
-		internal ChipPart installedChip = null;
 
 		void LateUpdate()
 		{
-			if (CarH.running && fuel_system.replaced)
+			if (CarH.running && fuelSystem != null && fuelSystem.replaced)
 			{
 				if ((bool) mod.settingThrottleBodyValveRotation.Value)
 				{
 					HandleThrottleBodyMovement();
 				}
 
-				if (installedChip == null) return;
+				if (fuelSystem.installedChip == null) return;
 
-				if (installedChip.startAssist)
+				if (fuelSystem.installedChip.startAssist)
 				{
 					if (CarH.drivetrain.differentialSpeed < 15 &&
 					    (CarH.drivetrain.gear == 2 || CarH.drivetrain.gear == 0))
@@ -50,9 +48,9 @@ namespace DonnerTech_ECU_Mod
 
 				var mapRpmIndex = GetRPMIndex(Convert.ToInt32(CarH.drivetrain.rpm));
 				var mapThrottleIndex = GetThrottleIndex((int) (CarH.axisCarController.throttle) * 100);
-				fuel_system.airFuelMixture.Value = installedChip.fuelMap[mapThrottleIndex, mapRpmIndex];
-				fuel_system.racingCarb_adjustAverage.Value = fuel_system.racingCarb_idealSetting.Value;
-				fuel_system.distributor_sparkAngle.Value = installedChip.sparkAngle;
+				fuelSystem.airFuelMixture.Value = fuelSystem.installedChip.fuelMap[mapThrottleIndex, mapRpmIndex];
+				fuelSystem.racingCarb_adjustAverage.Value = fuelSystem.racingCarb_idealSetting.Value;
+				fuelSystem.distributor_sparkAngle.Value = fuelSystem.installedChip.sparkAngle;
 			}
 		}
 
@@ -112,14 +110,14 @@ namespace DonnerTech_ECU_Mod
 			return index > 0 ? index : 0;
 		}
 
-		public void Init(FuelSystem fuel_system, DonnerTech_ECU_Mod mod)
+		public void Init(FuelSystem fuelSystem, DonnerTech_ECU_Mod mod)
 		{
 			this.mod = mod;
-			this.fuel_system = fuel_system;
-			throttleBodyValves = new Transform[fuel_system.throttleBodyParts.Count];
-			for (var i = 0; i < fuel_system.throttleBodyParts.Count; i++)
+			this.fuelSystem = fuelSystem;
+			throttleBodyValves = new Transform[fuelSystem.throttleBodyParts.Count];
+			for (var i = 0; i < fuelSystem.throttleBodyParts.Count; i++)
 			{
-				throttleBodyValves[i] = ((Part)fuel_system.throttleBodyParts[i]).transform.FindChild("Butterfly-Valve");
+				throttleBodyValves[i] = ((Part)fuelSystem.throttleBodyParts[i]).transform.FindChild("Butterfly-Valve");
 			}
 		}
 	}
