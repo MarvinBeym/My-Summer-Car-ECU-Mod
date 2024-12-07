@@ -140,7 +140,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 				}
 			}
 
-			infoPanel.SetDisplayValue(InfoPanel.VALUE_KMH, Convert.ToInt32(CarH.drivetrain.differentialSpeed));
+			infoPanel.SetDisplayValue(InfoPanel.VALUE_KMH, Convert.ToInt32(CarH.drivetrain.differentialSpeed < 0 ? (CarH.drivetrain.differentialSpeed * -1) : CarH.drivetrain.differentialSpeed));
 
 			clockUpdateTimer.Call();
 			voltageUpdateTimer.Call();
