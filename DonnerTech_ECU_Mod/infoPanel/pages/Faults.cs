@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmFloat wearHeadlightBulbLeft;
 		private FsmFloat wearHeadlightBulbRight;
 
-		public Faults(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Faults(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			PlayMakerFSM mechanicalWear = Cache.Find("SATSUMA(557kg, 248)/CarSimulation/MechanicalWear")
 				.GetComponent<PlayMakerFSM>();
@@ -55,21 +56,22 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = ConvertFloatToWear(wearAlternator.Value);
-			display_values["value_2"].text = ConvertFloatToWear(wearClutch.Value);
-			display_values["value_3"].text = ConvertFloatToWear(wearCrankshaft.Value);
-			display_values["value_4"].text = ConvertFloatToWear(wearFuelpump.Value);
-			display_values["value_5"].text = ConvertFloatToWear(wearGearbox.Value);
-			display_values["value_6"].text = ConvertFloatToWear(wearHeadgasket.Value);
-			display_values["value_7"].text = ConvertFloatToWear(wearRockershaft.Value);
-			display_values["value_8"].text = ConvertFloatToWear(wearStarter.Value);
-			display_values["value_9"].text = ConvertFloatToWear(wearPiston1.Value);
-			display_values["value_10"].text = ConvertFloatToWear(wearPiston2.Value);
-			display_values["value_11"].text = ConvertFloatToWear(wearPiston3.Value);
-			display_values["value_12"].text = ConvertFloatToWear(wearPiston4.Value);
-			display_values["value_13"].text = ConvertFloatToWear(wearWaterpump.Value);
-			display_values["value_14"].text = ConvertFloatToWear(wearHeadlightBulbLeft.Value);
-			display_values["value_15"].text = ConvertFloatToWear(wearHeadlightBulbRight.Value);
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, ConvertFloatToWear(wearAlternator.Value))
+				.SetDisplayValue(InfoPanel.VALUE_2, ConvertFloatToWear(wearClutch.Value))
+				.SetDisplayValue(InfoPanel.VALUE_3, ConvertFloatToWear(wearCrankshaft.Value))
+				.SetDisplayValue(InfoPanel.VALUE_4, ConvertFloatToWear(wearFuelpump.Value))
+				.SetDisplayValue(InfoPanel.VALUE_5, ConvertFloatToWear(wearGearbox.Value))
+				.SetDisplayValue(InfoPanel.VALUE_6, ConvertFloatToWear(wearHeadgasket.Value))
+				.SetDisplayValue(InfoPanel.VALUE_7, ConvertFloatToWear(wearRockershaft.Value))
+				.SetDisplayValue(InfoPanel.VALUE_8, ConvertFloatToWear(wearStarter.Value))
+				.SetDisplayValue(InfoPanel.VALUE_9, ConvertFloatToWear(wearPiston1.Value))
+				.SetDisplayValue(InfoPanel.VALUE_10, ConvertFloatToWear(wearPiston2.Value))
+				.SetDisplayValue(InfoPanel.VALUE_11, ConvertFloatToWear(wearPiston3.Value))
+				.SetDisplayValue(InfoPanel.VALUE_12, ConvertFloatToWear(wearPiston4.Value))
+				.SetDisplayValue(InfoPanel.VALUE_13, ConvertFloatToWear(wearWaterpump.Value))
+				.SetDisplayValue(InfoPanel.VALUE_14, ConvertFloatToWear(wearHeadlightBulbLeft.Value))
+				.SetDisplayValue(InfoPanel.VALUE_15, ConvertFloatToWear(wearHeadlightBulbRight.Value));
 		}
 
 		public override void Handle()
@@ -77,7 +79,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			DisplayValues();
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			/*
 			switch (value)

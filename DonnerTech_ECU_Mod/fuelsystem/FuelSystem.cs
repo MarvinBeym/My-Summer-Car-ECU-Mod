@@ -36,7 +36,7 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 		protected ReadOnlyCollection<BasicPart> fuelInjectorParts;
 		public ReadOnlyCollection<BasicPart> throttleBodyParts;
 		public List<ChipPart> chips = new List<ChipPart>();
-
+		public ChipPart installedChip = null;
 
 		public DonnerTech_ECU_Mod mod;
 
@@ -160,24 +160,33 @@ namespace DonnerTech_ECU_Mod.fuelsystem
 					chipPart.installBlocked = true;
 				}
 
-				if (!chip.inUse || !fuelInjectionParts.replaced)
+				if (!chip.inUse)
 				{
 					return;
 				}
-				fuelInjectionParts.SetReplacedState(true);
-				fuel_system_logic.installedChip = chip;
-				fuelInjectionManifold.wiresVisible = true;
+
+				installedChip = chip;
+
 				fuelInjectionParts.AddNewPart(chip, true);
+
+				if (!fuelInjectionParts.replaced)
+				{
+					return;
+				}
+
+				fuelInjectionParts.SetReplacedState(true);
+				fuelInjectionManifold.wiresVisible = true;
 
 			});
 			chip.AddEventListener(PartEvent.Time.Post, PartEvent.Type.Uninstall, delegate
 			{
+				installedChip = null;
+
 				foreach (var chipPart in chips.Where(chipPart => chipPart.installBlocked))
 				{
 					chipPart.installBlocked = false;
 				}
 				fuelInjectionParts.SetReplacedState(false);
-				fuel_system_logic.installedChip = null;
 				fuelInjectionManifold.wiresVisible = false;
 				fuelInjectionParts.RemoveNewPart(chip, true);
 			});

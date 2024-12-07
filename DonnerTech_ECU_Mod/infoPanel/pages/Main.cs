@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using UnityEngine;
 
@@ -39,8 +40,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private Timer odometerUpdateTimer;
 		private Timer voltageUpdateTimer;
 
-		public Main(string pageName, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,
-			infoPanelBaseInfo)
+		public Main(string pageName, InfoPanel infoPanel, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			this.needle = needle;
 			needleUsed = true;
@@ -94,12 +94,12 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		public void InitTimers()
 		{
 			clockUpdateTimer =
-				new Timer(delegate() { display_values["value_13"].text = ConvertToDigitalTime(clockHours.Value); }, 1);
-			gearUpdateTimer = new Timer(delegate() { display_values["value_gear"].text = GearToString(); }, 0.1f);
+				new Timer(delegate() { infoPanel.SetDisplayValue(InfoPanel.VALUE_13, ConvertToDigitalTime(clockHours.Value)); }, 1);
+			gearUpdateTimer = new Timer(delegate() { infoPanel.SetDisplayValue(InfoPanel.VALUE_GEAR, GearToString()); }, 0.1f);
 			odometerUpdateTimer =
-				new Timer(delegate() { display_values["value_km"].text = odometerKM.Value.ToString(); }, 1.0f);
+				new Timer(delegate() { infoPanel.SetDisplayValue(InfoPanel.VALUE_KM, odometerKM.Value); }, 1.0f);
 			voltageUpdateTimer =
-				new Timer(delegate() { display_values["value_14"].text = voltage.Value.ToString("00 .0") + "V"; },
+				new Timer(delegate() { infoPanel.SetDisplayValue(InfoPanel.VALUE_14, voltage.Value.ToString("00 .0") + "V"); },
 					0.2f);
 		}
 
@@ -107,37 +107,40 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		{
 			float[] fuelCalculated = FuelKMCalculate();
 
-			display_values["value_1"].text = Convert.ToInt32(CarH.drivetrain.rpm).ToString();
-			display_values["value_2"].text = Convert.ToInt32(coolantTemp.Value).ToString();
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, Convert.ToInt32(CarH.drivetrain.rpm))
+				.SetDisplayValue(InfoPanel.VALUE_2, Convert.ToInt32(coolantTemp.Value));
+
 			if (carbInstalled.Value)
 			{
-				display_values["value_3"].text = afRatioCarb.Value.ToString("00.00");
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_3, afRatioCarb.Value, "00.00");
 			}
 			else if (racingCarbInstalled.Value)
 			{
-				display_values["value_3"].text = afRatioRacingCarb.Value.ToString("00.00");
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_3, afRatioRacingCarb.Value, "00.00");
 			}
 			else if (twinCarbInstalled.Value)
 			{
-				display_values["value_3"].text = afRatioTwinCarb.Value.ToString("00.00");
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_3, afRatioTwinCarb.Value, "00.00");
 			}
 			else
 			{
-				display_values["value_3"].text = "00.00";
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_3, "00.00");
 			}
 
-			display_values["value_4"].text = Convert.ToInt32(coolantPressurePSI.Value).ToString();
+			infoPanel.SetDisplayValue(InfoPanel.VALUE_4, Convert.ToInt32(coolantPressurePSI.Value));
 
 			if (fuelCalculated != null && fuelCalculated[1] >= 0 && fuelCalculated[1] <= 9000)
 			{
 				if (fuelCalculated[1] >= 0 && fuelCalculated[1] <= 9000)
 				{
-					display_values["value_15"].text = Convert.ToInt32(fuelCalculated[1]).ToString();
-					display_values["value_16"].text = Convert.ToInt32(fuelCalculated[0]).ToString();
+					infoPanel
+						.SetDisplayValue(InfoPanel.VALUE_15, Convert.ToInt32(fuelCalculated[1]))
+						.SetDisplayValue(InfoPanel.VALUE_16, Convert.ToInt32(fuelCalculated[0]));
 				}
 			}
 
-			display_values["value_kmh"].text = Convert.ToInt32(CarH.drivetrain.differentialSpeed).ToString();
+			infoPanel.SetDisplayValue(InfoPanel.VALUE_KMH, Convert.ToInt32(CarH.drivetrain.differentialSpeed < 0 ? (CarH.drivetrain.differentialSpeed * -1) : CarH.drivetrain.differentialSpeed));
 
 			clockUpdateTimer.Call();
 			voltageUpdateTimer.Call();
@@ -169,7 +172,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			}
 			else
 			{
-				return display_values["value_13"].text;
+				return infoPanel.GetDisplayValue(InfoPanel.VALUE_13);
 			}
 		}
 
@@ -198,7 +201,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			return null;
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			/*
 			switch (value)

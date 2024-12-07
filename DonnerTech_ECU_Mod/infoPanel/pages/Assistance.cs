@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Tools;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 {
 	class Assistance : InfoPanelPage
 	{
-		public Assistance(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Assistance(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 		}
 
@@ -35,23 +36,27 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = logic.rainsensor_enabled.ToOnOff();
-			display_values["value_2"].text = logic.lightsensor_enabled.ToOnOff();
-			display_values["value_3"].text = logic.shift_indicator_greenLine.ToString();
-			display_values["value_4"].text = logic.shift_indicator_redLine.ToString();
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, infoPanel.rainLightSensorboard.rainSensorEnabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_2, infoPanel.rainLightSensorboard.lightSensorEnabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_3, infoPanel.shiftIndicatorGreenLine)
+				.SetDisplayValue(InfoPanel.VALUE_4, infoPanel.shiftIndicatorRedLine);
 			switch (logic.GetSelectedSetting())
 			{
 				case "Select Shift Indicator green line":
-					display_values["value_3"].color = Color.green;
-					display_values["value_4"].color = Color.white;
+					infoPanel
+						.SetDisplayValueColor(InfoPanel.VALUE_3, Color.green)
+						.SetDisplayValueColor(InfoPanel.VALUE_4, Color.white);
 					break;
 				case "Select Shift Indicator red line":
-					display_values["value_3"].color = Color.white;
-					display_values["value_4"].color = Color.green;
+					infoPanel
+						.SetDisplayValueColor(InfoPanel.VALUE_3, Color.white)
+						.SetDisplayValueColor(InfoPanel.VALUE_4, Color.green);
 					break;
 				default:
-					display_values["value_3"].color = Color.white;
-					display_values["value_4"].color = Color.white;
+					infoPanel
+						.SetDisplayValueColor(InfoPanel.VALUE_3, Color.white)
+						.SetDisplayValueColor(InfoPanel.VALUE_4, Color.white);
 					break;
 			}
 		}
@@ -70,10 +75,10 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					switch (action)
 					{
 						case "Select Shift Indicator green line":
-							logic.shift_indicator_greenLine += 100;
+							infoPanel.shiftIndicatorGreenLine += 100;
 							break;
 						case "Select Shift Indicator red line":
-							logic.shift_indicator_redLine += 100;
+							infoPanel.shiftIndicatorRedLine += 100;
 							break;
 					}
 
@@ -82,43 +87,43 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					switch (action)
 					{
 						case "Select Shift Indicator green line":
-							logic.shift_indicator_greenLine -= 100;
+							infoPanel.shiftIndicatorGreenLine -= 100;
 							break;
 						case "Select Shift Indicator red line":
-							logic.shift_indicator_redLine -= 100;
+							infoPanel.shiftIndicatorRedLine -= 100;
 							break;
 					}
 
 					break;
 			}
 
-			if (logic.shift_indicator_greenLine >= logic.shift_indicator_redLine)
+			if (infoPanel.shiftIndicatorGreenLine >= infoPanel.shiftIndicatorRedLine)
 			{
-				logic.shift_indicator_greenLine -= 100;
+				infoPanel.shiftIndicatorGreenLine -= 100;
 			}
 
-			if (logic.shift_indicator_greenLine <= logic.shift_indicator_baseLine)
+			if (infoPanel.shiftIndicatorGreenLine <= infoPanel.shiftIndicatorBaseLine)
 			{
-				logic.shift_indicator_greenLine += 100;
+				infoPanel.shiftIndicatorGreenLine += 100;
 			}
 
-			if (logic.shift_indicator_redLine <= logic.shift_indicator_greenLine)
+			if (infoPanel.shiftIndicatorRedLine <= infoPanel.shiftIndicatorGreenLine)
 			{
-				logic.shift_indicator_redLine += 100;
+				infoPanel.shiftIndicatorRedLine += 100;
 			}
 
-			logic.SetupShiftIndicator();
+			infoPanel.shiftIndicatorLogic.InitGradient();
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			switch (value)
 			{
 				case "Enable Rainsensor":
-					logic.rainsensor_enabled = !logic.rainsensor_enabled;
+					infoPanel.rainLightSensorboard.rainSensorEnabled = !infoPanel.rainLightSensorboard.rainSensorEnabled;
 					break;
 				case "Enable Lightsensor":
-					logic.lightsensor_enabled = !logic.lightsensor_enabled;
+					infoPanel.rainLightSensorboard.lightSensorEnabled = !infoPanel.rainLightSensorboard.rainSensorEnabled;
 					break;
 				case "Select Shift Indicator green line":
 					if (logic.GetSelectedSetting() == "Select Shift Indicator green line")
@@ -139,8 +144,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					logic.SetSelectedSetting("Select Shift Indicator red line");
 					break;
 			}
-
-			gameObjectHit.PlayTouch();
 		}
 	}
 }

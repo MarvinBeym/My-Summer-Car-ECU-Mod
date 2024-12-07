@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Tools;
 using UnityEngine;
@@ -18,8 +19,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmInt odometerKM;
 
 
-		public Modules(string pageName, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,
-			infoPanelBaseInfo)
+		public Modules(string pageName, InfoPanel infoPanel, GameObject needle, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			smartEngineLogic = mod.smartEngineModule.logic;
 			this.needle = needle;
@@ -87,41 +87,43 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = smartEngineLogic.absModuleEnabled.Value.ToOnOff();
-			display_values["value_2"].text = smartEngineLogic.espModuleEnabled.Value.ToOnOff();
-			display_values["value_3"].text = smartEngineLogic.tcsModuleEnabled.Value.ToOnOff();
-			display_values["value_4"].text = smartEngineLogic.twoStepModuleEnabled.Value.ToOnOff();
-			display_values["value_13"].text = smartEngineLogic.alsModuleEnabled.Value.ToOnOff();
-			display_values["value_16"].text = smartEngineLogic.twoStepRpm.Value.ToString();
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, infoPanel.absModule.enabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_2, infoPanel.espModule.enabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_3, infoPanel.tcsModule.enabled.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_4, smartEngineLogic.twoStepModuleEnabled.Value.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_13, smartEngineLogic.alsModuleEnabled.Value.ToOnOff())
+				.SetDisplayValue(InfoPanel.VALUE_16, smartEngineLogic.twoStepRpm.Value);
 			if (logic.GetSelectedSetting() == "Select 2Step RPM")
 			{
-				display_values["value_16"].color = Color.green;
+				infoPanel.SetDisplayValueColor(InfoPanel.VALUE_16, Color.green);
 			}
 			else
 			{
-				display_values["value_16"].color = Color.white;
+				infoPanel.SetDisplayValueColor(InfoPanel.VALUE_16, Color.white);
 			}
 
-			display_values["value_km"].text = odometerKM.Value.ToString();
-			display_values["value_kmh"].text = Convert.ToInt32(CarH.drivetrain.differentialSpeed).ToString();
-			display_values["value_gear"].text = GearToString();
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_KM, odometerKM.Value)
+				.SetDisplayValue(InfoPanel.VALUE_KMH, Convert.ToInt32(CarH.drivetrain.differentialSpeed))
+				.SetDisplayValue(InfoPanel.VALUE_GEAR, GearToString());
 
 
 			needle.transform.localRotation = Quaternion.Euler(new Vector3(-90f, GetRPMRotation(-1f), 0));
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			switch (value)
 			{
 				case "Enable ABS":
-					smartEngineLogic.ToggleModule(Module.Abs);
+					infoPanel.absModule.Toggle();
 					break;
 				case "Enable ESP":
-					smartEngineLogic.ToggleModule(Module.Esp);
+					infoPanel.espModule.Toggle();
 					break;
 				case "Enable TCS":
-					smartEngineLogic.ToggleModule(Module.Tcs);
+					infoPanel.tcsModule.Toggle();
 					break;
 				case "Enable 2StepRevLimiter":
 					smartEngineLogic.ToggleModule(Module.TwoStep);
@@ -139,8 +141,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					logic.SetSelectedSetting("Select 2Step RPM");
 					break;
 			}
-
-			gameObjectHit.PlayTouch();
 		}
 	}
 }

@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
+using MscModApi.Parts.EventSystem;
 using MscModApi.Tools;
 using UnityEngine;
 
@@ -105,9 +107,9 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			return;
 		}
 
-		public Airride(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Airride(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
-			airrideLogic = logic.panel.AddComponent<Airride_Logic>();
+			airrideLogic = infoPanel.AddEventBehaviour<Airride_Logic>(PartEvent.Type.Install);
 			airrideLogic.Init(this, mod);
 
 			airride_audioSource = CarH.satsuma.AddComponent<AudioSource>();
@@ -144,12 +146,13 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 
 		public override void DisplayValues()
 		{
-			display_values["value_1"].text = "UP";
-			display_values["value_2"].text = "DOWN";
-			display_values["value_3"].text = "HIGH";
-			display_values["value_4"].text = "LOW";
-			display_values["value_13"].text = CarH.running ? "INFINITE" : "LOW";
-			display_values["value_16"].text = "All";
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, "UP")
+				.SetDisplayValue(InfoPanel.VALUE_2, "DOWN")
+				.SetDisplayValue(InfoPanel.VALUE_3, "HIGH")
+				.SetDisplayValue(InfoPanel.VALUE_4, "LOW")
+				.SetDisplayValue(InfoPanel.VALUE_13, CarH.running ? "INFINITE" : "LOW")
+				.SetDisplayValue(InfoPanel.VALUE_16, "All");
 		}
 
 		public override void Handle()
@@ -158,7 +161,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			DisplayValues();
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			switch (value)
 			{
@@ -181,8 +184,6 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 					playSound = false;
 					break;
 			}
-
-			gameObjectHit.PlayTouch();
 		}
 	}
 }

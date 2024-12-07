@@ -13,12 +13,7 @@ namespace DonnerTech_ECU_Mod.part
 
 		public SmartEngineModule_Logic logic;
 
-		public SmartEngineModule(
-			MountingPlate parent,
-			AbsModule absModule,
-			EspModule espModule,
-			TcsModule tcsModule
-		) : base(parent, DonnerTech_ECU_Mod.partBaseInfo)
+		public SmartEngineModule(MountingPlate parent) : base(parent, DonnerTech_ECU_Mod.partBaseInfo)
 		{
 			AddScrews(new[]
 			{
@@ -29,7 +24,7 @@ namespace DonnerTech_ECU_Mod.part
 			}, 0.8f, 8);
 
 			logic = AddEventBehaviour<SmartEngineModule_Logic>(PartEvent.Type.Install);
-			logic.Init(this, absModule, espModule, tcsModule);
+			logic.Init(this);
 		}
 	}
 }

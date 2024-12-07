@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DonnerTech_ECU_Mod.fuelsystem;
 using DonnerTech_ECU_Mod.part;
+using DonnerTech_ECU_Mod.part.Module;
 using DonnerTech_ECU_Mod.Parts;
 using HutongGames.PlayMaker;
 using MSCLoader;
@@ -97,7 +98,7 @@ namespace DonnerTech_ECU_Mod
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
-		public override string Version => "1.6.0"; //Version
+		public override string Version => "1.6.1"; //Version
 		public override bool UseAssetsFolder => true;
 
 		public AssetBundle assetBundle;
@@ -181,7 +182,7 @@ namespace DonnerTech_ECU_Mod
 
 			ModConsole.Print(
 				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] started loading</color>");
-
+			
 			partsList = new List<Part>();
 
 			//MscModApi.MscModApi.EnableScrewPlacementForAllParts(this);
@@ -244,15 +245,17 @@ namespace DonnerTech_ECU_Mod
 			espModule = new EspModule(mountingPlate);
 			tcsModule = new TcsModule(mountingPlate);
 
-			smartEngineModule = new SmartEngineModule(mountingPlate, absModule, espModule, tcsModule);
+			smartEngineModule = new SmartEngineModule(mountingPlate);
 
 			cableHarness = new CableHarness(mountingPlate);
 
-			infoPanel = new InfoPanel(dashboard, this, assetBundle);
-
 			rainLightSensorboard = new RainLightSensorBoard(dashboard);
 
-			reverseCamera = new ReverseCamera(bootlid);
+			infoPanel = new InfoPanel(dashboard, absModule, espModule, tcsModule, rainLightSensorboard, this, assetBundle);
+
+			reverseCamera = new ReverseCamera(bootlid, infoPanel);
+
+
 
 			fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
 			fuelPumpCover = new FuelPumpCover(block);
@@ -338,11 +341,6 @@ namespace DonnerTech_ECU_Mod
 
 			ModConsole.Print(
 				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] finished loading</color>");
-		}
-
-		public void SetReverseCameraEnabled(bool enabled)
-		{
-			reverseCamera.SetEnabled(enabled);
 		}
 
 		public void CreateChipPart(string id, Vector3 spawnLocation, bool resetToDefault = false)

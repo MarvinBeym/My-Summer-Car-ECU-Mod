@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using MscModApi.Parts;
 using UnityEngine;
@@ -24,8 +25,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmInt rpm;
 		private FsmFloat boost;
 
-		public Turbocharger(string pageName, GameObject turbine, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName,
-			infoPanelBaseInfo)
+		public Turbocharger(string pageName, InfoPanel infoPanel, GameObject turbine, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			this.turbine = turbine;
 			turbineUsed = true;
@@ -44,21 +44,23 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		{
 			if (installedTurbo == null)
 			{
-				display_values["value_1"].text = "---";
-				display_values["value_2"].text = "---";
-				display_values["value_14"].text = "---";
-				display_values["value_15"].text = "---";
-				display_values["value_16"].text = "---";
+				infoPanel
+					.SetDisplayValue(InfoPanel.VALUE_1, "---")
+					.SetDisplayValue(InfoPanel.VALUE_2, "---")
+					.SetDisplayValue(InfoPanel.VALUE_14, "---")
+					.SetDisplayValue(InfoPanel.VALUE_15, "---")
+					.SetDisplayValue(InfoPanel.VALUE_16, "---");
 				return;
 			}
 
 			turbine.transform.Rotate(0f, 0f, 40 * Time.deltaTime);
 
-			display_values["value_1"].text = boost.Value.ToString("0.00");
-			display_values["value_2"].text = setBoost.Value.ToString("0.00");
-			display_values["value_14"].text = exhaustTemp.Value > 0f ? exhaustTemp.Value.ToString("000") : "---"; //ToDo: requires implementation on turbo mod side
-			display_values["value_15"].text = intakeTemp.Value > 0f ? intakeTemp.Value.ToString("000") : "---"; //ToDo: requires implementation on turbo mod side
-			display_values["value_16"].text = rpm.Value.ToString("0");
+			infoPanel
+				.SetDisplayValue(InfoPanel.VALUE_1, boost.Value, "0.00")
+				.SetDisplayValue(InfoPanel.VALUE_2, setBoost.Value, "0.00")
+				.SetDisplayValue(InfoPanel.VALUE_14, exhaustTemp.Value > 0f ? exhaustTemp.Value.ToString("000") : "---") //ToDo: requires implementation on turbo mod side
+				.SetDisplayValue(InfoPanel.VALUE_15, intakeTemp.Value > 0f ? intakeTemp.Value.ToString("000") : "---") //ToDo: requires implementation on turbo mod side
+				.SetDisplayValue(InfoPanel.VALUE_16, rpm.Value, "0");
 		}
 
 		public override void Handle()
@@ -110,7 +112,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			}
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 		}
 	}

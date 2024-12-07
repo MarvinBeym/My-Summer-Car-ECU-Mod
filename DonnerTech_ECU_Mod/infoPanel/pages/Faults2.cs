@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DonnerTech_ECU_Mod.part;
 using MscModApi.Caching;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		private FsmFloat wearSpark3;
 		private FsmFloat wearSpark4;
 
-		public Faults2(string pageName, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanelBaseInfo)
+		public Faults2(string pageName, InfoPanel infoPanel, InfoPanelBaseInfo infoPanelBaseInfo) : base(pageName, infoPanel, infoPanelBaseInfo)
 		{
 			PlayMakerFSM race_radiatorFSM = Cache.Find("Racing Radiator").GetComponent<PlayMakerFSM>();
 			PlayMakerFSM radiatorFSM = Cache.Find("Radiator").GetComponent<PlayMakerFSM>();
@@ -87,54 +88,56 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 		{
 			if (radiator_installed.Value)
 			{
-				display_values["value_1"].text = ConvertFloatToPercantage(0.01f, 5.4f, waterLevelRadiator.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_1, ConvertFloatToPercantage(0.01f, 5.4f, waterLevelRadiator.Value));
 			}
 			else if (race_radiator_installed.Value)
 			{
-				display_values["value_1"].text = ConvertFloatToPercantage(0.01f, 7, waterLevelRaceRadiator.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_1, ConvertFloatToPercantage(0.01f, 7, waterLevelRaceRadiator.Value));
 			}
 
 			if (oilpan_installed.Value)
 			{
-				display_values["value_2"].text = ConvertFloatToPercantage(0.01f, 3, oilLevel.Value);
-				display_values["value_3"].text = ConvertFloatToPercantage(1, 100, oilContamination.Value);
-				display_values["value_4"].text = oilGrade.Value.ToString("00.00");
+				infoPanel
+					.SetDisplayValue(InfoPanel.VALUE_2, ConvertFloatToPercantage(0.01f, 3, oilLevel.Value))
+					.SetDisplayValue(InfoPanel.VALUE_3, ConvertFloatToPercantage(1, 100, oilContamination.Value))
+					.SetDisplayValue(InfoPanel.VALUE_4, oilGrade.Value, "00.00");
 			}
 
 			if (clutchMasterCylinder_installed.Value)
 			{
-				display_values["value_5"].text = ConvertFloatToPercantage(0, 0.5f, clutchFluidLevel.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_5, ConvertFloatToPercantage(0, 0.5f, clutchFluidLevel.Value));
 			}
 
 			if (fueltank_installed.Value)
 			{
-				display_values["value_6"].text = ConvertFloatToPercantage(0, 36, fuelLevel.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_6, ConvertFloatToPercantage(0, 36, fuelLevel.Value));
 			}
 
 			if (brakeMasterCylinder_installed.Value)
 			{
-				display_values["value_7"].text = ConvertFloatToPercantage(0, 1, brakeFluidF.Value);
-				display_values["value_8"].text = ConvertFloatToPercantage(0, 1, brakeFluidR.Value);
+				infoPanel
+					.SetDisplayValue(InfoPanel.VALUE_7, ConvertFloatToPercantage(0, 1, brakeFluidF.Value))
+					.SetDisplayValue(InfoPanel.VALUE_8, ConvertFloatToPercantage(0, 1, brakeFluidR.Value));
 			}
 
 			if (sparkplug1_installed.Value)
 			{
-				display_values["value_9"].text = ConvertFloatToPercantage(0, 100, wearSpark1.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_9, ConvertFloatToPercantage(0, 100, wearSpark1.Value));
 			}
 
 			if (sparkplug2_installed.Value)
 			{
-				display_values["value_10"].text = ConvertFloatToPercantage(0, 100, wearSpark2.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_10, ConvertFloatToPercantage(0, 100, wearSpark2.Value));
 			}
 
 			if (sparkplug3_installed.Value)
 			{
-				display_values["value_11"].text = ConvertFloatToPercantage(0, 100, wearSpark3.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_11, ConvertFloatToPercantage(0, 100, wearSpark3.Value));
 			}
 
 			if (sparkplug4_installed.Value)
 			{
-				display_values["value_12"].text = ConvertFloatToPercantage(0, 100, wearSpark4.Value);
+				infoPanel.SetDisplayValue(InfoPanel.VALUE_12, ConvertFloatToPercantage(0, 100, wearSpark4.Value));
 			}
 		}
 
@@ -143,7 +146,7 @@ namespace DonnerTech_ECU_Mod.info_panel_pages
 			DisplayValues();
 		}
 
-		public override void Pressed_Display_Value(string value, GameObject gameObjectHit)
+		public override void Pressed_Display_Value(string value)
 		{
 			/*
 			switch (value)

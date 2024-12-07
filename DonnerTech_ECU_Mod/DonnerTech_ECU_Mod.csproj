@@ -76,6 +76,7 @@
     <Compile Include="gui\GuiDebug.cs" />
     <Compile Include="gui\GuiDebugElement.cs" />
     <Compile Include="gui\GuiDebugInfo.cs" />
+    <Compile Include="LightSensorLogic.cs" />
     <Compile Include="part\BlockGamePart.cs" />
     <Compile Include="part\InfoPanel.cs" />
     <Compile Include="part\ChipProgrammer.cs" />
@@ -84,15 +85,16 @@
     <Compile Include="part\FuelRail.cs" />
     <Compile Include="part\FuelPumpCover.cs" />
     <Compile Include="part\FuelInjectionManifold.cs" />
+    <Compile Include="part\Module\ModulePart.cs" />
     <Compile Include="part\NullGamePart.cs" />
     <Compile Include="part\RainLightSensorBoard.cs" />
     <Compile Include="part\CableHarness.cs" />
-    <Compile Include="part\ReverseCamera.cs" />
+    <Compile Include="part\Module\ReverseCamera.cs" />
     <Compile Include="part\CruiseControlPanel.cs" />
     <Compile Include="part\SmartEngineModule.cs" />
-    <Compile Include="part\EspModule.cs" />
-    <Compile Include="part\TcsModule.cs" />
-    <Compile Include="part\AbsModule.cs" />
+    <Compile Include="part\Module\EspModule.cs" />
+    <Compile Include="part\Module\TcsModule.cs" />
+    <Compile Include="part\Module\AbsModule.cs" />
     <Compile Include="part\MountingPlate.cs" />
     <Compile Include="CruiseControl_Logic.cs" />
     <Compile Include="fuelsystem\FloatForce.cs" />
@@ -103,7 +105,6 @@
     <Compile Include="infoPanel\pages\Assistance.cs" />
     <Compile Include="infoPanel\pages\Airride.cs" />
     <Compile Include="infoPanel\pages\Turbocharger.cs" />
-    <Compile Include="infoPanel\pages\Page4.cs" />
     <Compile Include="infoPanel\pages\Faults2.cs" />
     <Compile Include="infoPanel\pages\Faults.cs" />
     <Compile Include="infoPanel\pages\Main.cs" />
@@ -113,6 +114,8 @@
     <Compile Include="Parts\ChipPart.cs" />
     <Compile Include="Parts\ChipSave.cs" />
     <Compile Include="ReverseCamera_Logic.cs" />
+    <Compile Include="RainSensorLogic.cs" />
+    <Compile Include="ShiftIndicatorLogic.cs" />
     <Compile Include="SmartEngineModule_Logic.cs" />
     <Compile Include="DonnerTech_ECU_Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
