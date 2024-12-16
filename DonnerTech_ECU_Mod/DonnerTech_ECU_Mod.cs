@@ -166,6 +166,8 @@ namespace DonnerTech_ECU_Mod
 		public Settings enableAirrideInfoPanelPage = new Settings("enableAirrideInfoPanelPage",
 			"Enable Airride (enabled/disabled before load)", false);
 
+		public Settings enableFuelSystem = new Settings("enableFuelSystem", "Enable fuel injection system", false);
+
 
 		public override void OnNewGame()
 		{
@@ -225,18 +227,6 @@ namespace DonnerTech_ECU_Mod
 			ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
 			ecu_mod_gameObject.name = ID;
 
-			var fuel_injector = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
-			var throttle_body = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
-
-			var fuel_injectors_box_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("fuel_injectors_box.prefab")));
-			var throttle_bodies_box_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("throttle_bodies_box.prefab")));
-			ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
-
-			fuel_injectors_box_gameObject.SetNameLayerTag("Fuel Injectors(Clone)");
-			throttle_bodies_box_gameObject.SetNameLayerTag("Throttle Bodies(Clone)");
-
 			partBaseInfo = new PartBaseInfo(this, assetBundle, partsList);
 
 			mountingPlate = new MountingPlate(SatsumaGamePart.GetInstance());
@@ -256,43 +246,58 @@ namespace DonnerTech_ECU_Mod
 			reverseCamera = new ReverseCamera(bootlid, infoPanel);
 
 
+			if ((bool) enableFuelSystem.Value)
+			{
+				var fuelInjectorTemplate = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
+				var throttleBodyTemplate = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
 
-			fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
-			fuelPumpCover = new FuelPumpCover(block);
-			fuelRail = new FuelRail(fuelInjectionManifold);
+				var fuelInjectorsBoxGameObject =
+					GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("fuel_injectors_box.prefab")));
+				var throttleBodiesBoxGameObject =
+					GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("throttle_bodies_box.prefab")));
+				ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
 
-			electricFuelPump = new ElectricFuelPump(SatsumaGamePart.GetInstance());
+				fuelInjectorsBoxGameObject.SetNameLayerTag("Fuel Injectors(Clone)");
+				throttleBodiesBoxGameObject.SetNameLayerTag("Throttle Bodies(Clone)");
 
-			fuelInjectorsBox = new MscModApi.Parts.PartBox.Box(
-				"Fuel Injectors",
-				"fuel_injector",
-				"Fuel Injector",
-				fuel_injectors_box_gameObject,
-				fuel_injector,
-				4,
-				fuelInjectionManifold,
-				new[]
-				{
-					new Vector3(0.105f, 0.0074f, -0.0012f),
-					new Vector3(0.0675f, 0.0074f, -0.0012f),
-					new Vector3(-0.068f, 0.0074f, -0.0012f),
-					new Vector3(-0.105f, 0.0074f, -0.0012f)
-				},
-				new[]
-				{
-					new Vector3(30, 0, 0),
-					new Vector3(30, 0, 0),
-					new Vector3(30, 0, 0),
-					new Vector3(30, 0, 0),
-				},
-				Shop.SpawnLocation.Fleetari.Counter
-			);
+				fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
+				fuelPumpCover = new FuelPumpCover(block);
+				fuelRail = new FuelRail(fuelInjectionManifold);
+				electricFuelPump = new ElectricFuelPump(SatsumaGamePart.GetInstance());
 
-			throttleBodiesBox = new ThrottleBodiesBox(fuelInjectionManifold, throttle_bodies_box_gameObject, throttle_body);
+				fuelInjectorsBox = new MscModApi.Parts.PartBox.Box(
+					"Fuel Injectors",
+					"fuel_injector",
+					"Fuel Injector",
+					fuelInjectorsBoxGameObject,
+					fuelInjectorTemplate,
+					4,
+					fuelInjectionManifold,
+					new[]
+					{
+						new Vector3(0.105f, 0.0074f, -0.0012f),
+						new Vector3(0.0675f, 0.0074f, -0.0012f),
+						new Vector3(-0.068f, 0.0074f, -0.0012f),
+						new Vector3(-0.105f, 0.0074f, -0.0012f)
+					},
+					new[]
+					{
+						new Vector3(30, 0, 0),
+						new Vector3(30, 0, 0),
+						new Vector3(30, 0, 0),
+						new Vector3(30, 0, 0),
+					},
+					Shop.SpawnLocation.Fleetari.Counter
+				);
 
-			fuelSystem = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
-			chipProgrammer = new ChipProgrammer(this, fuelSystem);
-			fuelSystem.LoadChips();
+				throttleBodiesBox = new ThrottleBodiesBox(fuelInjectionManifold, throttleBodiesBoxGameObject, throttleBodyTemplate);
+
+				fuelSystem = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
+				chipProgrammer = new ChipProgrammer(this, fuelSystem);
+				fuelSystem.LoadChips();
+				Object.Destroy(fuelInjectorTemplate);
+				Object.Destroy(throttleBodyTemplate);
+			}
 
 			cruiseControlPanel = new CruiseControlPanel(dashboard, smartEngineModule, cableHarness, mountingPlate, fuelSystem);
 
@@ -317,27 +322,32 @@ namespace DonnerTech_ECU_Mod
 				new ShopItem("Rain & Light Sensorboard", 1000, shopSpawnLocation, rainLightSensorboard,
 					"rain-light-sensorboard_productImage.png"),
 				new ShopItem("Reverse Camera", 1500, shopSpawnLocation, reverseCamera,
-					"reverse-camera_productImage.png"),
-				new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuelPumpCover,
-					"fuel-pump-cover-plate_productImage.png"),
-				new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuelInjectionManifold,
-					"fuel-injection-manifold_productImage.png"),
-				new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuelRail, "fuel-rail_productImage.png"),
-				new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chipProgrammer,
-					"chip-programmer_productImage.png"),
-				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electricFuelPump,
-					"electric-fuel-pump_productImage.png"),
-				new ShopItem("Fuel Injectors", 800, shopSpawnLocation, fuelInjectorsBox, "fuel-injectors-box_productImage.png"),
-				new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, throttleBodiesBox, "throttle-bodies-box_productImage.png"),
-			new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
-				{
-					CreateChipPart($"chip_{ChipPart.counter}", shopSpawnLocation, true);
-				}, "chip_productImage.png"),
+					"reverse-camera_productImage.png")
 			});
 
+			if ((bool) enableFuelSystem.Value)
+			{
+				Shop.Add(shopBaseInfo, Shop.ShopLocation.Fleetari, new[]
+				{
+					new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuelPumpCover,
+						"fuel-pump-cover-plate_productImage.png"),
+					new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuelInjectionManifold,
+						"fuel-injection-manifold_productImage.png"),
+					new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuelRail, "fuel-rail_productImage.png"),
+					new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chipProgrammer,
+						"chip-programmer_productImage.png"),
+					new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electricFuelPump,
+						"electric-fuel-pump_productImage.png"),
+					new ShopItem("Fuel Injectors", 800, shopSpawnLocation, fuelInjectorsBox, "fuel-injectors-box_productImage.png"),
+					new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, throttleBodiesBox, "throttle-bodies-box_productImage.png"),
+					new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
+					{
+						CreateChipPart($"chip_{ChipPart.counter}", shopSpawnLocation, true);
+					}, "chip_productImage.png")
+				});
+			}
+
 			assetBundle.Unload(false);
-			Object.Destroy(fuel_injector);
-			Object.Destroy(throttle_body);
 
 			ModConsole.Print(
 				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] finished loading</color>");
@@ -371,7 +381,19 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddHeader(this, "Settings");
 			Settings.AddCheckBox(this, enableAirrideInfoPanelPage);
 			Settings.AddCheckBox(this, settingThrottleBodyValveRotation);
-			Settings.AddHeader(this, "", Color.clear);
+			Settings.AddHeader(this, "Fuel system");
+			Settings.AddCheckBox(this, enableFuelSystem);
+			Settings.AddText(this, "The fuel system (injection) is currently highly experimental." 
+			   + "\n\nThis checkbox has to be checked prior to loading the game!"
+               + "\nCurrently many issues exist with parts being disassembled when loading the game." 
+               + "\nThese are related to mods being loaded too early by the ModLoader and parts aren't physically on the car yet." 
+               + "\n\nSome of the causes where fixed through a workaround by keeping the player movement locked for ~5 seconds after MscModApi has loaded to wait a few seconds longer"
+               + "\nbut some users appear to still have issues, I've never been reliably able to replicate these issues so the feature is now considered <color=blue>experimental</color>"
+			   + "\n\nBecause the mod fakes the install state for some parts (so the game still works as usual) this results in the mod unable to determine what the real state of those parts is" 
+               + "\n(mod supposed to fake the install state or are the parts actually physically installed on the car = not using mod)" 
+               + "\n\nBy checking the checkbox above you agree this feature can and will likely cause problems." 
+               + "\ngeneric '<color=blue>don't work fix this</color>'. Bug reports with no useful information added will be closed!"
+			);
 
 			TransmissionHandler.SetupSettings(this);
 			GearRatiosHandler.SetupSettings(this);
