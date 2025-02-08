@@ -1,0 +1,117 @@
+fileFormatVersion: 2
+guid: eb4199ec0799c2c4f9853e9a71800e53
+timeCreated: 1738964221
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Display_Background_CruiseControlPanel_DisplayBackground
+    100004: Panel_CruiseControlPanel.001
+    100006: Switch_Minus_CruiseControlPanel_Minus.001
+    100008: Switch_Minus_Text_CruiseControlPanel_Minus_Text
+    100010: Switch_Plus_CruiseControlPanel_Plus.001
+    100012: Switch_Plus_Text_CruiseControlPanel_Plus_Text
+    100014: Switch_Reset_CruiseControlPanel_Reset.001
+    100016: Switch_Reset_Text_CruiseControlPanel_Reset_Text
+    100018: Switch_Set_CruiseControlPanel_Set.001
+    100020: Switch_Set_Text_CruiseControlPanel_Set_Text
+    400000: //RootNode
+    400002: Display_Background_CruiseControlPanel_DisplayBackground
+    400004: Panel_CruiseControlPanel.001
+    400006: Switch_Minus_CruiseControlPanel_Minus.001
+    400008: Switch_Minus_Text_CruiseControlPanel_Minus_Text
+    400010: Switch_Plus_CruiseControlPanel_Plus.001
+    400012: Switch_Plus_Text_CruiseControlPanel_Plus_Text
+    400014: Switch_Reset_CruiseControlPanel_Reset.001
+    400016: Switch_Reset_Text_CruiseControlPanel_Reset_Text
+    400018: Switch_Set_CruiseControlPanel_Set.001
+    400020: Switch_Set_Text_CruiseControlPanel_Set_Text
+    2300000: Display_Background_CruiseControlPanel_DisplayBackground
+    2300002: Panel_CruiseControlPanel.001
+    2300004: Switch_Minus_CruiseControlPanel_Minus.001
+    2300006: Switch_Minus_Text_CruiseControlPanel_Minus_Text
+    2300008: Switch_Plus_CruiseControlPanel_Plus.001
+    2300010: Switch_Plus_Text_CruiseControlPanel_Plus_Text
+    2300012: Switch_Reset_CruiseControlPanel_Reset.001
+    2300014: Switch_Reset_Text_CruiseControlPanel_Reset_Text
+    2300016: Switch_Set_CruiseControlPanel_Set.001
+    2300018: Switch_Set_Text_CruiseControlPanel_Set_Text
+    3300000: Display_Background_CruiseControlPanel_DisplayBackground
+    3300002: Panel_CruiseControlPanel.001
+    3300004: Switch_Minus_CruiseControlPanel_Minus.001
+    3300006: Switch_Minus_Text_CruiseControlPanel_Minus_Text
+    3300008: Switch_Plus_CruiseControlPanel_Plus.001
+    3300010: Switch_Plus_Text_CruiseControlPanel_Plus_Text
+    3300012: Switch_Reset_CruiseControlPanel_Reset.001
+    3300014: Switch_Reset_Text_CruiseControlPanel_Reset_Text
+    3300016: Switch_Set_CruiseControlPanel_Set.001
+    3300018: Switch_Set_Text_CruiseControlPanel_Set_Text
+    4300000: Display_Background_CruiseControlPanel_DisplayBackground
+    4300002: Panel_CruiseControlPanel.001
+    4300004: Switch_Minus_CruiseControlPanel_Minus.001
+    4300006: Switch_Minus_Text_CruiseControlPanel_Minus_Text
+    4300008: Switch_Plus_CruiseControlPanel_Plus.001
+    4300010: Switch_Plus_Text_CruiseControlPanel_Plus_Text
+    4300012: Switch_Reset_CruiseControlPanel_Reset.001
+    4300014: Switch_Reset_Text_CruiseControlPanel_Reset_Text
+    4300016: Switch_Set_CruiseControlPanel_Set.001
+    4300018: Switch_Set_Text_CruiseControlPanel_Set_Text
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
