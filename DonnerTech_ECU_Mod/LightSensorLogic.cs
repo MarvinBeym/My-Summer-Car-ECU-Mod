@@ -35,8 +35,8 @@ namespace DonnerTech_ECU_Mod
 
 			beamShort = Cache.Find("SATSUMA(557kg, 248)/Electricity/PowerON/BeamsShort");
 
-			FsmHook.FsmInject(Cache.Find("StreetLights"), "Day", new Action(delegate () { isNight = false; }));
-			FsmHook.FsmInject(Cache.Find("StreetLights"), "Night", new Action(delegate () { isNight = true; }));
+			Cache.Find("StreetLights").FsmInject("Lights Switch", "Day", new Action(delegate() { isNight = false; }));
+			Cache.Find("StreetLights").FsmInject("Lights Switch", "Night", new Action(delegate () { isNight = true; }));
 		}
 
 		public bool enabled

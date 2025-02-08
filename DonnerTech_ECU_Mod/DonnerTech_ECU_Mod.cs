@@ -99,7 +99,6 @@ namespace DonnerTech_ECU_Mod
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
 		public override string Version => "1.6.1"; //Version
-		public override bool UseAssetsFolder => true;
 
 		public AssetBundle assetBundle;
 		public GuiDebug guiDebug;
@@ -156,20 +155,23 @@ namespace DonnerTech_ECU_Mod
 
 		public ChipProgrammer chipProgrammer;
 
-
-		private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
-		private Settings resetPosSetting = new Settings("resetPos", "Reset Part position", Helper.WorkAroundAction);
-
-		public Settings settingThrottleBodyValveRotation =
-			new Settings("settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
-
-		public Settings enableAirrideInfoPanelPage = new Settings("enableAirrideInfoPanelPage",
-			"Enable Airride (enabled/disabled before load)", false);
-
-		public Settings enableFuelSystem = new Settings("enableFuelSystem", "Enable fuel injection system", false);
+		private SettingsCheckBox debugGuiSetting;
+		public SettingsCheckBox settingThrottleBodyValveRotation;
+		public SettingsCheckBox enableAirrideInfoPanelPage;
+		public SettingsCheckBox enableFuelSystem;
 
 
-		public override void OnNewGame()
+		public override void ModSetup()
+		{
+			SetupFunction(Setup.OnNewGame, OnNewGame);
+			SetupFunction(Setup.OnLoad, OnLoad);
+			SetupFunction(Setup.ModSettings, ModSettings);
+			SetupFunction(Setup.Update, Update);
+			SetupFunction(Setup.OnSave, OnSave);
+			SetupFunction(Setup.OnGUI, OnGUI);
+		}
+
+		public void OnNewGame()
 		{
 			MscModApi.MscModApi.NewGameCleanUp(this);
 			foreach (var file in Directory.GetFiles(Path.Combine(ModLoader.GetModSettingsFolder(this), "fuelMaps"), "chip_*_saveFile.json", SearchOption.TopDirectoryOnly))
@@ -178,7 +180,7 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		public override void OnLoad()
+		public void OnLoad()
 		{
 			NullGamePart.LoadCleanup();
 
@@ -198,8 +200,6 @@ namespace DonnerTech_ECU_Mod
 					new GuiDebugElement("Cruise control"),
 				});
 
-			resetPosSetting.DoAction = PosReset;
-
 			assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
 
 			Keybind.AddHeader(this, "ECU-Panel Keybinds");
@@ -210,7 +210,7 @@ namespace DonnerTech_ECU_Mod
 			Keybind.Add(this, plus);
 			Keybind.Add(this, minus);
 
-			if ((bool) enableAirrideInfoPanelPage.Value)
+			if (enableAirrideInfoPanelPage.GetValue())
 			{
 				Keybind.AddHeader(this, "Airride Keybinds");
 				Keybind.Add(this, highestKeybind);
@@ -246,7 +246,7 @@ namespace DonnerTech_ECU_Mod
 			reverseCamera = new ReverseCamera(bootlid, infoPanel);
 
 
-			if ((bool) enableFuelSystem.Value)
+			if (enableFuelSystem.GetValue())
 			{
 				var fuelInjectorTemplate = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
 				var throttleBodyTemplate = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
@@ -325,7 +325,7 @@ namespace DonnerTech_ECU_Mod
 					"reverse-camera_productImage.png")
 			});
 
-			if ((bool) enableFuelSystem.Value)
+			if ((bool) enableFuelSystem.GetValue())
 			{
 				Shop.Add(shopBaseInfo, Shop.ShopLocation.Fleetari, new[]
 				{
@@ -372,17 +372,18 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		public override void ModSettings()
+		public void ModSettings()
 		{
 			Settings.HideResetAllButton(this);
 			Settings.AddHeader(this, "DEBUG");
-			Settings.AddCheckBox(this, debugGuiSetting);
-			Settings.AddButton(this, resetPosSetting, "Reset uninstalled part location");
+			debugGuiSetting = Settings.AddCheckBox(this, "debugGuiSetting", "Show DEBUG GUI", false);
+			Settings.AddButton(this, "resetPos", "Reset Part position", PosReset);
 			Settings.AddHeader(this, "Settings");
-			Settings.AddCheckBox(this, enableAirrideInfoPanelPage);
-			Settings.AddCheckBox(this, settingThrottleBodyValveRotation);
+			enableAirrideInfoPanelPage = Settings.AddCheckBox(this, "enableAirrideInfoPanelPage",
+				"Enable Airride (enabled/disabled before load)", false);
+			settingThrottleBodyValveRotation = Settings.AddCheckBox(this, "settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
 			Settings.AddHeader(this, "Fuel system");
-			Settings.AddCheckBox(this, enableFuelSystem);
+			enableFuelSystem = Settings.AddCheckBox(this, "enableFuelSystem", "Enable fuel injection system", false);
 			Settings.AddText(this, "The fuel system (injection) is currently highly experimental." 
 			   + "\n\nThis checkbox has to be checked prior to loading the game!"
                + "\nCurrently many issues exist with parts being disassembled when loading the game." 
@@ -401,15 +402,15 @@ namespace DonnerTech_ECU_Mod
 			Settings.AddText(this, "Copyright © Marvin Beym 2020-2024");
 		}
 
-		public override void OnSave()
+		public void OnSave()
 		{
 			//Nothing to do
 		}
 
 
-		public override void OnGUI()
+		public void OnGUI()
 		{
-			if ((bool) debugGuiSetting.Value)
+			if (debugGuiSetting.GetValue())
 			{
 				guiDebug.Handle(new[]
 				{
@@ -436,7 +437,7 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		public override void Update()
+		public void Update()
 		{
 			TransmissionHandler.Handle();
 			GearRatiosHandler.Handle();

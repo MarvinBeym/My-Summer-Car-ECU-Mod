@@ -145,7 +145,7 @@ namespace DonnerTech_ECU_Mod.part
 				pages.Add(new Turbocharger("turbocharger_page", this, transform.FindChild("turbine").gameObject, infoPanelBaseInfo));
 			}
 
-			if ((bool)mod.enableAirrideInfoPanelPage.Value)
+			if (mod.enableAirrideInfoPanelPage.GetValue())
 			{
 				pages.Add(new Airride("airride_page", this, infoPanelBaseInfo));
 			}
