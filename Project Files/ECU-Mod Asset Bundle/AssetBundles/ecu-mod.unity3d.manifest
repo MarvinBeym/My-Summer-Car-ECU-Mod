@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2059078132
+CRC: 2998449707
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d7d7fdbbc4e64d3a25408da4755b8eb1
+    Hash: dabcec0bea1ea35fb60707050494539e
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 389209fce78cc7ac6121dcbd1144b3ea
+    Hash: b067bb3b0c934474bb6149fb979bbbad
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -71,10 +71,6 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 128
   Script: {instanceID: 0}
-- Class: 136
-  Script: {instanceID: 0}
-- Class: 137
-  Script: {instanceID: 0}
 - Class: 212
   Script: {instanceID: 0}
 - Class: 213
@@ -103,7 +99,6 @@ Assets:
 - Assets/FuelSystem/fuel_injector.prefab
 - Assets/Info-Panel/tuner_page.png
 - Assets/ProductImages/chip-programmer_productImage.png
-- Assets/AWD/awd_gearbox.prefab
 - Assets/Info-Panel/airride_page.png
 - Assets/ProductImages/cruise-control_productImage.png
 - Assets/FuelSystem/fuel_injection_manifold.prefab
@@ -112,15 +107,12 @@ Assets:
 - Assets/FuelSystem/electric_fuel_pump.prefab
 - Assets/Info-Panel/Handbrake-Icon.png
 - Assets/FuelSystem/wires_sparkPlugs_2.prefab
-- Assets/AWD/awd_propshaft.prefab
 - Assets/Info-Panel/assistance_page.png
 - Assets/Info-Panel/TurbineWheel.png
 - Assets/Info-Panel/turbocharger_page.png
 - Assets/Info-Panel/HighBeam-Icon.png
-- Assets/AWD/awd_differential.prefab
 - Assets/FuelSystem/wires_sparkPlugs_1.prefab
 - Assets/Info-Panel/faults_page.png
-- Assets/Airride/Airride_FL.prefab
 - Assets/FuelSystem/throttle_body.prefab
 - Assets/ProductImages/fuel-pump-cover-plate_productImage.png
 - Assets/ProductImages/fuel-injection-manifold_productImage.png

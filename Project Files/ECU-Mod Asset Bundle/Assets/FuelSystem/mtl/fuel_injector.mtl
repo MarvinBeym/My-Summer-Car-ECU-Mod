@@ -1,20 +1,22 @@
-# Blender MTL File: 'Blender-Project.blend'
-# Material Count: 2
+# Blender 3.6.1 MTL File: 'Blender-Project-Ecu.blend'
+# www.blender.org
 
 newmtl Connector-Material
-Ns 81.000006
+Ns 90.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.150000 0.150000 1.000000
+Kd 0.149960 0.149960 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 3
 
-newmtl None
-Ns 500
-Ka 0.8 0.8 0.8
-Kd 0.8 0.8 0.8
-Ks 0.8 0.8 0.8
-d 1
+newmtl Grey-Material
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.137583 0.137583 0.137583
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
 illum 2
