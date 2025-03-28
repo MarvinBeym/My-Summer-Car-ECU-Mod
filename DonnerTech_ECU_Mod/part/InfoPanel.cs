@@ -18,8 +18,8 @@ namespace DonnerTech_ECU_Mod.part
 	{
 		protected override string partId => "info_panel";
 		protected override string partName => "Info Panel";
-		protected override Vector3 partInstallPosition => new Vector3(0.25f, -0.088f, -0.01f);
-		protected override Vector3 partInstallRotation => new Vector3(0, 180, 180);
+		protected override Vector3 partInstallPosition => new Vector3(0.25f, -0.12f, 0.006f);
+		protected override Vector3 partInstallRotation => new Vector3(20, 180, 180);
 
 		public const string VALUE_1 = "1";
 		public const string VALUE_2 = "2";
