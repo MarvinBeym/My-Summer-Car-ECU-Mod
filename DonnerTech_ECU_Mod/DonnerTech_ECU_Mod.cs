@@ -258,7 +258,7 @@ namespace DonnerTech_ECU_Mod
 					"Fuel Injectors",
 					"fuel_injector",
 					"Fuel Injector",
-					fuelInjectorsBoxGameObject,
+					fuelInjectorsBoxGameObject,  //ToDo: don't use custom box anymore
 					fuelInjectorTemplate,
 					4,
 					fuelInjectionManifold,
@@ -279,7 +279,7 @@ namespace DonnerTech_ECU_Mod
 					Shop.SpawnLocation.Fleetari.Counter
 				);
 
-				throttleBodiesBox = new ThrottleBodiesBox(fuelInjectionManifold, throttleBodiesBoxGameObject, throttleBodyTemplate);
+				throttleBodiesBox = new ThrottleBodiesBox(fuelInjectionManifold, throttleBodiesBoxGameObject, throttleBodyTemplate); //ToDo: don't use custom box anymore
 
 				fuelSystem = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
 				chipProgrammer = new ChipProgrammer(this, fuelSystem);
