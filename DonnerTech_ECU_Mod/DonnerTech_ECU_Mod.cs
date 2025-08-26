@@ -109,16 +109,22 @@ namespace DonnerTech_ECU_Mod
 		internal static List<Part> partsList;
 
 		//Keybinds
-		public Keybind highestKeybind = new Keybind("airride_highest", "Airride Highest", KeyCode.LeftArrow);
-		public Keybind lowestKeybind = new Keybind("airride_lowest", "Airride Lowest", KeyCode.RightArrow);
-		public Keybind increaseKeybind = new Keybind("airride_increase", "Airride Increase", KeyCode.UpArrow);
-		public Keybind decreaseKeybind = new Keybind("airride_decrease", "Airride Decrease", KeyCode.DownArrow);
-		public Keybind arrowUp = new Keybind("info_panel_arrowUp", "Arrow Up", KeyCode.Keypad8);
-		public Keybind arrowDown = new Keybind("info_panel_arrowDown", "Arrow Down", KeyCode.Keypad2);
-		public Keybind circle = new Keybind("info_panel_circle", "Circle", KeyCode.KeypadEnter);
-		public Keybind cross = new Keybind("info_panel_cross", "Cross", KeyCode.KeypadPeriod);
-		public Keybind plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
-		public Keybind minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
+
+		//Airride
+		public KeybindHeader airrideKeybindHeader;
+		public SettingsKeybind highestKeybind;
+		public SettingsKeybind lowestKeybind;
+		public SettingsKeybind increaseKeybind;
+		public SettingsKeybind decreaseKeybind;
+
+		//Ecu-Panel
+		public KeybindHeader ecuPanelKeybindHeader;
+		public SettingsKeybind arrowUp;
+		public SettingsKeybind arrowDown;
+		public SettingsKeybind circle;
+		public SettingsKeybind cross;
+		public SettingsKeybind plus;
+		public SettingsKeybind minus;
 
 		//FuelSystem
 		public FuelSystem fuelSystem;
@@ -201,23 +207,6 @@ namespace DonnerTech_ECU_Mod
 				});
 
 			assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
-
-			Keybind.AddHeader(this, "ECU-Panel Keybinds");
-			Keybind.Add(this, arrowUp);
-			Keybind.Add(this, arrowDown);
-			Keybind.Add(this, circle);
-			Keybind.Add(this, cross);
-			Keybind.Add(this, plus);
-			Keybind.Add(this, minus);
-
-			if (enableAirrideInfoPanelPage.GetValue())
-			{
-				Keybind.AddHeader(this, "Airride Keybinds");
-				Keybind.Add(this, highestKeybind);
-				Keybind.Add(this, lowestKeybind);
-				Keybind.Add(this, increaseKeybind);
-				Keybind.Add(this, decreaseKeybind);
-			}
 
 			dashboard = new GamePart("Database/DatabaseMechanics/Dashboard");
 			bootlid = new GamePart("Database/DatabaseBody/Bootlid");
@@ -395,6 +384,24 @@ namespace DonnerTech_ECU_Mod
                + "\n\nBy checking the checkbox above you agree this feature can and will likely cause problems." 
                + "\ngeneric '<color=blue>don't work fix this</color>'. Bug reports with no useful information added will be closed!"
 			);
+
+			ecuPanelKeybindHeader = Keybind.AddHeader("ECU-Panel Keybinds");
+			arrowUp = Keybind.Add("info_panel_arrowUp", "Arrow Up", KeyCode.Keypad8);
+			arrowDown = Keybind.Add("info_panel_arrowDown", "Arrow Down", KeyCode.Keypad2);
+			circle = Keybind.Add("info_panel_circle", "Circle", KeyCode.KeypadEnter);
+			cross = Keybind.Add("info_panel_cross", "Cross", KeyCode.KeypadPeriod);
+			plus = Keybind.Add("info_panel_plus", "Plus", KeyCode.KeypadPlus);
+			minus = Keybind.Add("info_panel_minus", "Minus", KeyCode.KeypadMinus);
+
+			if (enableAirrideInfoPanelPage.GetValue())
+			{
+				airrideKeybindHeader = Keybind.AddHeader("Airride Keybinds");
+
+				highestKeybind = Keybind.Add("airride_highest", "Airride Highest", KeyCode.LeftArrow);
+				lowestKeybind = Keybind.Add("airride_lowest", "Airride Lowest", KeyCode.RightArrow);
+				increaseKeybind = Keybind.Add("airride_increase", "Airride Increase", KeyCode.UpArrow);
+				decreaseKeybind = Keybind.Add("airride_decrease", "Airride Decrease", KeyCode.DownArrow);
+			}
 
 			TransmissionHandler.SetupSettings(this);
 			GearRatiosHandler.SetupSettings(this);
