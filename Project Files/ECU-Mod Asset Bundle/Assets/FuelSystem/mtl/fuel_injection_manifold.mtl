@@ -1,13 +1,12 @@
-# Blender MTL File: 'Blender-Project.blend'
-# Material Count: 1
+# Blender 3.6.1 MTL File: 'Blender-Project-Ecu.blend'
+# www.blender.org
 
 newmtl Steel-Material
-Ns 323.999994
+Ns 360.000000
 Ka 0.800000 0.800000 0.800000
-Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 3
-map_Kd C:\\Users\\Marvin Beym\\Desktop\\Steel-Material.png
+map_Kd D:/Programmierung/My Summer Car Modding/My-Summer-Car-ECU-Mod/Project Files/Blender/images/Steel-Material.png

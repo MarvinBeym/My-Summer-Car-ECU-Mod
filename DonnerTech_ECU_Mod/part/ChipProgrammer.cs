@@ -17,7 +17,7 @@ namespace DonnerTech_ECU_Mod.part
 		protected override Vector3 partInstallPosition => new Vector3(0, 0, 0);
 		protected override Vector3 partInstallRotation => new Vector3(0, 0, 0);
 
-		protected Keybind openUi;
+		protected SettingsKeybind openUi;
 		protected DonnerTech_ECU_Mod mod;
 		private GameObject uiGameObject;
 		private readonly ChipProgrammerLogic logic;
@@ -34,8 +34,7 @@ namespace DonnerTech_ECU_Mod.part
 		{
 			this.mod = mod;
 
-			openUi = new Keybind(partId + "_openUi", "Open/Close", KeyCode.Keypad0);
-			Keybind.Add(mod, openUi);
+			openUi = Keybind.Add(partId + "_openUi", "Open/Close", KeyCode.Keypad0);
 
 			uiGameObject =
 				GameObject.Instantiate((mod.assetBundle.LoadAsset<GameObject>("ui_interface.prefab")));

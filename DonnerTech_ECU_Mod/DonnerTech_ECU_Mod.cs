@@ -98,8 +98,7 @@ namespace DonnerTech_ECU_Mod
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
-		public override string Version => "1.6.1"; //Version
-		public override bool UseAssetsFolder => true;
+		public override string Version => "1.6.2"; //Version
 
 		public AssetBundle assetBundle;
 		public GuiDebug guiDebug;
@@ -110,16 +109,22 @@ namespace DonnerTech_ECU_Mod
 		internal static List<Part> partsList;
 
 		//Keybinds
-		public Keybind highestKeybind = new Keybind("airride_highest", "Airride Highest", KeyCode.LeftArrow);
-		public Keybind lowestKeybind = new Keybind("airride_lowest", "Airride Lowest", KeyCode.RightArrow);
-		public Keybind increaseKeybind = new Keybind("airride_increase", "Airride Increase", KeyCode.UpArrow);
-		public Keybind decreaseKeybind = new Keybind("airride_decrease", "Airride Decrease", KeyCode.DownArrow);
-		public Keybind arrowUp = new Keybind("info_panel_arrowUp", "Arrow Up", KeyCode.Keypad8);
-		public Keybind arrowDown = new Keybind("info_panel_arrowDown", "Arrow Down", KeyCode.Keypad2);
-		public Keybind circle = new Keybind("info_panel_circle", "Circle", KeyCode.KeypadEnter);
-		public Keybind cross = new Keybind("info_panel_cross", "Cross", KeyCode.KeypadPeriod);
-		public Keybind plus = new Keybind("info_panel_plus", "Plus", KeyCode.KeypadPlus);
-		public Keybind minus = new Keybind("info_panel_minus", "Minus", KeyCode.KeypadMinus);
+
+		//Airride
+		public KeybindHeader airrideKeybindHeader;
+		public SettingsKeybind highestKeybind;
+		public SettingsKeybind lowestKeybind;
+		public SettingsKeybind increaseKeybind;
+		public SettingsKeybind decreaseKeybind;
+
+		//Ecu-Panel
+		public KeybindHeader ecuPanelKeybindHeader;
+		public SettingsKeybind arrowUp;
+		public SettingsKeybind arrowDown;
+		public SettingsKeybind circle;
+		public SettingsKeybind cross;
+		public SettingsKeybind plus;
+		public SettingsKeybind minus;
 
 		//FuelSystem
 		public FuelSystem fuelSystem;
@@ -156,18 +161,23 @@ namespace DonnerTech_ECU_Mod
 
 		public ChipProgrammer chipProgrammer;
 
-
-		private Settings debugGuiSetting = new Settings("debugGuiSetting", "Show DEBUG GUI", false);
-		private Settings resetPosSetting = new Settings("resetPos", "Reset Part position", Helper.WorkAroundAction);
-
-		public Settings settingThrottleBodyValveRotation =
-			new Settings("settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
-
-		public Settings enableAirrideInfoPanelPage = new Settings("enableAirrideInfoPanelPage",
-			"Enable Airride (enabled/disabled before load)", false);
+		private SettingsCheckBox debugGuiSetting;
+		public SettingsCheckBox settingThrottleBodyValveRotation;
+		public SettingsCheckBox enableAirrideInfoPanelPage;
+		public SettingsCheckBox enableFuelSystem;
 
 
-		public override void OnNewGame()
+		public override void ModSetup()
+		{
+			SetupFunction(Setup.OnNewGame, OnNewGame);
+			SetupFunction(Setup.OnLoad, OnLoad);
+			SetupFunction(Setup.ModSettings, ModSettings);
+			SetupFunction(Setup.Update, Update);
+			SetupFunction(Setup.OnSave, OnSave);
+			SetupFunction(Setup.OnGUI, OnGUI);
+		}
+
+		public void OnNewGame()
 		{
 			MscModApi.MscModApi.NewGameCleanUp(this);
 			foreach (var file in Directory.GetFiles(Path.Combine(ModLoader.GetModSettingsFolder(this), "fuelMaps"), "chip_*_saveFile.json", SearchOption.TopDirectoryOnly))
@@ -176,13 +186,13 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		public override void OnLoad()
+		public void OnLoad()
 		{
 			NullGamePart.LoadCleanup();
 
 			ModConsole.Print(
 				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] started loading</color>");
-			
+
 			partsList = new List<Part>();
 
 			//MscModApi.MscModApi.EnableScrewPlacementForAllParts(this);
@@ -196,26 +206,7 @@ namespace DonnerTech_ECU_Mod
 					new GuiDebugElement("Cruise control"),
 				});
 
-			resetPosSetting.DoAction = PosReset;
-
 			assetBundle = Helper.LoadAssetBundle(this, "ecu-mod.unity3d");
-
-			Keybind.AddHeader(this, "ECU-Panel Keybinds");
-			Keybind.Add(this, arrowUp);
-			Keybind.Add(this, arrowDown);
-			Keybind.Add(this, circle);
-			Keybind.Add(this, cross);
-			Keybind.Add(this, plus);
-			Keybind.Add(this, minus);
-
-			if ((bool) enableAirrideInfoPanelPage.Value)
-			{
-				Keybind.AddHeader(this, "Airride Keybinds");
-				Keybind.Add(this, highestKeybind);
-				Keybind.Add(this, lowestKeybind);
-				Keybind.Add(this, increaseKeybind);
-				Keybind.Add(this, decreaseKeybind);
-			}
 
 			dashboard = new GamePart("Database/DatabaseMechanics/Dashboard");
 			bootlid = new GamePart("Database/DatabaseBody/Bootlid");
@@ -224,18 +215,6 @@ namespace DonnerTech_ECU_Mod
 
 			ecu_mod_gameObject = GameObject.Instantiate(new GameObject());
 			ecu_mod_gameObject.name = ID;
-
-			var fuel_injector = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
-			var throttle_body = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
-
-			var fuel_injectors_box_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("fuel_injectors_box.prefab")));
-			var throttle_bodies_box_gameObject =
-				GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("throttle_bodies_box.prefab")));
-			ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
-
-			fuel_injectors_box_gameObject.SetNameLayerTag("Fuel Injectors(Clone)");
-			throttle_bodies_box_gameObject.SetNameLayerTag("Throttle Bodies(Clone)");
 
 			partBaseInfo = new PartBaseInfo(this, assetBundle, partsList);
 
@@ -256,43 +235,58 @@ namespace DonnerTech_ECU_Mod
 			reverseCamera = new ReverseCamera(bootlid, infoPanel);
 
 
+			if (enableFuelSystem.GetValue())
+			{
+				var fuelInjectorTemplate = (assetBundle.LoadAsset<GameObject>("fuel_injector.prefab"));
+				var throttleBodyTemplate = (assetBundle.LoadAsset<GameObject>("throttle_body.prefab"));
 
-			fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
-			fuelPumpCover = new FuelPumpCover(block);
-			fuelRail = new FuelRail(fuelInjectionManifold);
+				var fuelInjectorsBoxGameObject =
+					GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("fuel_injectors_box.prefab")));
+				var throttleBodiesBoxGameObject =
+					GameObject.Instantiate((assetBundle.LoadAsset<GameObject>("throttle_bodies_box.prefab")));
+				ChipPart.prefab = assetBundle.LoadAsset<GameObject>("chip.prefab");
 
-			electricFuelPump = new ElectricFuelPump(SatsumaGamePart.GetInstance());
+				fuelInjectorsBoxGameObject.SetNameLayerTag("Fuel Injectors(Clone)");
+				throttleBodiesBoxGameObject.SetNameLayerTag("Throttle Bodies(Clone)");
 
-			fuelInjectorsBox = new MscModApi.Parts.PartBox.Box(
-				"Fuel Injectors",
-				"fuel_injector",
-				"Fuel Injector",
-				fuel_injectors_box_gameObject,
-				fuel_injector,
-				4,
-				fuelInjectionManifold,
-				new[]
-				{
-					new Vector3(0.105f, 0.0074f, -0.0012f),
-					new Vector3(0.0675f, 0.0074f, -0.0012f),
-					new Vector3(-0.068f, 0.0074f, -0.0012f),
-					new Vector3(-0.105f, 0.0074f, -0.0012f)
-				},
-				new[]
-				{
-					new Vector3(30, 0, 0),
-					new Vector3(30, 0, 0),
-					new Vector3(30, 0, 0),
-					new Vector3(30, 0, 0),
-				},
-				Shop.SpawnLocation.Fleetari.Counter
-			);
+				fuelInjectionManifold = new FuelInjectionManifold(assetBundle, cylinderHead);
+				fuelPumpCover = new FuelPumpCover(block);
+				fuelRail = new FuelRail(fuelInjectionManifold);
+				electricFuelPump = new ElectricFuelPump(SatsumaGamePart.GetInstance());
 
-			throttleBodiesBox = new ThrottleBodiesBox(fuelInjectionManifold, throttle_bodies_box_gameObject, throttle_body);
+				fuelInjectorsBox = new MscModApi.Parts.PartBox.Box(
+					"Fuel Injectors",
+					"fuel_injector",
+					"Fuel Injector",
+					fuelInjectorsBoxGameObject,  //ToDo: don't use custom box anymore
+					fuelInjectorTemplate,
+					4,
+					fuelInjectionManifold,
+					new[]
+					{
+						new Vector3(0.105f, 0.0074f, -0.0012f),
+						new Vector3(0.0675f, 0.0074f, -0.0012f),
+						new Vector3(-0.068f, 0.0074f, -0.0012f),
+						new Vector3(-0.105f, 0.0074f, -0.0012f)
+					},
+					new[]
+					{
+						new Vector3(30, 0, 0),
+						new Vector3(30, 0, 0),
+						new Vector3(30, 0, 0),
+						new Vector3(30, 0, 0),
+					},
+					Shop.SpawnLocation.Fleetari.Counter
+				);
 
-			fuelSystem = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
-			chipProgrammer = new ChipProgrammer(this, fuelSystem);
-			fuelSystem.LoadChips();
+				throttleBodiesBox = new ThrottleBodiesBox(fuelInjectionManifold, throttleBodiesBoxGameObject, throttleBodyTemplate); //ToDo: don't use custom box anymore
+
+				fuelSystem = new FuelSystem(this, fuelInjectorsBox.childs, throttleBodiesBox.childs, fuelInjectionManifold);
+				chipProgrammer = new ChipProgrammer(this, fuelSystem);
+				fuelSystem.LoadChips();
+				Object.Destroy(fuelInjectorTemplate);
+				Object.Destroy(throttleBodyTemplate);
+			}
 
 			cruiseControlPanel = new CruiseControlPanel(dashboard, smartEngineModule, cableHarness, mountingPlate, fuelSystem);
 
@@ -317,27 +311,32 @@ namespace DonnerTech_ECU_Mod
 				new ShopItem("Rain & Light Sensorboard", 1000, shopSpawnLocation, rainLightSensorboard,
 					"rain-light-sensorboard_productImage.png"),
 				new ShopItem("Reverse Camera", 1500, shopSpawnLocation, reverseCamera,
-					"reverse-camera_productImage.png"),
-				new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuelPumpCover,
-					"fuel-pump-cover-plate_productImage.png"),
-				new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuelInjectionManifold,
-					"fuel-injection-manifold_productImage.png"),
-				new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuelRail, "fuel-rail_productImage.png"),
-				new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chipProgrammer,
-					"chip-programmer_productImage.png"),
-				new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electricFuelPump,
-					"electric-fuel-pump_productImage.png"),
-				new ShopItem("Fuel Injectors", 800, shopSpawnLocation, fuelInjectorsBox, "fuel-injectors-box_productImage.png"),
-				new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, throttleBodiesBox, "throttle-bodies-box_productImage.png"),
-			new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
-				{
-					CreateChipPart($"chip_{ChipPart.counter}", shopSpawnLocation, true);
-				}, "chip_productImage.png"),
+					"reverse-camera_productImage.png")
 			});
 
+			if ((bool) enableFuelSystem.GetValue())
+			{
+				Shop.Add(shopBaseInfo, Shop.ShopLocation.Fleetari, new[]
+				{
+					new ShopItem("Fuel Pump Cover", 120, shopSpawnLocation, fuelPumpCover,
+						"fuel-pump-cover-plate_productImage.png"),
+					new ShopItem("Fuel Injection Manifold", 1600, shopSpawnLocation, fuelInjectionManifold,
+						"fuel-injection-manifold_productImage.png"),
+					new ShopItem("Fuel Rail", 375, shopSpawnLocation, fuelRail, "fuel-rail_productImage.png"),
+					new ShopItem("Chip Programmer", 3799, shopSpawnLocation, chipProgrammer,
+						"chip-programmer_productImage.png"),
+					new ShopItem("Electric Fuel Pump", 500, shopSpawnLocation, electricFuelPump,
+						"electric-fuel-pump_productImage.png"),
+					new ShopItem("Fuel Injectors", 800, shopSpawnLocation, fuelInjectorsBox, "fuel-injectors-box_productImage.png"),
+					new ShopItem("Throttle Bodies", 1200, shopSpawnLocation, throttleBodiesBox, "throttle-bodies-box_productImage.png"),
+					new ShopItem("Programmable chip", 500, Shop.SpawnLocation.Fleetari.Counter, delegate
+					{
+						CreateChipPart($"chip_{ChipPart.counter}", shopSpawnLocation, true);
+					}, "chip_productImage.png")
+				});
+			}
+
 			assetBundle.Unload(false);
-			Object.Destroy(fuel_injector);
-			Object.Destroy(throttle_body);
 
 			ModConsole.Print(
 				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] finished loading</color>");
@@ -362,32 +361,63 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		public override void ModSettings()
+		public void ModSettings()
 		{
 			Settings.HideResetAllButton(this);
-			Settings.AddHeader(this, "DEBUG");
-			Settings.AddCheckBox(this, debugGuiSetting);
-			Settings.AddButton(this, resetPosSetting, "Reset uninstalled part location");
-			Settings.AddHeader(this, "Settings");
-			Settings.AddCheckBox(this, enableAirrideInfoPanelPage);
-			Settings.AddCheckBox(this, settingThrottleBodyValveRotation);
-			Settings.AddHeader(this, "", Color.clear);
+			Settings.AddHeader("DEBUG");
+			debugGuiSetting = Settings.AddCheckBox("debugGuiSetting", "Show DEBUG GUI", false);
+			Settings.AddButton("Reset Part position", PosReset);
+			Settings.AddHeader("Settings");
+			enableAirrideInfoPanelPage = Settings.AddCheckBox("enableAirrideInfoPanelPage",
+				"Enable Airride (enabled/disabled before load)", false);
+			settingThrottleBodyValveRotation = Settings.AddCheckBox("settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
+			Settings.AddHeader("Fuel system");
+			enableFuelSystem = Settings.AddCheckBox("enableFuelSystem", "Enable fuel injection system", false);
+			Settings.AddText("The fuel system (injection) is currently highly experimental."
+			   + "\n\nThis checkbox has to be checked prior to loading the game!"
+			   + "\nCurrently many issues exist with parts being disassembled when loading the game."
+			   + "\nThese are related to mods being loaded too early by the ModLoader and parts aren't physically on the car yet."
+			   + "\n\nSome of the causes where fixed through a workaround by keeping the player movement locked for ~5 seconds after MscModApi has loaded to wait a few seconds longer"
+			   + "\nbut some users appear to still have issues, I've never been reliably able to replicate these issues so the feature is now considered <color=blue>experimental</color>"
+			   + "\n\nBecause the mod fakes the install state for some parts (so the game still works as usual) this results in the mod unable to determine what the real state of those parts is"
+			   + "\n(mod supposed to fake the install state or are the parts actually physically installed on the car = not using mod)"
+			   + "\n\nBy checking the checkbox above you agree this feature can and will likely cause problems."
+			   + "\ngeneric '<color=blue>don't work fix this</color>'. Bug reports with no useful information added will be closed!"
+			);
+
+			ecuPanelKeybindHeader = Keybind.AddHeader("ECU-Panel Keybinds");
+			arrowUp = Keybind.Add("info_panel_arrowUp", "Arrow Up", KeyCode.Keypad8);
+			arrowDown = Keybind.Add("info_panel_arrowDown", "Arrow Down", KeyCode.Keypad2);
+			circle = Keybind.Add("info_panel_circle", "Circle", KeyCode.KeypadEnter);
+			cross = Keybind.Add("info_panel_cross", "Cross", KeyCode.KeypadPeriod);
+			plus = Keybind.Add("info_panel_plus", "Plus", KeyCode.KeypadPlus);
+			minus = Keybind.Add("info_panel_minus", "Minus", KeyCode.KeypadMinus);
+
+			if (enableAirrideInfoPanelPage.GetValue())
+			{
+				airrideKeybindHeader = Keybind.AddHeader("Airride Keybinds");
+
+				highestKeybind = Keybind.Add("airride_highest", "Airride Highest", KeyCode.LeftArrow);
+				lowestKeybind = Keybind.Add("airride_lowest", "Airride Lowest", KeyCode.RightArrow);
+				increaseKeybind = Keybind.Add("airride_increase", "Airride Increase", KeyCode.UpArrow);
+				decreaseKeybind = Keybind.Add("airride_decrease", "Airride Decrease", KeyCode.DownArrow);
+			}
 
 			TransmissionHandler.SetupSettings(this);
 			GearRatiosHandler.SetupSettings(this);
 
-			Settings.AddText(this, "Copyright © Marvin Beym 2020-2024");
+			Settings.AddText("Copyright © Marvin Beym 2020-2026");
 		}
 
-		public override void OnSave()
+		public void OnSave()
 		{
 			//Nothing to do
 		}
 
 
-		public override void OnGUI()
+		public void OnGUI()
 		{
-			if ((bool) debugGuiSetting.Value)
+			if (debugGuiSetting.GetValue())
 			{
 				guiDebug.Handle(new[]
 				{
@@ -414,7 +444,7 @@ namespace DonnerTech_ECU_Mod
 			}
 		}
 
-		public override void Update()
+		public void Update()
 		{
 			TransmissionHandler.Handle();
 			GearRatiosHandler.Handle();

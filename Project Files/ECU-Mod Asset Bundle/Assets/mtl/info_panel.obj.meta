@@ -1,0 +1,137 @@
+fileFormatVersion: 2
+guid: 94ac0bda16dfcb440999574c7f359af8
+timeCreated: 1738964591
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: ECU-Panel-ArrowDown_ECU-Panel-ArrowDown
+    100002: ECU-Panel-ArrowUp_ECU-Panel-ArrowUp
+    100004: ECU-Panel-Button-ArrowDown_ECU-Panel-Button-ArrowDown
+    100006: ECU-Panel-Button-ArrowUp_ECU-Panel-Button-ArrowUp
+    100008: ECU-Panel-Button-Circle_ECU-Panel-Button-Circle.001
+    100010: ECU-Panel-Button-Cross_ECU-Panel-Button-Cross
+    100012: ECU-Panel-Button-Minus_ECU-Panel-Button-Minus
+    100014: ECU-Panel-Button-Plus_ECU-Panel-Button-Plus
+    100016: ECU-Panel-Circle_ECU-Panel-Circle
+    100018: ECU-Panel-Cross_ECU-Panel-Cross
+    100020: ECU-Panel-Display_ECU-Panel-Display
+    100022: ECU-Panel-Minus_ECU-Panel-Minus
+    100024: ECU-Panel-Plus_ECU-Panel-Plus
+    100026: //RootNode
+    100028: Mounting_bracket_Cube.038
+    400000: ECU-Panel-ArrowDown_ECU-Panel-ArrowDown
+    400002: ECU-Panel-ArrowUp_ECU-Panel-ArrowUp
+    400004: ECU-Panel-Button-ArrowDown_ECU-Panel-Button-ArrowDown
+    400006: ECU-Panel-Button-ArrowUp_ECU-Panel-Button-ArrowUp
+    400008: ECU-Panel-Button-Circle_ECU-Panel-Button-Circle.001
+    400010: ECU-Panel-Button-Cross_ECU-Panel-Button-Cross
+    400012: ECU-Panel-Button-Minus_ECU-Panel-Button-Minus
+    400014: ECU-Panel-Button-Plus_ECU-Panel-Button-Plus
+    400016: ECU-Panel-Circle_ECU-Panel-Circle
+    400018: ECU-Panel-Cross_ECU-Panel-Cross
+    400020: ECU-Panel-Display_ECU-Panel-Display
+    400022: ECU-Panel-Minus_ECU-Panel-Minus
+    400024: ECU-Panel-Plus_ECU-Panel-Plus
+    400026: //RootNode
+    400028: Mounting_bracket_Cube.038
+    2300000: ECU-Panel-ArrowDown_ECU-Panel-ArrowDown
+    2300002: ECU-Panel-ArrowUp_ECU-Panel-ArrowUp
+    2300004: ECU-Panel-Button-ArrowDown_ECU-Panel-Button-ArrowDown
+    2300006: ECU-Panel-Button-ArrowUp_ECU-Panel-Button-ArrowUp
+    2300008: ECU-Panel-Button-Circle_ECU-Panel-Button-Circle.001
+    2300010: ECU-Panel-Button-Cross_ECU-Panel-Button-Cross
+    2300012: ECU-Panel-Button-Minus_ECU-Panel-Button-Minus
+    2300014: ECU-Panel-Button-Plus_ECU-Panel-Button-Plus
+    2300016: ECU-Panel-Circle_ECU-Panel-Circle
+    2300018: ECU-Panel-Cross_ECU-Panel-Cross
+    2300020: ECU-Panel-Display_ECU-Panel-Display
+    2300022: ECU-Panel-Minus_ECU-Panel-Minus
+    2300024: ECU-Panel-Plus_ECU-Panel-Plus
+    2300026: Mounting_bracket_Cube.038
+    3300000: ECU-Panel-ArrowDown_ECU-Panel-ArrowDown
+    3300002: ECU-Panel-ArrowUp_ECU-Panel-ArrowUp
+    3300004: ECU-Panel-Button-ArrowDown_ECU-Panel-Button-ArrowDown
+    3300006: ECU-Panel-Button-ArrowUp_ECU-Panel-Button-ArrowUp
+    3300008: ECU-Panel-Button-Circle_ECU-Panel-Button-Circle.001
+    3300010: ECU-Panel-Button-Cross_ECU-Panel-Button-Cross
+    3300012: ECU-Panel-Button-Minus_ECU-Panel-Button-Minus
+    3300014: ECU-Panel-Button-Plus_ECU-Panel-Button-Plus
+    3300016: ECU-Panel-Circle_ECU-Panel-Circle
+    3300018: ECU-Panel-Cross_ECU-Panel-Cross
+    3300020: ECU-Panel-Display_ECU-Panel-Display
+    3300022: ECU-Panel-Minus_ECU-Panel-Minus
+    3300024: ECU-Panel-Plus_ECU-Panel-Plus
+    3300026: Mounting_bracket_Cube.038
+    4300000: ECU-Panel-ArrowDown_ECU-Panel-ArrowDown
+    4300002: ECU-Panel-ArrowUp_ECU-Panel-ArrowUp
+    4300004: ECU-Panel-Button-ArrowDown_ECU-Panel-Button-ArrowDown
+    4300006: ECU-Panel-Button-ArrowUp_ECU-Panel-Button-ArrowUp
+    4300008: ECU-Panel-Button-Circle_ECU-Panel-Button-Circle.001
+    4300010: ECU-Panel-Button-Cross_ECU-Panel-Button-Cross
+    4300012: ECU-Panel-Button-Minus_ECU-Panel-Button-Minus
+    4300014: ECU-Panel-Button-Plus_ECU-Panel-Button-Plus
+    4300016: ECU-Panel-Circle_ECU-Panel-Circle
+    4300018: ECU-Panel-Cross_ECU-Panel-Cross
+    4300020: ECU-Panel-Display_ECU-Panel-Display
+    4300022: ECU-Panel-Minus_ECU-Panel-Minus
+    4300024: ECU-Panel-Plus_ECU-Panel-Plus
+    4300026: Mounting_bracket_Cube.038
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

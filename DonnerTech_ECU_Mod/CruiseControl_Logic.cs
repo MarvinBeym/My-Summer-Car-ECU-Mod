@@ -38,12 +38,12 @@ namespace DonnerTech_ECU_Mod
 		{
 			this.cruiseControlPanel = cruiseControlPanel;
 
-			switchMinus = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Minus").gameObject;
-			switchPlus = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Plus").gameObject;
-			switchSet = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Set").gameObject;
-			switchReset = cruiseControlPanel.transform.FindChild("ECU-Mod_CruiseControlPanel_Switch_Reset").gameObject;
+			switchMinus = cruiseControlPanel.transform.FindChild("Switch_Minus").gameObject;
+			switchPlus = cruiseControlPanel.transform.FindChild("Switch_Plus").gameObject;
+			switchSet = cruiseControlPanel.transform.FindChild("Switch_Set").gameObject;
+			switchReset = cruiseControlPanel.transform.FindChild("Switch_Reset").gameObject;
 			cruiseControlText = cruiseControlPanel.transform
-				.FindChild("ECU-Mod_CruiseControlPanel_Set_Speed_Text")
+				.FindChild("Set_Speed_Text")
 				.GetComponent<TextMesh>();
 		}
 		void Update()

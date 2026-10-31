@@ -26,7 +26,7 @@ namespace DonnerTech_ECU_Mod
 		{
 			if (CarH.running && fuelSystem != null && fuelSystem.replaced)
 			{
-				if ((bool) mod.settingThrottleBodyValveRotation.Value)
+				if ((bool) mod.settingThrottleBodyValveRotation.GetValue())
 				{
 					HandleThrottleBodyMovement();
 				}

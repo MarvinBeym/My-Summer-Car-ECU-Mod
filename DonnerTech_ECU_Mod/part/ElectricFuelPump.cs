@@ -19,8 +19,6 @@ namespace DonnerTech_ECU_Mod.part
 				new Screw(new Vector3(0f, -0.04f, -0.0030f), new Vector3(0, 180, 0))
 			}, 0.6f, 8);
 
-			transform.FindChild("fuelLine-1").GetComponent<Renderer>().enabled = true;
-			transform.FindChild("fuelLine-2").GetComponent<Renderer>().enabled = true;
 		}
 	}
 }
