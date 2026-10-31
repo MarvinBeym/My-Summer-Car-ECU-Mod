@@ -98,7 +98,7 @@ namespace DonnerTech_ECU_Mod
 		public override string ID => "DonnerTech_ECU_Mod"; //Your mod ID (unique)
 		public override string Name => "DonnerTechRacing ECUs"; //You mod name
 		public override string Author => "DonnerPlays"; //Your Username
-		public override string Version => "1.6.1"; //Version
+		public override string Version => "1.6.2"; //Version
 
 		public AssetBundle assetBundle;
 		public GuiDebug guiDebug;
@@ -192,7 +192,7 @@ namespace DonnerTech_ECU_Mod
 
 			ModConsole.Print(
 				$"<color=white><color=blue>{Name}</color> [<color=green>v{Version}</color>] started loading</color>");
-			
+
 			partsList = new List<Part>();
 
 			//MscModApi.MscModApi.EnableScrewPlacementForAllParts(this);
@@ -364,25 +364,25 @@ namespace DonnerTech_ECU_Mod
 		public void ModSettings()
 		{
 			Settings.HideResetAllButton(this);
-			Settings.AddHeader(this, "DEBUG");
-			debugGuiSetting = Settings.AddCheckBox(this, "debugGuiSetting", "Show DEBUG GUI", false);
-			Settings.AddButton(this, "resetPos", "Reset Part position", PosReset);
-			Settings.AddHeader(this, "Settings");
-			enableAirrideInfoPanelPage = Settings.AddCheckBox(this, "enableAirrideInfoPanelPage",
+			Settings.AddHeader("DEBUG");
+			debugGuiSetting = Settings.AddCheckBox("debugGuiSetting", "Show DEBUG GUI", false);
+			Settings.AddButton("Reset Part position", PosReset);
+			Settings.AddHeader("Settings");
+			enableAirrideInfoPanelPage = Settings.AddCheckBox("enableAirrideInfoPanelPage",
 				"Enable Airride (enabled/disabled before load)", false);
-			settingThrottleBodyValveRotation = Settings.AddCheckBox(this, "settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
-			Settings.AddHeader(this, "Fuel system");
-			enableFuelSystem = Settings.AddCheckBox(this, "enableFuelSystem", "Enable fuel injection system", false);
-			Settings.AddText(this, "The fuel system (injection) is currently highly experimental." 
+			settingThrottleBodyValveRotation = Settings.AddCheckBox("settingThrottleBodyValveRotation", "Throttle body valve rotation", true);
+			Settings.AddHeader("Fuel system");
+			enableFuelSystem = Settings.AddCheckBox("enableFuelSystem", "Enable fuel injection system", false);
+			Settings.AddText("The fuel system (injection) is currently highly experimental."
 			   + "\n\nThis checkbox has to be checked prior to loading the game!"
-               + "\nCurrently many issues exist with parts being disassembled when loading the game." 
-               + "\nThese are related to mods being loaded too early by the ModLoader and parts aren't physically on the car yet." 
-               + "\n\nSome of the causes where fixed through a workaround by keeping the player movement locked for ~5 seconds after MscModApi has loaded to wait a few seconds longer"
-               + "\nbut some users appear to still have issues, I've never been reliably able to replicate these issues so the feature is now considered <color=blue>experimental</color>"
-			   + "\n\nBecause the mod fakes the install state for some parts (so the game still works as usual) this results in the mod unable to determine what the real state of those parts is" 
-               + "\n(mod supposed to fake the install state or are the parts actually physically installed on the car = not using mod)" 
-               + "\n\nBy checking the checkbox above you agree this feature can and will likely cause problems." 
-               + "\ngeneric '<color=blue>don't work fix this</color>'. Bug reports with no useful information added will be closed!"
+			   + "\nCurrently many issues exist with parts being disassembled when loading the game."
+			   + "\nThese are related to mods being loaded too early by the ModLoader and parts aren't physically on the car yet."
+			   + "\n\nSome of the causes where fixed through a workaround by keeping the player movement locked for ~5 seconds after MscModApi has loaded to wait a few seconds longer"
+			   + "\nbut some users appear to still have issues, I've never been reliably able to replicate these issues so the feature is now considered <color=blue>experimental</color>"
+			   + "\n\nBecause the mod fakes the install state for some parts (so the game still works as usual) this results in the mod unable to determine what the real state of those parts is"
+			   + "\n(mod supposed to fake the install state or are the parts actually physically installed on the car = not using mod)"
+			   + "\n\nBy checking the checkbox above you agree this feature can and will likely cause problems."
+			   + "\ngeneric '<color=blue>don't work fix this</color>'. Bug reports with no useful information added will be closed!"
 			);
 
 			ecuPanelKeybindHeader = Keybind.AddHeader("ECU-Panel Keybinds");
@@ -406,7 +406,7 @@ namespace DonnerTech_ECU_Mod
 			TransmissionHandler.SetupSettings(this);
 			GearRatiosHandler.SetupSettings(this);
 
-			Settings.AddText(this, "Copyright © Marvin Beym 2020-2024");
+			Settings.AddText("Copyright © Marvin Beym 2020-2026");
 		}
 
 		public void OnSave()

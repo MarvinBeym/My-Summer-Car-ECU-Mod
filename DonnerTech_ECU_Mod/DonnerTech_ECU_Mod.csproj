@@ -76,6 +76,7 @@
     <Compile Include="gui\GuiDebug.cs" />
     <Compile Include="gui\GuiDebugElement.cs" />
     <Compile Include="gui\GuiDebugInfo.cs" />
+    <Compile Include="infoPanel\InfoPanelValueLogic.cs" />
     <Compile Include="LightSensorLogic.cs" />
     <Compile Include="part\BlockGamePart.cs" />
     <Compile Include="part\InfoPanel.cs" />
