@@ -174,6 +174,7 @@ namespace DonnerTech_ECU_Mod.part
 					if (textMesh.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
 					{
 						displayValues.Add("value_" + i, textMesh);
+						//textMesh.gameObject.AddComponent<InfoPanelValueLogic>(); // Not implemented yet, may in the future replace the complex Dictionary code
 					}
 				}
 			}
