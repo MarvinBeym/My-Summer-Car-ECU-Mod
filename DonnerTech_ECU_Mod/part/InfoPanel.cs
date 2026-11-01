@@ -92,8 +92,6 @@ namespace DonnerTech_ECU_Mod.part
 			this.tcsModule = tcsModule;
 			this.rainLightSensorboard = rainLightSensorboard;
 
-			SetupScaleFix();
-
 			AddScrews(new[]
 			{
 				new Screw(new Vector3(0f, -0.025f, -0.082f), new Vector3(180, 0, 0))
@@ -176,6 +174,7 @@ namespace DonnerTech_ECU_Mod.part
 					if (textMesh.name == ("displayValue_" + i.ToString().PadLeft(2, '0')))
 					{
 						displayValues.Add("value_" + i, textMesh);
+						//textMesh.gameObject.AddComponent<InfoPanelValueLogic>(); // Not implemented yet, may in the future replace the complex Dictionary code
 					}
 				}
 			}
@@ -384,35 +383,6 @@ namespace DonnerTech_ECU_Mod.part
 		{
 			SetDisplayValue(index, format != "" ? value.ToString(format) : value.ToString());
 			return this;
-		}
-
-		/// <summary>
-		/// Should be fixed by actually scaling the 3D-model in the future so it stays as 1.0 in Unity
-		/// </summary>
-		private void SetupScaleFix()
-		{
-			GameObject hand = Cache.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera/1Hand_Assemble/Hand");
-
-			PlayMakerFSM pickUpFsm = hand.FindFsm("PickUp");
-			FsmGameObject pickedGameObject = pickUpFsm.FsmVariables.GetFsmGameObject("PickedObject");
-			if (!pickUpFsm.Fsm.Initialized)
-			{
-				pickUpFsm.InitializeFSM();
-			}
-			FsmState waitState = pickUpFsm.FindState("Wait");
-
-
-			AddActionAsFirst(waitState, () =>
-			{
-				infoPanelInHand = pickedGameObject.Value == gameObject;
-			});
-			AddActionAsLast(waitState, () =>
-			{
-				if (infoPanelInHand)
-				{
-					transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-				}
-			});
 		}
 	}
 }
